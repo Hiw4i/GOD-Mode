@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOD Mode — Free Premium Forever</title>
+    <link rel="icon" type="image/png" href="sources/Icon_rounded.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/sections.css">
+    <link rel="stylesheet" href="css/modals.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <symbol id="icon-apple" viewBox="0 0 24 24">
+        <path fill="currentColor" stroke="none" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+    </symbol>
+</svg>
+
+<!-- NAV -->
+<nav>
+    <a href="#hero" class="nav-logo"><span class="god">GOD</span> <span class="mode">mode</span></a>
+    <div class="nav-right">
+        <a href="#features"><i data-lucide="layout-dashboard" class="nav-icon"></i><span class="nav-label">Features</span></a>
+        <a href="#download"><i data-lucide="download" class="nav-icon"></i><span class="nav-label">Download</span></a>
+        <a href="#support"><i data-lucide="gem" class="nav-icon"></i><span class="nav-label">Support</span></a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+    <div class="hero-content">
+        <div class="hero-label fade-in">Deep Focus System</div>
+        <h1 class="hero-title fade-in d1">GOD MODE</h1>
+    </div>
+    <img class="hero-statue" src="sources/statue.png" alt="David">
+</section>
+
+<!-- FEATURES -->
+<section class="how-it-works" id="features">
+    <div class="features-stage">
+        <div class="how-it-works-bg">
+            <div class="hiw-bg-text" data-parallax-features-text>
+                <div class="hiw-bg-label">Ready to unlock your real potential?</div>
+                FEATURES
+            </div>
+            <img class="hiw-bg-img" data-parallax-features-img src="sources/statue for features.png" alt="Features" loading="lazy">
+        </div>
+        <div class="how-it-works-content">
+            <div class="feature-cards" data-parallax-feature-cards>
+                <div class="total-focus-wrap fade-in d1">
+                    <div class="floating-icons" data-floating-icons>
+                        <img class="float-icon float-icon--youtube" src="sources/youtube.jpg" alt="" draggable="false">
+                        <img class="float-icon float-icon--tiktok" src="sources/tiktok.jpg" alt="" draggable="false">
+                        <img class="float-icon float-icon--instagram" src="sources/instagram.jpg" alt="" draggable="false">
+                    </div>
+                    <article class="feature-card glass-card">
+                        <h3>Total Focus</h3>
+                        <p>All notifications and apps are blocked. You are left alone with the task.</p>
+                    </article>
+                </div>
+                <article class="feature-card glass-card is-right fade-in d2">
+                    <h3>The Best UX/UI</h3>
+                    <p>Aesthetic excellence is the heart of GOD Mode. Every detail is crafted to perfection.</p>
+                </article>
+                <article class="feature-card glass-card fade-in d2">
+                    <h3>Real Statistics</h3>
+                    <p>Know yourself. Find out your real productivity. Every second tracked. Every distraction counted.</p>
+                </article>
+                <article class="feature-card glass-card fade-in d3" id="cruelCard">
+                    <h3>Cruel Stopwatch</h3>
+                    <p>Every break has a price. Stopwatch will reset after any distraction.</p>
+                    <div class="cruel-timer" id="cruelTimer">00:00</div>
+                </article>
+                <article class="feature-card glass-card fade-in d4" id="ambientCard">
+                    <div class="ambient-card-copy">
+                        <h3>Ambient Soundscapes</h3>
+                        <p>Curated sounds to drown out noise.</p>
+                    </div>
+                    <div class="ambient-player-stage" data-ambient-stage>
+                        <div class="ambient-player-frame"></div>
+                        <div class="ambient-player" data-ambient-player>
+                            <img class="ambient-cover" data-ambient-cover src="sources/music (1).jpg" alt="">
+                            <div class="ambient-player-shade"></div>
+                            <span class="ambient-track-name" data-ambient-name>Had to be alone</span>
+                            <div class="ambient-controls">
+                                <button class="ambient-control ambient-control--prev" type="button" aria-label="Previous track" data-ambient-prev><i data-lucide="skip-back"></i></button>
+                                <button class="ambient-control ambient-control--play" type="button" aria-label="Play Had to be alone" aria-pressed="false" data-ambient-play><i data-lucide="play" class="play-icon"></i><i data-lucide="pause" class="pause-icon"></i></button>
+                                <button class="ambient-control ambient-control--next" type="button" aria-label="Next track" data-ambient-next><i data-lucide="skip-forward"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <audio data-ambient-audio preload="metadata"></audio>
+                </article>
+                <article class="feature-card glass-card fade-in d5">
+                    <h3>Task Targeting</h3>
+                    <p>Point all energy at one task with absolute intent.</p>
+                </article>
+                <article class="feature-card glass-card fade-in d5">
+                    <h3>Museum of Focus</h3>
+                    <p>Turn your discipline into art. Convert raw focus time and completed tasks into XP, level up your rank, and unlock unique collectible trophies.</p>
+                </article>
+                <article class="feature-card glass-card fade-in d5">
+                    <h3>QUESTS</h3>
+                    <p>Deploy daily missions and focus challenges of varying difficulty.</p>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="download-section" id="download">
+    <div class="download-bg">
+        <div class="download-bg-text section-bg-text" data-parallax-download-text>
+            <div class="download-bg-label section-bg-label">Prove your commitment to change. Lifetime focus costs less than 3 cups of coffee.</div>
+            DOWNLOAD
+        </div>
+        <img class="download-bg-img section-bg-img" data-parallax-download-img src="sources/statue for download.png" alt="Download" loading="lazy">
+    </div>
+    <div class="download-content">
+        <div class="download-cards">
+            <div class="download-card glass-card free-card">
+                <h3 class="download-card-title">Standard</h3>
+                <div class="download-card-price">
+                    <span class="price-amount">$0</span>
+                </div>
+                <ul class="download-card-features">
+                    <li><span class="feature-check">—</span> Basic focus stopwatch</li>
+                    <li><span class="feature-check">—</span> Last 4 weeks of statistics</li>
+                    <li><span class="feature-check">—</span> 1 default aesthetic theme</li>
+                    <li><span class="feature-check">—</span> Basic soundscapes</li>
+                    <li><span class="feature-check">—</span> No ads</li>
+                </ul>
+                <a href="#" class="btn btn-outline" data-open-modal="downloadModal">Download Free</a>
+                <div class="os-icons-row">
+                    <img src="sources/android.png" alt="Android">
+                    <svg fill="currentColor" stroke="none"><use href="#icon-apple"/></svg>
+                    <i data-lucide="grid-2x2"></i>
+                    <img src="sources/linux.png" alt="Linux">
+                </div>
+            </div>
+            <div class="download-card glass-card premium-card">
+                <h3 class="download-card-title">Premium FOREVER</h3>
+                <p class="spots-desc">First 1000 legends get lifetime access for free</p>
+                <div class="spots-counter">
+                    <span class="spots-remaining" id="spotsRemaining">58</span>
+                    <span class="spots-label">/1000 spots left</span>
+                </div>
+                <div class="spots-bar">
+                    <div class="spots-bar-fill" id="spotsBarFill"></div>
+                </div>
+                <div class="price-display">
+                    <span class="price-old">$20</span>
+                    <span class="price-new">$0</span>
+                    <span class="price-period">lifetime</span>
+                </div>
+                <ul class="download-card-features">
+                    <li><span class="feature-check">✓</span> Psychological edge over 99% of people</li>
+                    <li><span class="feature-check">✓</span> Full & Lifetime growth statistics</li>
+                    <li><span class="feature-check">✓</span> Unlocks high-performance living</li>
+                    <li><span class="feature-check">✓</span> Strict App Blocker</li>
+                    <li><span class="feature-check">✓</span> Eliminate 90% of self-inflicted problems</li>
+                    <li><span class="feature-check">✓</span> All premium aesthetic themes and Unlimited customization</li>
+                    <li><span class="feature-check">✓</span> Full soundscapes library</li>
+                    <li><span class="feature-check">✓</span> Streak Freeze active</li>
+                    <li><span class="feature-check">✓</span> Lifetime access & future updates</li>
+                    <li><span class="feature-check">✓</span> Priority support</li>
+                </ul>
+                <a href="#" class="btn download-card-btn filled" data-open-modal="premiumModal">
+                    Get Premium FOREVER<span class="arrow">&rarr;</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SUPPORT -->
+<section class="support-section" id="support">
+    <div class="support-bg">
+        <div class="support-bg-text section-bg-text" data-parallax-support-text>
+            <div class="support-bg-label section-bg-label">Help build a life-changing tool</div>
+            SUPPORT
+        </div>
+        <img class="support-bg-img section-bg-img" data-parallax-support-img src="sources/statue for support.png" alt="Support" loading="lazy">
+    </div>
+    <div class="support-content">
+        <div class="support-cards">
+            <div class="support-card glass-card">
+                <div class="support-card-icon rub">₽</div>
+                <h3 class="support-card-title">T-bank</h3>
+                <p class="support-card-sub">Direct Transfer (RU)</p>
+                <a href="https://tbank.ru/cf/1ntWnJ2SQaO" target="_blank" rel="noopener" class="btn btn-outline">Link <svg class="btn-external-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+            </div>
+            <div class="support-card glass-card">
+                <div class="support-card-icon btc">₿</div>
+                <h3 class="support-card-title">Crypto</h3>
+                <p class="support-card-sub">USDT / BTC / ETH / SOL</p>
+                <button class="btn btn-outline" data-open-modal="cryptoModal">View Addresses</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CRYPTO MODAL -->
+<div id="cryptoModal" class="modal-overlay">
+    <div class="modal glass-card">
+        <button class="modal-close">&times;</button>
+        <h3 class="modal-title">Crypto Addresses</h3>
+        <div class="modal-item">
+            <span class="modal-label">USDT (SOL)</span>
+            <code class="modal-address" data-copy>TExampleAddress1234567890abc</code>
+        </div>
+        <div class="modal-item">
+            <span class="modal-label">BTC</span>
+            <code class="modal-address" data-copy>bc1qexampleaddress000000000</code>
+        </div>
+        <div class="modal-item">
+            <span class="modal-label">ETH</span>
+            <code class="modal-address" data-copy>0xExampleAddress1234567890</code>
+        </div>
+        <div class="modal-item">
+            <span class="modal-label">SOL</span>
+            <code class="modal-address" data-copy>ExampleAddress1234567890abc</code>
+        </div>
+    </div>
+</div>
+
+<!-- DOWNLOAD MODAL -->
+<div id="downloadModal" class="modal-overlay">
+    <div class="modal glass-card">
+        <button class="modal-close">&times;</button>
+        <h3 class="modal-title">Choose Your Platform</h3>
+        <div class="download-os-grid">
+            <a href="#" class="selectable-btn download-os-btn" data-os-btn>
+                <i data-lucide="smartphone"></i>
+                <span>Android</span>
+            </a>
+            <a href="#" class="selectable-btn download-os-btn" data-os-btn>
+                <i data-lucide="smartphone"></i>
+                <span>iOS</span>
+            </a>
+            <a href="#" class="selectable-btn download-os-btn" data-os-btn>
+                <i data-lucide="grid-2x2"></i>
+                <span>Windows</span>
+            </a>
+            <a href="#" class="selectable-btn download-os-btn" data-os-btn>
+                <img src="sources/linux.png" alt="Linux">
+                <span>Linux</span>
+            </a>
+            <a href="#" class="selectable-btn download-os-btn" data-os-btn>
+                <svg fill="currentColor" stroke="none"><use href="#icon-apple"/></svg>
+                <span>macOS</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- PREMIUM MODAL -->
+<div id="premiumModal" class="modal-overlay">
+    <div class="modal glass-card">
+        <button class="modal-close">&times;</button>
+        <h3 class="modal-title">Sign in to secure your Premium</h3>
+        <div class="premium-auth-grid">
+            <a href="#" class="selectable-btn premium-auth-btn" data-auth-btn>
+                <img src="sources/google.png" alt="Google">
+                <span>Google</span>
+            </a>
+            <a href="#" class="selectable-btn premium-auth-btn" data-auth-btn>
+                <img src="sources/github.png" alt="GitHub">
+                <span>GitHub</span>
+            </a>
+        </div>
+        <p class="premium-email-note">or use email</p>
+    </div>
+</div>
+
+<!-- SIGNUP MODAL -->
+<div id="signupModal" class="modal-overlay">
+    <div class="modal glass-card">
+        <button class="modal-close">&times;</button>
+        <h3 class="modal-title">Create your account</h3>
+        <form class="signup-form">
+            <input class="signup-input" type="text" placeholder="Name" required>
+            <input class="signup-input" type="email" placeholder="Email" required>
+            <input class="signup-input" type="password" placeholder="Password" required>
+            <button class="signup-submit" type="submit">Sign Up</button>
+        </form>
+    </div>
+</div>
+
+<!-- CDN scripts -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
+<script src="js/utils.js"></script>
+<script src="js/parallax.js"></script>
+<script src="js/animations.js"></script>
+<script src="js/ui.js"></script>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

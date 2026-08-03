@@ -1,0 +1,202 @@
+/* ===== MODALS ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+    --glass-radius: 16px;
+    padding: 3rem;
+    max-width: 560px;
+    width: 90%;
+    transform: translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+
+.modal-overlay.open .modal { transform: translateY(0); }
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: color 0.3s;
+    z-index: 1;
+    touch-action: manipulation;
+}
+
+.modal-close:hover { color: var(--text); }
+
+.modal-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.modal-item {
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.modal-label {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+}
+
+.modal-address {
+    display: block;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    font-size: 0.75rem;
+    color: var(--text);
+    word-break: break-all;
+    cursor: pointer;
+    transition: border-color 0.3s, color 0.3s, background 0.3s;
+    font-family: 'Space Grotesk', monospace;
+}
+
+.modal-address:hover {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.08);
+}
+
+.modal-address.copied {
+    border-color: #16a34a;
+    color: #16a34a;
+}
+
+/* Download OS Modal */
+.download-os-grid {
+    display: flex;
+    gap: 12px;
+    margin-top: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.download-os-btn {
+    padding: 1rem 0.6rem;
+}
+
+.download-os-btn img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+/* Premium Auth Modal */
+.premium-auth-grid {
+    display: flex;
+    gap: 16px;
+    margin-top: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.premium-auth-btn {
+    padding: 1.5rem 2rem;
+}
+
+.premium-auth-btn img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+}
+
+.premium-email-note {
+    text-align: center;
+    margin-top: 1.2rem;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    transition: color 0.3s;
+    touch-action: manipulation;
+}
+
+.premium-email-note:hover { color: var(--text); }
+
+/* Signup Modal */
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.signup-input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    font-size: 0.75rem;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    transition: border-color 0.3s, background 0.3s;
+    outline: none;
+}
+
+.signup-input::placeholder { color: var(--text-dim); }
+
+.signup-input:focus {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.08);
+}
+
+.signup-submit {
+    margin-top: 0.5rem;
+    padding: 0.9rem;
+    background: rgba(255,255,255,0.9);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    touch-action: manipulation;
+}
+
+.signup-submit:hover {
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+}
+
+.signup-submit.success {
+    background: #16a34a;
+    color: #fff;
+    pointer-events: none;
+}

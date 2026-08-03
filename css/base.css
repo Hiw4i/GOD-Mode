@@ -1,0 +1,57 @@
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+img { user-select: none; -webkit-user-select: none; }
+
+:root {
+    --accent: #D4451A;
+    --text: #EAEAEA;
+    --text-dim: rgba(234,234,234,0.35);
+    --bg: #0A0A0A;
+    --bg-card: #141414;
+    --border: rgba(234,234,234,0.08);
+    --font: 'Space Grotesk', sans-serif;
+    --glass-radius: 16px;
+}
+
+html.lenis, html.lenis body { height: auto; }
+.lenis-smooth { scroll-behavior: auto !important; }
+.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis-stopped { overflow: hidden; }
+.lenis-scrolling iframe { pointer-events: none; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+::selection { background: var(--accent); color: #fff; }
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 2px; }
+
+/* Edge blur */
+body::before,
+body::after {
+    content: '';
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 200px;
+    z-index: 50;
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(32px);
+    backdrop-filter: blur(32px);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+}
+
+body::before { top: 0; }
+
+body::after {
+    bottom: 0;
+    -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
+    mask-image: linear-gradient(to top, black 0%, transparent 100%);
+}
