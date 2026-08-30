@@ -6,10 +6,19 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    ignore:
+      # Major upgrades are reviewed manually after the Next.js lint toolchain
+      # declares compatible peer dependency ranges.
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
     groups:
       npm-dependencies:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
 
   - package-ecosystem: github-actions
     directory: /

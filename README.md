@@ -33,7 +33,7 @@ corepack pnpm build
 
 ## Continuous integration
 
-GitHub Actions runs on every push and pull request to `main`. The workflow uses Node.js 24 LTS and the pinned pnpm version, validates peer dependencies, runs lint and TypeScript checks, builds the static export, and stores `out/` as a seven-day build artifact. Dependabot checks npm packages and GitHub Actions weekly.
+GitHub Actions runs on every push and pull request to `main`. The workflow uses Node.js 24 LTS and the pinned pnpm version, validates peer dependencies, runs lint and TypeScript checks, builds the static export, and stores `out/` as a seven-day build artifact. Dependabot checks npm packages and GitHub Actions weekly. npm patch and minor updates are grouped automatically; major npm upgrades are reviewed and tested manually to avoid incompatible peer dependency combinations.
 
 ## Project structure
 
