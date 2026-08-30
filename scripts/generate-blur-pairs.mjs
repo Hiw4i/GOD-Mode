@@ -137,23 +137,6 @@ async function generateIconPlane(definition) {
   console.log(`✓ ${definition.name}: ${info.width}x${info.height}, source blur=${blurRadius.toFixed(1)}px`);
 }
 
-async function generateCardReplica() {
-  const width = 900;
-  const height = 360;
-  const radius = 34;
-  const svg = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#222"/><stop offset="1" stop-color="#0d0d0d"/></linearGradient></defs><rect x="2" y="2" width="896" height="356" rx="${radius}" fill="url(#g)" stroke="#ffffff26" stroke-width="2"/><text x="70" y="145" fill="#fff" font-family="Space Grotesk" font-size="72" font-weight="700">TOTAL FOCUS</text><text x="70" y="232" fill="#8f8f8f" font-family="Space Grotesk" font-size="28" font-weight="700">All notifications and apps are blocked. You</text><text x="70" y="274" fill="#8f8f8f" font-family="Space Grotesk" font-size="28" font-weight="700">are left alone with the task.</text></svg>`);
-  const sharpCard = await sharp(svg, { density: 144 }).resize(width, height, { fit: "fill" }).png().toBuffer();
-  const blurredCard = await sharp(sharpCard).blur(20).png().toBuffer();
-  const matte = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="${width}" height="${height}" rx="${radius}" fill="#111" fill-opacity=".94"/></svg>`);
-  const output = await sharp({ create: { width, height, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
-    .composite([{ input: matte }, { input: blurredCard }])
-    .webp({ quality: 84, alphaQuality: 100, effort: 6 })
-    .toBuffer();
-  await assertGeometry(output, width, height, "total-focus card blur");
-  await writeFile(path.join(publicRoot, "total-focus-card (blured).webp"), output);
-  console.log(`✓ total-focus-card: ${width}x${height}, blur=${output.byteLength} bytes`);
-}
-
 await mkdir(publicRoot, { recursive: true });
 await generateHero();
 
@@ -186,4 +169,3 @@ const textManifest = {};
 for (const plane of textPlanes) textManifest[plane.name] = await generateTextPlane(plane);
 await writeFile(manifestPath, `${JSON.stringify(textManifest, null, 2)}\n`);
 for (const icon of iconPlanes) await generateIconPlane(icon);
-await generateCardReplica();

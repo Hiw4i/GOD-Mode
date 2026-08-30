@@ -215,7 +215,7 @@ nav {
 
 .hiw-bg-img {
     position: absolute;
-    top: clamp(10.5rem, 22vh, 11.5rem);
+    top: clamp(12rem, 24vh, 13rem);
     left: 50%;
     transform: translateX(-50%);
     width: clamp(360px, 34vw, 560px);
@@ -250,6 +250,8 @@ nav {
     --card-speed: 1;
     --feature-card-lift: 0px;
     --feature-card-scale: 1;
+    --feature-card-hover-lift: -8px;
+    --feature-card-hover-scale: 1.02;
     --glass-radius: 16px;
     position: absolute;
     width: clamp(300px, 32vw, 450px);
@@ -287,11 +289,6 @@ nav {
     max-width: 32ch;
 }
 
-.feature-card:hover {
-    --feature-card-lift: -8px;
-    --feature-card-scale: 1.02;
-}
-
 .feature-card:nth-child(2) {
     top: 32vh;
     right: 1%;
@@ -306,8 +303,8 @@ nav {
     --card-speed: 1.16;
     --card-z: 92px;
     --feature-card-scale: 1.12;
+    --feature-card-hover-scale: 1.15;
 }
-.feature-card:nth-child(3):hover { --feature-card-scale: 1.15; }
 .feature-card:nth-child(3) h3 { font-size: clamp(1.95rem, 3.4vw, 2.8rem); }
 .feature-card:nth-child(3) p { font-size: clamp(0.8rem, 1.1vw, 1rem); margin-top: 1.35rem; }
 
@@ -318,8 +315,8 @@ nav {
     --card-speed: 1.50;
     --card-z: 116px;
     --feature-card-scale: 1.18;
+    --feature-card-hover-scale: 1.22;
 }
-.feature-card:nth-child(4):hover { --feature-card-scale: 1.22; }
 .feature-card:nth-child(4) h3 { font-size: clamp(2.1rem, 3.8vw, 3rem); }
 .feature-card:nth-child(4) p { font-size: clamp(0.88rem, 1.2vw, 1.1rem); margin-top: 1.5rem; }
 
@@ -330,8 +327,8 @@ nav {
     --card-speed: 1.34;
     --card-z: 86px;
     --feature-card-scale: 1.12;
+    --feature-card-hover-scale: 1.15;
 }
-.feature-card:nth-child(5):hover { --feature-card-scale: 1.15; }
 .feature-card:nth-child(5) h3 { font-size: clamp(1.95rem, 3.4vw, 2.8rem); }
 .feature-card:nth-child(5) p { font-size: clamp(0.8rem, 1.1vw, 1rem); margin-top: 1.35rem; }
 
@@ -342,8 +339,8 @@ nav {
     --card-speed: 1.42;
     --card-z: 120px;
     --feature-card-scale: 1.06;
+    --feature-card-hover-scale: 1.09;
 }
-.feature-card:nth-child(6):hover { --feature-card-scale: 1.09; }
 .feature-card:nth-child(6) h3 { font-size: clamp(1.82rem, 3.1vw, 2.6rem); }
 .feature-card:nth-child(6) p { font-size: clamp(0.75rem, 1.02vw, 0.94rem); }
 
@@ -354,8 +351,8 @@ nav {
     --card-speed: 1.30;
     --card-z: 60px;
     --feature-card-scale: 1.12;
+    --feature-card-hover-scale: 1.15;
 }
-.feature-card:nth-child(7):hover { --feature-card-scale: 1.15; }
 .feature-card:nth-child(7) h3 { font-size: clamp(1.78rem, 3vw, 2.5rem); }
 .feature-card:nth-child(7) p { font-size: clamp(0.72rem, 0.98vw, 0.88rem); }
 
@@ -366,8 +363,8 @@ nav {
     --card-speed: 1.25;
     --card-z: 68px;
     --feature-card-scale: 1.03;
+    --feature-card-hover-scale: 1.06;
 }
-.feature-card:nth-child(8):hover { --feature-card-scale: 1.06; }
 .feature-card:nth-child(8) h3 { font-size: clamp(1.78rem, 3vw, 2.5rem); }
 .feature-card:nth-child(8) p { font-size: clamp(0.72rem, 0.98vw, 0.88rem); }
 
@@ -485,8 +482,8 @@ nav {
     overflow: visible;
     height: 182px;
     min-height: 182px;
+    --feature-card-hover-scale: 1.21;
 }
-#ambientCard:hover { --feature-card-lift: -8px; --feature-card-scale: 1.21; }
 #ambientCard::after { top: 0; left: 0; width: 100%; height: 100%; }
 
 .ambient-card-copy {

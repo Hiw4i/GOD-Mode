@@ -2,12 +2,11 @@ import Image from "next/image";
 import { Download, ExternalLink, Gem, Grid2X2, LayoutDashboard } from "lucide-react";
 import { AmbientPlayer } from "@/components/ambient-player";
 import { CruelStopwatch } from "@/components/cruel-stopwatch";
-import { FeatureOverlapReplica } from "@/components/feature-overlap-replica";
 import { ModalSystem } from "@/components/modal-system";
 import { MotionRuntime } from "@/components/motion-runtime";
 import { PairedSceneVisual, XrayPlane } from "@/components/paired-scene-visual";
 import { SpotsCounter } from "@/components/spots-counter";
-import { ambientTracks, downloadPlans, featureOverlapReplicas, features, supportMethods } from "@/lib/content";
+import { ambientTracks, downloadPlans, features, supportMethods } from "@/lib/content";
 import { APP_VERSION_LABEL } from "@/lib/version";
 import xrayPlanes from "@/lib/generated-xray-planes.json";
 
@@ -94,7 +93,6 @@ export default function HomePage() {
                   }
                   return (
                     <article key={feature.id} id={feature.kind === "ambient" ? "ambientCard" : feature.kind === "timer" ? "cruelCard" : undefined} className={className} data-feature-card data-feature-id={feature.id} data-speed={feature.speed} data-mask-target={feature.id} data-motion-near>
-                      {featureOverlapReplicas.filter((replica) => replica.targetId === feature.id).map((replica) => <FeatureOverlapReplica key={`${replica.sourceId}:${replica.targetId}`} definition={replica} />)}
                       {feature.kind === "ambient" ? (
                         <><div className="ambient-card-copy"><h3>{feature.title}</h3><p>{feature.description}</p></div><AmbientPlayer tracks={ambientTracks} /></>
                       ) : (

@@ -37,21 +37,6 @@ type CardMotionState = {
   hoverY: number;
 };
 
-type OverlapReplicaState = {
-  element: HTMLElement;
-  source: CardMotionState;
-  target: CardMotionState;
-  sourceX: number;
-  sourceY: number;
-  targetX: number;
-  targetY: number;
-  sourceWidth: number;
-  sourceHeight: number;
-  targetWidth: number;
-  targetHeight: number;
-  disabledAt: number;
-};
-
 function renderMaskState(state: MaskMotionState) {
   const y = state.scrollY + state.hoverY;
   const transform = [
@@ -61,21 +46,6 @@ function renderMaskState(state: MaskMotionState) {
     `translate(${-state.centerX.toFixed(3)} ${-state.centerY.toFixed(3)})`,
   ].join(" ");
   state.groups.forEach((group) => group.setAttribute("transform", transform));
-}
-
-function renderOverlapState(state: OverlapReplicaState) {
-  if (window.innerWidth <= state.disabledAt) return;
-  const sourceScale = Math.max(0.001, state.source.scale);
-  const targetScale = Math.max(0.001, state.target.scale);
-  const sourceWorldX = state.sourceX + (state.sourceWidth * (1 - sourceScale)) / 2;
-  const sourceWorldY = state.sourceY + state.source.scrollY + state.source.hoverY + (state.sourceHeight * (1 - sourceScale)) / 2;
-  const targetWorldX = state.targetX + (state.targetWidth * (1 - targetScale)) / 2;
-  const targetWorldY = state.targetY + state.target.scrollY + state.target.hoverY + (state.targetHeight * (1 - targetScale)) / 2;
-  const x = (sourceWorldX - targetWorldX) / targetScale;
-  const y = (sourceWorldY - targetWorldY) / targetScale;
-  state.element.style.width = `${(state.sourceWidth * sourceScale) / targetScale}px`;
-  state.element.style.height = `${(state.sourceHeight * sourceScale) / targetScale}px`;
-  state.element.style.transform = `translate3d(${x.toFixed(3)}px, ${y.toFixed(3)}px, 0)`;
 }
 
 export function MotionRuntime() {
@@ -93,9 +63,10 @@ export function MotionRuntime() {
 
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      const usesNativeMobileScroll = window.matchMedia("(max-width: 768px), (hover: none), (pointer: coarse)").matches;
       ScrollTrigger.config({ ignoreMobileResize: true, limitCallbacks: true });
 
-      const lenis = prefersReducedMotion ? null : new Lenis({
+      const lenis = prefersReducedMotion || usesNativeMobileScroll ? null : new Lenis({
         duration: 1,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
@@ -114,18 +85,11 @@ export function MotionRuntime() {
 
       const maskStates = new Map<string, MaskMotionState>();
       const cardStates = new Map<string, CardMotionState>();
-      const overlapStates = new Map<string, OverlapReplicaState>();
       const maskKey = (planeId: string, targetId: string) => `${planeId}:${targetId}`;
       const sceneTargetKey = (scene: string, targetId: string) => `${scene}:${targetId}`;
       const masksBySceneTarget = new Map<string, MaskMotionState[]>();
 
       const getTargetMasks = (scene: string, targetId: string) => masksBySceneTarget.get(sceneTargetKey(scene, targetId)) ?? [];
-      const renderOverlapsFor = (cardId: string) => {
-        overlapStates.forEach((state) => {
-          if (state.source.id === cardId || state.target.id === cardId) renderOverlapState(state);
-        });
-      };
-
       const syncCardStates = (stage: HTMLElement) => {
         stage.querySelectorAll<HTMLElement>("[data-feature-id]").forEach((card) => {
           const id = card.dataset.featureId;
@@ -227,35 +191,6 @@ export function MotionRuntime() {
         });
       };
 
-      const syncOverlapReplicas = (stage: HTMLElement) => {
-        stage.querySelectorAll<HTMLElement>("[data-overlap-replica]").forEach((replica) => {
-          const relation = replica.dataset.overlapReplica;
-          const [sourceId, targetId] = relation?.split(":") ?? [];
-          const source = sourceId ? cardStates.get(sourceId) : null;
-          const target = targetId ? cardStates.get(targetId) : null;
-          const windowElement = replica.closest<HTMLElement>("[data-overlap-window]");
-          if (!relation || !source || !target || !windowElement) return;
-          const sourceOffset = offsetWithin(source.element, stage);
-          const targetOffset = offsetWithin(target.element, stage);
-          const state: OverlapReplicaState = {
-            element: replica,
-            source,
-            target,
-            sourceX: sourceOffset.x,
-            sourceY: sourceOffset.y,
-            targetX: targetOffset.x,
-            targetY: targetOffset.y,
-            sourceWidth: source.element.offsetWidth,
-            sourceHeight: source.element.offsetHeight,
-            targetWidth: target.element.offsetWidth,
-            targetHeight: target.element.offsetHeight,
-            disabledAt: Number(windowElement.dataset.overlapDisableAt ?? 680),
-          };
-          overlapStates.set(relation, state);
-          renderOverlapState(state);
-        });
-      };
-
       const scenes = Array.from(document.querySelectorAll<HTMLElement>("[data-mask-stage]"));
       const featuresStage = document.querySelector<HTMLElement>('[data-mask-stage="features"]');
       const deferredPlanes = scenes.flatMap((scene) => Array.from(scene.querySelectorAll<HTMLElement>("[data-xray-plane]")))
@@ -286,7 +221,6 @@ export function MotionRuntime() {
         scenes.forEach(syncScene);
         if (featuresStage) {
           syncCardStates(featuresStage);
-          syncOverlapReplicas(featuresStage);
         }
       };
       let syncFrame = 0;
@@ -337,7 +271,7 @@ export function MotionRuntime() {
                 onToggle: ({ isActive }) => featuresStage.classList.toggle("motion-active", isActive),
               },
             });
-            const imageDistance = mobile ? -411 : -617;
+            const imageDistance = mobile ? -132 : -242;
             const textDistance = -309;
             if (visual) timeline.to(visual, { y: imageDistance, ease: "none" }, 0);
             if (text) timeline.to(text, { y: textDistance, ease: "none" }, 0);
@@ -354,7 +288,7 @@ export function MotionRuntime() {
 
               const cardState = cardStates.get(targetId);
               if (cardState) {
-                timeline.fromTo(cardState, { scrollY: from }, { scrollY: to, ease: "none", onUpdate: () => renderOverlapsFor(targetId) }, 0);
+                timeline.fromTo(cardState, { scrollY: from }, { scrollY: to, ease: "none" }, 0);
               }
               getTargetMasks("features", targetId).forEach((maskState) => {
                 const planeDistance = maskState.motionChannel === "visual" ? imageDistance : maskState.motionChannel === "text" ? textDistance : 0;
@@ -455,28 +389,28 @@ export function MotionRuntime() {
             const baseScale = cardState?.baseScale ?? targetMasks[0]?.baseScale ?? 1;
             if (isFeature && hoverScale === null) {
               const style = getComputedStyle(target);
-              hoverScale = Number.parseFloat(style.getPropertyValue("--feature-card-scale")) || baseScale;
-              hoverY = Number.parseFloat(style.getPropertyValue("--feature-card-lift")) || -8;
+              hoverScale = Number.parseFloat(style.getPropertyValue("--feature-card-hover-scale")) || baseScale * 1.02;
+              hoverY = Number.parseFloat(style.getPropertyValue("--feature-card-hover-lift")) || -8;
             }
             const scale = isFeature ? hoverScale ?? baseScale : 1.02;
             const y = isFeature ? hoverY : -8;
             if (isFeature) {
-              gsap.to(target, { "--feature-card-scale": scale, "--feature-card-lift": `${y}px`, duration: 0.45, ease: "power3.out", overwrite: "auto" });
+              gsap.to(target, { "--feature-card-scale": scale, "--feature-card-lift": `${y}px`, duration: 0.55, ease: "power2.out", overwrite: "auto" });
             } else {
               gsap.to(target, { y, scale, duration: 0.45, ease: "power3.out", overwrite: "auto" });
             }
-            targetMasks.forEach((maskState) => gsap.to(maskState, { scale, hoverY: y, duration: 0.45, ease: "power3.out", overwrite: "auto", onUpdate: () => renderMaskState(maskState) }));
-            if (cardState) gsap.to(cardState, { scale, hoverY: y, duration: 0.45, ease: "power3.out", overwrite: "auto", onUpdate: () => renderOverlapsFor(targetId) });
+            targetMasks.forEach((maskState) => gsap.to(maskState, { scale, hoverY: y, duration: 0.55, ease: "power2.out", overwrite: "auto", onUpdate: () => renderMaskState(maskState) }));
+            if (cardState) gsap.to(cardState, { scale, hoverY: y, duration: 0.55, ease: "power2.out", overwrite: "auto" });
           };
           const leave = () => {
             const baseScale = cardState?.baseScale ?? targetMasks[0]?.baseScale ?? 1;
             if (isFeature) {
-              gsap.to(target, { "--feature-card-scale": baseScale, "--feature-card-lift": "0px", duration: 0.45, ease: "power3.out", overwrite: "auto", onComplete: () => gsap.set(target, { clearProps: "--feature-card-scale,--feature-card-lift" }) });
+              gsap.to(target, { "--feature-card-scale": baseScale, "--feature-card-lift": "0px", duration: 0.55, ease: "power2.out", overwrite: "auto", onComplete: () => gsap.set(target, { clearProps: "--feature-card-scale,--feature-card-lift" }) });
             } else {
               gsap.to(target, { y: 0, scale: 1, duration: 0.45, ease: "power3.out", overwrite: "auto" });
             }
-            targetMasks.forEach((maskState) => gsap.to(maskState, { scale: maskState.baseScale, hoverY: 0, duration: 0.45, ease: "power3.out", overwrite: "auto", onUpdate: () => renderMaskState(maskState) }));
-            if (cardState) gsap.to(cardState, { scale: cardState.baseScale, hoverY: 0, duration: 0.45, ease: "power3.out", overwrite: "auto", onUpdate: () => renderOverlapsFor(targetId) });
+            targetMasks.forEach((maskState) => gsap.to(maskState, { scale: maskState.baseScale, hoverY: 0, duration: 0.55, ease: "power2.out", overwrite: "auto", onUpdate: () => renderMaskState(maskState) }));
+            if (cardState) gsap.to(cardState, { scale: cardState.baseScale, hoverY: 0, duration: 0.55, ease: "power2.out", overwrite: "auto" });
           };
           target.addEventListener("pointerenter", enter);
           target.addEventListener("pointerleave", leave);
@@ -503,7 +437,7 @@ export function MotionRuntime() {
       const resizeObserver = new ResizeObserver(scheduleSync);
       scenes.forEach((scene) => {
         resizeObserver.observe(scene);
-        scene.querySelectorAll<HTMLElement>("[data-xray-plane], [data-mask-target], [data-overlap-window]").forEach((element) => resizeObserver.observe(element));
+        scene.querySelectorAll<HTMLElement>("[data-xray-plane], [data-mask-target]").forEach((element) => resizeObserver.observe(element));
       });
       void document.fonts.ready.then(() => { if (!disposed) scheduleSync(); });
       ScrollTrigger.addEventListener("refreshInit", syncAll);
@@ -549,7 +483,6 @@ export function MotionRuntime() {
         sectionObserver.disconnect();
         maskStates.clear();
         cardStates.clear();
-        overlapStates.clear();
         context.revert();
         if (lenis) gsap.ticker.remove(tick);
         lenis?.destroy();

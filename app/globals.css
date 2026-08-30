@@ -86,7 +86,6 @@ html[data-mask-debug="true"] .glass-card {
 html[data-mask-debug="true"] .glass-card::after {
     opacity: 0 !important;
 }
-html[data-mask-debug="true"] .feature-overlap-window,
 html[data-mask-debug="true"] .floating-icons--blur {
     outline: 1px solid rgba(0, 180, 255, .8);
 }
@@ -156,24 +155,6 @@ html[data-mask-debug="true"] .floating-icons--blur {
 .floating-icons--blur .float-icon {
     opacity: 1;
 }
-.feature-overlap-window {
-    position: absolute !important;
-    inset: 0;
-    overflow: hidden;
-    border-radius: inherit;
-    z-index: 0 !important;
-    pointer-events: none;
-}
-.feature-overlap-replica {
-    position: absolute !important;
-    top: 0;
-    left: 0;
-    display: block;
-    max-width: none;
-    transform-origin: 0 0;
-    pointer-events: none;
-}
-
 .cruel-timer { font-family: var(--font-mono-local); }
 .ambient-track-name { font-family: var(--font-mono-local); }
 .ambient-cover { z-index: 0 !important; }
@@ -226,7 +207,6 @@ html[data-mask-debug="true"] .floating-icons--blur {
     .hero-statue-wrap { bottom: 0; width: 290%; }
     .download-os-grid { flex-wrap: wrap; }
     .download-os-btn { flex: 1 1 calc(33.333% - 12px); }
-    .feature-overlap-window { display: none; }
     .site-footer { padding: 1rem 1.5rem 1.25rem; }
 }
 

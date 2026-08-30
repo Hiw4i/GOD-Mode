@@ -17,7 +17,7 @@
     .features-stage { min-height: 700px; padding: 0 2.5rem; }
     .hiw-bg-text { top: 6.8rem; font-size: clamp(4.8rem, 15vw, 9rem); }
     .hiw-bg-label { font-size: 0.55rem; letter-spacing: 2px; }
-    .hiw-bg-img { width: clamp(330px, 52vw, 500px); top: 11.5rem; }
+    .hiw-bg-img { width: clamp(330px, 52vw, 500px); top: 13rem; }
     .feature-cards { width: min(760px, 100%); }
     .feature-card { width: min(340px, 40vw); min-height: 143px; }
     .feature-card h3 { font-size: clamp(1.55rem, 3.7vw, 2.1rem); }
@@ -66,7 +66,7 @@
     .hiw-bg-text { top: 18rem; font-size: clamp(4.5rem, 22vw, 7.8rem); }
     .hiw-bg-label { bottom: calc(100% + 30rem); font-size: 0.45rem; letter-spacing: 1.5px; }
     .download-bg-label, .support-bg-label { bottom: calc(100% + 1.1rem); }
-    .hiw-bg-img { top: 55rem; width: clamp(320px, 92vw, 460px); }
+    .hiw-bg-img { top: 56rem; width: clamp(320px, 92vw, 460px); }
     .download-bg-img { bottom: 9rem; }
     .support-bg-img { width: 85%; }
     .feature-cards {

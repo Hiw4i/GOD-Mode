@@ -33,19 +33,6 @@ export interface AmbientTrack {
   src: string;
 }
 
-export interface FeatureOverlapReplica {
-  sourceId: "total-focus";
-  targetId: "statistics";
-  blurredSrc: string;
-  width: number;
-  height: number;
-  disabledAt: number;
-}
-
-export const featureOverlapReplicas: FeatureOverlapReplica[] = [
-  { sourceId: "total-focus", targetId: "statistics", blurredSrc: "/sources/total-focus-card (blured).webp", width: 900, height: 360, disabledAt: 680 },
-];
-
 export const features: Feature[] = [
   {
     id: "total-focus",
