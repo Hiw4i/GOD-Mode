@@ -1,5 +1,7 @@
 # GOD Mode landing page
 
+[![CI](https://github.com/Hiw4i/GOD-Mode/actions/workflows/ci.yml/badge.svg)](https://github.com/Hiw4i/GOD-Mode/actions/workflows/ci.yml)
+
 GOD Mode is a cinematic one-page product site built with Next.js App Router, React, TypeScript, GSAP, Lenis, and locally hosted media. Production is exported as static HTML/CSS/JavaScript and served at [godmode.vaneev.com](https://godmode.vaneev.com).
 
 ## Requirements
@@ -28,6 +30,10 @@ corepack pnpm build
 ```
 
 `next build` creates the deployable static export in `out/`. The site intentionally avoids runtime-only Next.js features because the production hosting provides static files over FTPS, not a Node.js process.
+
+## Continuous integration
+
+GitHub Actions runs on every push and pull request to `main`. The workflow uses Node.js 24 LTS and the pinned pnpm version, validates peer dependencies, runs lint and TypeScript checks, builds the static export, and stores `out/` as a seven-day build artifact. Dependabot checks npm packages and GitHub Actions weekly.
 
 ## Project structure
 

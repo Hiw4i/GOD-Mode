@@ -13,6 +13,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - The production target is a static export served by Majordomo over HTTPS. Keep `output: "export"`, `trailingSlash: true`, and `images.unoptimized: true` compatible unless hosting is deliberately migrated away from static FTPS.
 - Before changing Next.js code or configuration, read the relevant installed guide in `node_modules/next/dist/docs/`.
 - Run `corepack pnpm lint`, `corepack pnpm typecheck`, and `corepack pnpm build` before release.
+- Keep `.github/workflows/ci.yml` aligned with the Node and pnpm versions in `package.json`; CI must pass before production deployment.
 - Deploy only through `deploy/deploy.ps1`. It uploads `out/` into an immutable release, atomically switches `.htaccess`, runs HTTPS smoke tests, and rolls back on failure.
 - Never commit or print `deploy/credentials.ps1`, `.env*`, `deploy/deploy.log`, or `deploy/tools/`.
 - A deploy is an external production change. Run it only when the user explicitly requests deployment.
