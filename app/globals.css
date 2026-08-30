@@ -1,0 +1,205 @@
+@import "../css/base.css";
+@import "../css/components.css";
+@import "../css/sections.css";
+@import "../css/modals.css";
+@import "../css/responsive.css";
+
+:root {
+    --font: var(--font-space), sans-serif;
+    --font-mono-local: var(--font-mono), monospace;
+}
+
+html { background: var(--bg); }
+html.modal-open { overflow: hidden; }
+body {
+    background:
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,.025), transparent 34%),
+        var(--bg);
+}
+
+button, input { font: inherit; }
+button { color: inherit; }
+
+/* The hero keeps its original crop, but the animated transform lives on a wrapper. */
+.hero-statue-wrap {
+    position: absolute;
+    bottom: -20%;
+    left: 50%;
+    z-index: 2;
+    width: clamp(1150px, 140vw, 2400px);
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+.hero-statue {
+    position: relative;
+    inset: auto;
+    display: block;
+    width: 100%;
+    height: auto;
+    transform: none;
+}
+
+/* The sharp and blurred statues share one box and one transform. */
+.paired-scene-visual {
+    isolation: isolate;
+    pointer-events: none;
+}
+.paired-scene-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+.xray-text-word {
+    position: relative;
+    display: inline-block;
+    line-height: inherit;
+}
+.xray-text-proxy {
+    visibility: hidden;
+    white-space: nowrap;
+}
+.xray-text-plane {
+    position: absolute;
+    top: 50%;
+    left: var(--xray-plane-left, 0%);
+    width: var(--xray-plane-width, 100%);
+    height: auto;
+    transform: translateY(-50%);
+    z-index: 1;
+    overflow: visible;
+}
+.download-bg-img,
+.support-bg-img { z-index: 1; }
+.download-content,
+.support-content { z-index: 3; }
+
+html[data-mask-debug="true"] .glass-card {
+    background: transparent !important;
+}
+html[data-mask-debug="true"] .glass-card::after {
+    opacity: 0 !important;
+}
+html[data-mask-debug="true"] .feature-overlap-window,
+html[data-mask-debug="true"] .floating-icons--blur {
+    outline: 1px solid rgba(0, 180, 255, .8);
+}
+
+/* Cheap glass finish over the masked image: tint, border, highlight and static grain. */
+.glass-card {
+    background: linear-gradient(145deg, rgba(30,30,30,.64), rgba(10,10,10,.46));
+    box-shadow: 0 20px 60px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.035);
+}
+.glass-card::after {
+    inset: 0;
+    width: auto;
+    height: auto;
+    opacity: .34;
+    z-index: 0;
+    background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E"),
+        radial-gradient(circle at 25% 15%, rgba(255,255,255,.11), transparent 48%);
+    background-size: 180px 180px, 100% 100%;
+    mix-blend-mode: soft-light;
+}
+.glass-card > * { position: relative; z-index: 1; }
+.glass-card:hover { border-color: rgba(255,255,255,.22); }
+
+/* ScrollTrigger changes only the custom transform offset. Hover scale is mirrored by the SVG mask. */
+.feature-card.fade-in,
+.feature-card.fade-in.visible {
+    transform: translate3d(0, calc(var(--feature-card-y, 0px) + var(--feature-card-lift, 0px)), 0) scale(var(--feature-card-scale, 1));
+    transition: opacity .8s cubic-bezier(.16,1,.3,1), border-color .45s ease, box-shadow .45s ease;
+}
+.total-focus-wrap {
+    transform: translate3d(0, var(--feature-card-y, 0px), 0);
+}
+.total-focus-wrap > .feature-card { --feature-card-y: 0px; }
+.total-focus-wrap.fade-in {
+    opacity: 0;
+    transform: translate3d(0, var(--feature-card-y, 0px), 0);
+    transition: opacity .8s cubic-bezier(.16,1,.3,1);
+}
+.total-focus-wrap.fade-in.visible {
+    opacity: 1;
+    transform: translate3d(0, var(--feature-card-y, 0px), 0);
+}
+
+.motion-active [data-feature-card],
+.motion-near[data-feature-card],
+.motion-active .download-card,
+.motion-active .support-card,
+.motion-near .download-card,
+.motion-near .support-card,
+.motion-near [data-parallax-visual],
+.motion-near [data-parallax-text] { will-change: transform; }
+
+.motion-near .float-icon { will-change: transform; animation-play-state: running; }
+.float-icon { animation-play-state: paused; }
+.float-icon--youtube { animation: floatOne 8s ease-in-out infinite; }
+.float-icon--tiktok { animation: floatTwo 9.5s ease-in-out infinite; }
+.float-icon--instagram { animation: floatThree 11s ease-in-out infinite; }
+@keyframes floatOne { 0%,100% { transform: translate3d(0,0,0) rotate(-10deg); } 50% { transform: translate3d(5px,-13px,0) rotate(2deg); } }
+@keyframes floatTwo { 0%,100% { transform: translate3d(0,0,0) rotate(22deg); } 50% { transform: translate3d(-7px,12px,0) rotate(10deg); } }
+@keyframes floatThree { 0%,100% { transform: translate3d(0,0,0) rotate(-8deg); } 50% { transform: translate3d(4px,-8px,0) rotate(3deg); } }
+
+.floating-icons--blur {
+    z-index: 0 !important;
+    pointer-events: none;
+}
+.floating-icons--blur .float-icon {
+    opacity: 1;
+}
+.feature-overlap-window {
+    position: absolute !important;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    z-index: 0 !important;
+    pointer-events: none;
+}
+.feature-overlap-replica {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    display: block;
+    max-width: none;
+    transform-origin: 0 0;
+    pointer-events: none;
+}
+
+.cruel-timer { font-family: var(--font-mono-local); }
+.ambient-track-name { font-family: var(--font-mono-local); }
+.ambient-cover { z-index: 0 !important; }
+.ambient-player-stage { will-change: transform; }
+
+.modal-overlay { background: rgba(0,0,0,.91); }
+.modal {
+    background: linear-gradient(145deg, rgba(36,36,36,.98), rgba(11,11,11,.98));
+    box-shadow: 0 30px 100px rgba(0,0,0,.72), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.modal-address {
+    width: 100%;
+    text-align: left;
+}
+.premium-email-note {
+    width: 100%;
+    border: 0;
+    background: transparent;
+}
+
+.btn-external-icon { width: 12px; height: 12px; }
+.os-icons-row > svg { width: 18px; height: 18px; }
+.download-os-btn { border: 1px solid rgba(255,255,255,.1); }
+
+@media (max-width: 680px) {
+    .hero-statue-wrap { bottom: 0; width: 290%; }
+    .download-os-grid { flex-wrap: wrap; }
+    .download-os-btn { flex: 1 1 calc(33.333% - 12px); }
+    .feature-overlap-window { display: none; }
+}
+
+@media (max-width: 410px) {
+    .hero-statue-wrap { width: 310%; }
+}

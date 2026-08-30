@@ -1,12 +1,10 @@
 /* ===== GLASS CARD ===== */
 .glass-card {
-    background: rgba(255,255,255,0.05);
+    background: linear-gradient(145deg, rgba(34,34,34,0.72), rgba(13,13,13,0.48));
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: var(--glass-radius, 16px);
     overflow: hidden;
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    transition: transform 0.6s cubic-bezier(0.16,1,0.3,1), border-color 0.6s ease, box-shadow 0.6s ease;
+    transition: border-color 0.6s ease, box-shadow 0.6s ease;
     isolation: isolate;
     position: relative;
 }
@@ -86,6 +84,7 @@
 .section-bg-img {
     position: absolute;
     left: 50%;
+    height: auto;
     transform: translateX(-50%);
     pointer-events: none;
 }
@@ -195,4 +194,3 @@
 }
 
 .download-card.fade-in.visible { transform: translateY(0); }
-.download-card.fade-in.visible:hover { transform: translateY(-8px) scale(1.02); }

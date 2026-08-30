@@ -14,7 +14,6 @@
 @media (max-width: 1024px) {
     .hero-title { font-size: clamp(5.5rem, 14vw, 12rem); }
     .hero-statue { width: clamp(900px, 140vw, 1800px); bottom: 0%; }
-    .hero::after { height: 150px; }
     .features-stage { min-height: 700px; padding: 0 2.5rem; }
     .hiw-bg-text { top: 6.8rem; font-size: clamp(4.8rem, 15vw, 9rem); }
     .hiw-bg-label { font-size: 0.55rem; letter-spacing: 2px; }
@@ -123,9 +122,10 @@
         position: relative;
         top: auto;
         left: auto;
-        width: 100%;
-        display: flex;
-        justify-content: center;
+        width: min(300px, calc(100vw - 40px));
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
         margin-top: clamp(3rem, 5vh, 4rem);
     }
     .float-icon--youtube { left: -5%; margin-top: -55px; }
@@ -156,7 +156,6 @@
     .hero { min-height: 100svh; }
     .hero-label { font-size: 0.5rem; letter-spacing: 3px; margin-bottom: 1rem; }
     .hero-statue { width: 280%; bottom: 0%; }
-    .hero::after { height: 80px; }
     .download-section { padding: 5rem 1.5rem 3rem; }
     .download-cards { gap: 1.2rem; max-width: 320px; }
     .premium-card .download-card-features { grid-template-columns: 1fr; }

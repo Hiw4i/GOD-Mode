@@ -1,0 +1,22 @@
+{
+  "features-title": {
+    "width": 2536,
+    "height": 1309,
+    "contentBox": {
+      "x": 540,
+      "y": 540,
+      "width": 1456,
+      "height": 229
+    }
+  },
+  "download-title": {
+    "width": 2492,
+    "height": 1309,
+    "contentBox": {
+      "x": 540,
+      "y": 540,
+      "width": 1412,
+      "height": 229
+    }
+  }
+}

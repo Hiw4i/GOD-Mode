@@ -1,0 +1,11 @@
+node_modules/
+.pnpm-store/
+.next/
+out/
+dist/
+*.tsbuildinfo
+.env*
+!.env.example
+deploy/credentials.ps1
+*.log
+.DS_Store

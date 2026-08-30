@@ -1,0 +1,11 @@
+.git
+.next
+node_modules
+npm-debug.log*
+pnpm-debug.log*
+.env*
+!.env.example
+*.md
+index.html
+css
+js
