@@ -135,7 +135,8 @@ function Test-Deployment([string]$ExpectedRelease) {
             if (-not $response.IsSuccessStatusCode) {
                 throw "$path returned HTTP $([int]$response.StatusCode)."
             }
-            if (($response.Content.Headers.ContentLength ?? 0) -eq 0) {
+            $assetBytes = $response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()
+            if ($assetBytes.Length -eq 0) {
                 throw "$path returned an empty response."
             }
         }
