@@ -110,34 +110,21 @@ html[data-mask-debug="true"] .floating-icons--blur {
 .glass-card > * { position: relative; z-index: 1; }
 .glass-card:hover { border-color: rgba(255,255,255,.22); }
 
-/* ScrollTrigger changes only the custom transform offset. Hover scale is mirrored by the SVG mask. */
-.feature-card.fade-in,
-.feature-card.fade-in.visible {
-    transform: translate3d(0, calc(var(--feature-card-y, 0px) + var(--feature-card-lift, 0px)), 0) scale(var(--feature-card-scale, 1));
-    transition: opacity .8s cubic-bezier(.16,1,.3,1), border-color .45s ease, box-shadow .45s ease;
-}
-.total-focus-wrap {
-    transform: translate3d(0, var(--feature-card-y, 0px), 0);
-}
-.total-focus-wrap > .feature-card { --feature-card-y: 0px; }
-.total-focus-wrap.fade-in {
+/* Scroll and hover live on separate transform nodes to keep both compositor-only. */
+.feature-card-motion.fade-in {
     opacity: 0;
-    transform: translate3d(0, var(--feature-card-y, 0px), 0);
     transition: opacity .8s cubic-bezier(.16,1,.3,1);
 }
-.total-focus-wrap.fade-in.visible {
-    opacity: 1;
-    transform: translate3d(0, var(--feature-card-y, 0px), 0);
-}
+.feature-card-motion.fade-in.visible { opacity: 1; }
 
-.motion-active [data-feature-card],
-.motion-near[data-feature-card],
+.motion-near.feature-card-motion,
+.motion-near.feature-card-motion > .feature-card-surface,
 .motion-active .download-card,
 .motion-active .support-card,
 .motion-near .download-card,
 .motion-near .support-card,
-.motion-near [data-parallax-visual],
-.motion-near [data-parallax-text] { will-change: transform; }
+.motion-active [data-parallax-visual],
+.motion-active [data-parallax-text] { will-change: transform; }
 
 .motion-near .float-icon { will-change: transform; animation-play-state: running; }
 .float-icon { animation-play-state: paused; }
@@ -161,15 +148,6 @@ html[data-mask-debug="true"] .floating-icons--blur {
 .ambient-player-stage { will-change: auto; }
 .motion-near .ambient-player-stage { will-change: transform; }
 
-.modal-overlay { background: rgba(0,0,0,.91); }
-.modal {
-    background: linear-gradient(145deg, rgba(36,36,36,.98), rgba(11,11,11,.98));
-    box-shadow: 0 30px 100px rgba(0,0,0,.72), inset 0 1px 0 rgba(255,255,255,.06);
-}
-.modal-address {
-    width: 100%;
-    text-align: left;
-}
 .premium-email-note {
     width: 100%;
     border: 0;
@@ -180,34 +158,11 @@ html[data-mask-debug="true"] .floating-icons--blur {
 .os-icons-row > svg { width: 18px; height: 18px; }
 .download-os-btn { border: 1px solid rgba(255,255,255,.1); }
 
-.site-footer {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 3rem 1.6rem;
-    border-top: 1px solid var(--border);
-    color: var(--text-dim);
-    background: var(--bg);
-    font-size: .58rem;
-    font-weight: 600;
-    letter-spacing: .18em;
-}
-
-.site-footer a {
-    color: inherit;
-    text-decoration: none;
-    transition: color .25s ease;
-}
-
-.site-footer a:hover { color: var(--text); }
-
 @media (max-width: 680px) {
     .hero-statue-wrap { bottom: 0; width: 290%; }
     .download-os-grid { flex-wrap: wrap; }
     .download-os-btn { flex: 1 1 calc(33.333% - 12px); }
-    .site-footer { padding: 1rem 1.5rem 1.25rem; }
+    .support-version { right: 1.5rem; bottom: 1.25rem; }
 }
 
 @media (max-width: 410px) {
@@ -219,12 +174,6 @@ html[data-mask-debug="true"] .floating-icons--blur {
 }
 
 @media (hover: none), (pointer: coarse) {
-    .feature-card,
-    .feature-card:hover,
-    #ambientCard:hover {
-        --feature-card-lift: 0px;
-    }
-
     .total-focus-wrap:hover .floating-icons { transform: none; }
 }
 

@@ -32,25 +32,32 @@ type MaskLayerProps = {
   layer: "sharp" | "blur";
   width: number;
   height: number;
+  planeId: string;
   targets: string[];
 };
 
-function PlaneMask({ id, layer, width, height, targets }: MaskLayerProps) {
+function safeSvgId(value: string) {
+  return value.replace(/[^a-zA-Z0-9_-]/g, "-");
+}
+
+function targetShapeId(planeId: string, target: string) {
+  return `xray-shape-${safeSvgId(planeId)}-${safeSvgId(target)}`;
+}
+
+function PlaneMask({ id, layer, width, height, planeId, targets }: MaskLayerProps) {
   const inverse = layer === "sharp";
   return (
     <mask id={id} data-card-mask={layer} maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="0" width={width} height={height} style={{ maskType: "luminance" }}>
       <rect data-mask-base={layer} x="0" y="0" width={width} height={height} fill={inverse ? "white" : "black"} />
       {targets.map((target) => (
-        <g key={target} data-mask-motion={target} data-mask-layer={layer}>
-          <rect data-mask-rect={target} data-mask-layer={layer} x="0" y="0" width="0" height="0" rx="0" fill={inverse ? "black" : "white"} />
-        </g>
+        <use key={target} href={`#${targetShapeId(planeId, target)}`} fill={inverse ? "black" : "white"} />
       ))}
     </mask>
   );
 }
 
 export function XrayPlane({ id, scene, sharpSrc, blurredSrc, width, height, contentBox, targets, motionChannel, className, alt = "", centered = false }: XrayPlaneProps) {
-  const safeId = id.replace(/[^a-zA-Z0-9_-]/g, "-");
+  const safeId = safeSvgId(id);
   const sharpMaskId = `xray-sharp-mask-${safeId}`;
   const blurMaskId = `xray-blur-mask-${safeId}`;
   const planeStyle = contentBox
@@ -77,8 +84,17 @@ export function XrayPlane({ id, scene, sharpSrc, blurredSrc, width, height, cont
     >
       <svg className="paired-scene-canvas" data-mask-backdrop={id} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>
-          <PlaneMask id={sharpMaskId} layer="sharp" width={width} height={height} targets={targets} />
-          <PlaneMask id={blurMaskId} layer="blur" width={width} height={height} targets={targets} />
+          {targets.map((target) => (
+            <g key={target} id={targetShapeId(id, target)} data-mask-motion={target}>
+              <g data-mask-scroll={target}>
+                <g data-mask-hover={target}>
+                  <rect data-mask-rect={target} x="0" y="0" width="0" height="0" rx="0" />
+                </g>
+              </g>
+            </g>
+          ))}
+          <PlaneMask id={sharpMaskId} layer="sharp" width={width} height={height} planeId={id} targets={targets} />
+          <PlaneMask id={blurMaskId} layer="blur" width={width} height={height} planeId={id} targets={targets} />
         </defs>
         <image className="paired-scene-sharp" data-paired-image="sharp" data-paired-src={deferImages ? sharpSrc : undefined} href={deferImages ? undefined : sharpSrc} x="0" y="0" width={width} height={height} preserveAspectRatio="none" mask={`url(#${sharpMaskId})`} />
         <image className="paired-scene-blur" data-paired-image="blur" data-paired-src={deferImages ? blurredSrc : undefined} href={deferImages ? undefined : blurredSrc} x="0" y="0" width={width} height={height} preserveAspectRatio="none" mask={`url(#${blurMaskId})`} />

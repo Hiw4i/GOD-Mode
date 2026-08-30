@@ -79,26 +79,30 @@ export default function HomePage() {
             <div className="how-it-works-content">
               <div className="feature-cards">
                 {features.map((feature) => {
-                  const className = `feature-card glass-card fade-in d${feature.delay}${feature.align === "right" ? " is-right" : ""}`;
+                  const className = `feature-card feature-card-motion fade-in d${feature.delay}${feature.align === "right" ? " is-right" : ""}`;
                   if (feature.kind === "focus") {
                     return (
-                      <div key={feature.id} className="total-focus-wrap fade-in d1" data-feature-card data-speed={feature.speed} data-mask-link={feature.id} data-motion-near>
-                        <FloatingFeatureIcons />
-                        <article className="feature-card glass-card" data-feature-id={feature.id} data-mask-target={feature.id}>
-                          <FloatingFeatureIcons blurred />
-                          <h3>{feature.title}</h3><p>{feature.description}</p>
-                        </article>
+                      <div key={feature.id} className="total-focus-wrap feature-card-motion fade-in d1" data-feature-card data-speed={feature.speed} data-mask-link={feature.id} data-motion-near>
+                        <div className="total-focus-motion" data-feature-id={feature.id} data-mask-target={feature.id}>
+                          <FloatingFeatureIcons />
+                          <article className="feature-card-surface glass-card">
+                            <FloatingFeatureIcons blurred />
+                            <h3>{feature.title}</h3><p>{feature.description}</p>
+                          </article>
+                        </div>
                       </div>
                     );
                   }
                   return (
-                    <article key={feature.id} id={feature.kind === "ambient" ? "ambientCard" : feature.kind === "timer" ? "cruelCard" : undefined} className={className} data-feature-card data-feature-id={feature.id} data-speed={feature.speed} data-mask-target={feature.id} data-motion-near>
-                      {feature.kind === "ambient" ? (
-                        <><div className="ambient-card-copy"><h3>{feature.title}</h3><p>{feature.description}</p></div><AmbientPlayer tracks={ambientTracks} /></>
-                      ) : (
-                        <><h3>{feature.title}</h3><p>{feature.description}</p></>
-                      )}
-                      {feature.kind === "timer" && <CruelStopwatch />}
+                    <article key={feature.id} className={className} data-feature-card data-speed={feature.speed} data-mask-link={feature.id} data-motion-near>
+                      <div id={feature.kind === "ambient" ? "ambientCard" : feature.kind === "timer" ? "cruelCard" : undefined} className="feature-card-surface glass-card" data-feature-id={feature.id} data-mask-target={feature.id}>
+                        {feature.kind === "ambient" ? (
+                          <><div className="ambient-card-copy"><h3>{feature.title}</h3><p>{feature.description}</p></div><AmbientPlayer tracks={ambientTracks} /></>
+                        ) : (
+                          <><h3>{feature.title}</h3><p>{feature.description}</p></>
+                        )}
+                        {feature.kind === "timer" && <CruelStopwatch />}
+                      </div>
                     </article>
                   );
                 })}
@@ -120,7 +124,7 @@ export default function HomePage() {
               scene="download"
               className="download-bg-img section-bg-img"
               sharpSrc="/sources/statue for download.webp?v=20260830-2"
-              blurredSrc="/sources/statue for download (blured).webp?v=20260830-2"
+              blurredSrc="/sources/statue for download (blured).webp?v=20260830-3"
               width={745}
               height={758}
               alt="Download"
@@ -153,7 +157,7 @@ export default function HomePage() {
               scene="support"
               className="support-bg-img section-bg-img"
               sharpSrc="/sources/statue for support.webp?v=20260830-2"
-              blurredSrc="/sources/statue for support (blured).webp?v=20260830-2"
+              blurredSrc="/sources/statue for support (blured).webp?v=20260830-3"
               width={958}
               height={715}
               alt="Support"
@@ -171,13 +175,9 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+          <a className="support-version" href="/version.json" aria-label={`GOD Mode build information, ${APP_VERSION_LABEL}`}>{APP_VERSION_LABEL}</a>
         </section>
       </main>
-
-      <footer className="site-footer">
-        <span>GOD MODE</span>
-        <a href="/version.json" aria-label={`GOD Mode build information, ${APP_VERSION_LABEL}`}>{APP_VERSION_LABEL}</a>
-      </footer>
 
       <ModalSystem />
       <MotionRuntime />

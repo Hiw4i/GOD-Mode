@@ -20,7 +20,7 @@
     .hiw-bg-img { width: clamp(330px, 52vw, 500px); top: 13rem; }
     .feature-cards { width: min(760px, 100%); }
     .feature-card { width: min(340px, 40vw); min-height: 143px; }
-    .feature-card h3 { font-size: clamp(1.55rem, 3.7vw, 2.1rem); }
+    .feature-card-surface h3 { font-size: clamp(1.55rem, 3.7vw, 2.1rem); }
     .total-focus-wrap { left: 0; top: 7vh; }
     .total-focus-wrap .floating-icons { top: 18vh; }
     .feature-card:nth-child(2) { right: 0; top: 34vh; }
@@ -57,6 +57,7 @@
         height: auto;
         min-height: 0;
         overflow: visible;
+        contain: none;
         display: block;
         padding: 0 1rem;
     }
@@ -90,14 +91,13 @@
         width: min(300px, calc(100vw - 40px));
         margin-left: 0;
         margin-right: 0;
-        --feature-card-y: 0px;
         --feature-card-scale: 1;
     }
-    .feature-card { padding: 1.05rem; border-radius: 14px; }
+    .feature-card-surface { padding: 1.05rem; border-radius: 14px; }
     #cruelCard { overflow: visible; }
-    .feature-card::before { border-radius: 14px; }
-    .feature-card h3 { font-size: clamp(1.3rem, 7vw, 1.7rem); }
-    .feature-card p { font-size: 0.62rem; }
+    .feature-card-surface::before { border-radius: 14px; }
+    .feature-card-surface h3 { font-size: clamp(1.3rem, 7vw, 1.7rem); }
+    .feature-card-surface p { font-size: 0.62rem; }
     .download-cards { gap: 1.6rem; max-width: 420px; }
     .download-card { padding: 1.5rem 1.1rem; }
     .download-card-title { font-size: 1.5rem; margin-bottom: 0.8rem; }
@@ -133,7 +133,7 @@
     .float-icon--tiktok { left: 18%; margin-top: -30px; }
     .float-icon--instagram { left: -2%; margin-bottom: 55px; }
     .cruel-timer { bottom: -25px; right: -10px; }
-    .total-focus-wrap .feature-card { top: auto; left: auto; }
+    .total-focus-wrap .feature-card-surface { top: auto; left: auto; }
     .feature-card:nth-child(1) { margin-left: -8px; --card-speed: 0.7; }
     .feature-card:nth-child(2) { margin-left: 8px; --card-speed: 1.6; }
     .feature-card:nth-child(3) { margin-left: -8px; --card-speed: 0.8; }

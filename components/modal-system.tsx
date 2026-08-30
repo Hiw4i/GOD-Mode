@@ -23,11 +23,37 @@ function AppleIcon() {
 
 export function ModalSystem() {
   const [open, setOpen] = useState<ModalId | null>(null);
+  const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const returnFocusRef = useRef<HTMLElement | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
+
+  const showModal = (id: ModalId) => {
+    if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
+    if (animationFrameRef.current !== null) window.cancelAnimationFrame(animationFrameRef.current);
+    setOpen(id);
+    setVisible(false);
+    animationFrameRef.current = window.requestAnimationFrame(() => {
+      animationFrameRef.current = window.requestAnimationFrame(() => setVisible(true));
+    });
+  };
+
+  const closeModal = () => {
+    if (animationFrameRef.current !== null) window.cancelAnimationFrame(animationFrameRef.current);
+    setVisible(false);
+    closeTimerRef.current = window.setTimeout(() => setOpen(null), 400);
+  };
+
+  const switchModal = (id: ModalId) => {
+    if (animationFrameRef.current !== null) window.cancelAnimationFrame(animationFrameRef.current);
+    if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
+    setVisible(false);
+    closeTimerRef.current = window.setTimeout(() => showModal(id), 200);
+  };
 
   useEffect(() => {
     const onDocumentClick = (event: MouseEvent) => {
@@ -36,7 +62,7 @@ export function ModalSystem() {
       if (!id) return;
       event.preventDefault();
       returnFocusRef.current = target;
-      setOpen(id);
+      showModal(id);
     };
     document.addEventListener("click", onDocumentClick);
     return () => document.removeEventListener("click", onDocumentClick);
@@ -44,7 +70,7 @@ export function ModalSystem() {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(null);
+      if (event.key === "Escape") closeModal();
     };
     document.documentElement.classList.toggle("modal-open", Boolean(open));
     window.dispatchEvent(new CustomEvent("godmode:modal", { detail: { open: Boolean(open) } }));
@@ -56,6 +82,11 @@ export function ModalSystem() {
     }
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
+
+  useEffect(() => () => {
+    if (animationFrameRef.current !== null) window.cancelAnimationFrame(animationFrameRef.current);
+    if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
+  }, []);
 
   const flashSelected = (value: string) => {
     setSelected(value);
@@ -70,20 +101,21 @@ export function ModalSystem() {
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const form = event.currentTarget;
     setSuccess(true);
     window.setTimeout(() => {
       setSuccess(false);
-      setOpen(null);
-      event.currentTarget.reset();
-    }, 1800);
+      closeModal();
+      form.reset();
+    }, 2000);
   };
 
   if (!open) return null;
 
   return (
-    <div className="modal-overlay open" onMouseDown={(event) => event.target === event.currentTarget && setOpen(null)}>
+    <div className={`modal-overlay${visible ? " open" : ""}`} onMouseDown={(event) => event.target === event.currentTarget && closeModal()}>
       <div ref={dialogRef} className="modal glass-card" role="dialog" aria-modal="true" aria-labelledby={`${open}-modal-title`}>
-        <button className="modal-close" type="button" aria-label="Close modal" onClick={() => setOpen(null)}>×</button>
+        <button className="modal-close" type="button" aria-label="Close modal" onClick={closeModal}>×</button>
 
         {open === "crypto" && (
           <>
@@ -91,9 +123,18 @@ export function ModalSystem() {
             {addresses.map(([label, address]) => (
               <div className="modal-item" key={label}>
                 <span className="modal-label">{label}</span>
-                <button className={`modal-address${copied === address ? " copied" : ""}`} type="button" onClick={() => copy(address)}>
-                  {copied === address ? "Copied ✓" : address}
-                </button>
+                <code
+                  className={`modal-address${copied === address ? " copied" : ""}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => copy(address)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      void copy(address);
+                    }
+                  }}
+                >{address}</code>
               </div>
             ))}
           </>
@@ -129,7 +170,7 @@ export function ModalSystem() {
                 </button>
               ))}
             </div>
-            <button className="premium-email-note" type="button" onClick={() => setOpen("signup")}>or use email</button>
+            <button className="premium-email-note" type="button" onClick={() => switchModal("signup")}>or use email</button>
           </>
         )}
 

@@ -142,6 +142,7 @@ nav {
     height: 100svh;
     min-height: 720px;
     overflow: hidden;
+    contain: layout paint style;
     display: flex;
     align-items: stretch;
     justify-content: center;
@@ -246,28 +247,37 @@ nav {
     pointer-events: none;
 }
 
-.feature-card {
+.feature-card-motion {
     --card-speed: 1;
-    --feature-card-lift: 0px;
     --feature-card-scale: 1;
     --feature-card-hover-lift: -8px;
     --feature-card-hover-scale: 1.02;
     --glass-radius: 16px;
+    pointer-events: auto;
+}
+
+.feature-card {
     position: absolute;
     width: clamp(300px, 32vw, 450px);
     min-height: 152px;
+}
+
+.feature-card-surface {
+    width: 100%;
+    min-height: inherit;
     padding: clamp(1.45rem, 2.3vw, 1.8rem);
     text-align: left;
     color: #fff;
     box-shadow: 0 20px 60px rgba(0,0,0,0.28);
     pointer-events: auto;
-    transform: translate(0, calc(var(--feature-card-y, 0px) + var(--feature-card-lift))) scale(var(--feature-card-scale));
+    transform: scale(var(--feature-card-scale));
+    transform-origin: 50% 50%;
 }
 
 .feature-card.is-right { text-align: right; }
-.feature-card.is-right p { margin-left: auto; }
+.feature-card.is-right p { margin-left: 0; }
 
-.feature-card h3 {
+.feature-card-surface h3 {
     position: relative;
     z-index: 1;
     font-size: clamp(1.75rem, 3vw, 2.5rem);
@@ -278,7 +288,7 @@ nav {
     text-wrap: balance;
 }
 
-.feature-card p {
+.feature-card-surface p {
     position: relative;
     z-index: 1;
     margin-top: 1.25rem;
@@ -376,12 +386,22 @@ nav {
     width: clamp(300px, 32vw, 450px);
 }
 
-.total-focus-wrap .feature-card {
+.total-focus-motion {
+    position: relative;
+    width: 100%;
+    min-height: 152px;
+    transform-origin: 50% 50%;
+    transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.total-focus-wrap:hover .total-focus-motion {
+    transform: translateY(var(--feature-card-hover-lift)) scale(var(--feature-card-hover-scale));
+}
+
+.total-focus-wrap .feature-card-surface {
     position: relative;
     top: auto;
     left: auto;
-    --card-speed: 0.95;
-    --card-z: 58px;
     width: 100%;
 }
 
@@ -920,6 +940,21 @@ nav {
     margin-top: auto;
     contain: layout style;
 }
+
+.support-version {
+    position: absolute;
+    right: 2rem;
+    bottom: 1.5rem;
+    z-index: 10;
+    color: var(--bg);
+    font-size: .58rem;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-decoration: none;
+    transition: color .25s ease;
+}
+
+.support-version:hover { color: var(--bg); }
 
 .support-label {
     font-size: 0.6rem;

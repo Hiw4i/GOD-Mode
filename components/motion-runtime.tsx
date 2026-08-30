@@ -19,34 +19,13 @@ type MaskMotionState = {
   scene: string;
   targetId: string;
   motionChannel: "visual" | "text" | "static";
-  groups: SVGGElement[];
+  scrollGroup: SVGGElement;
+  hoverGroup: SVGGElement;
   centerX: number;
   centerY: number;
   baseScale: number;
-  scale: number;
-  scrollY: number;
-  hoverY: number;
+  hovered: boolean;
 };
-
-type CardMotionState = {
-  id: string;
-  element: HTMLElement;
-  baseScale: number;
-  scale: number;
-  scrollY: number;
-  hoverY: number;
-};
-
-function renderMaskState(state: MaskMotionState) {
-  const y = state.scrollY + state.hoverY;
-  const transform = [
-    `translate(0 ${y.toFixed(3)})`,
-    `translate(${state.centerX.toFixed(3)} ${state.centerY.toFixed(3)})`,
-    `scale(${state.scale.toFixed(5)})`,
-    `translate(${-state.centerX.toFixed(3)} ${-state.centerY.toFixed(3)})`,
-  ].join(" ");
-  state.groups.forEach((group) => group.setAttribute("transform", transform));
-}
 
 export function MotionRuntime() {
   useEffect(() => {
@@ -84,27 +63,11 @@ export function MotionRuntime() {
       if (lenis) gsap.ticker.add(tick);
 
       const maskStates = new Map<string, MaskMotionState>();
-      const cardStates = new Map<string, CardMotionState>();
       const maskKey = (planeId: string, targetId: string) => `${planeId}:${targetId}`;
       const sceneTargetKey = (scene: string, targetId: string) => `${scene}:${targetId}`;
       const masksBySceneTarget = new Map<string, MaskMotionState[]>();
 
       const getTargetMasks = (scene: string, targetId: string) => masksBySceneTarget.get(sceneTargetKey(scene, targetId)) ?? [];
-      const syncCardStates = (stage: HTMLElement) => {
-        stage.querySelectorAll<HTMLElement>("[data-feature-id]").forEach((card) => {
-          const id = card.dataset.featureId;
-          if (!id) return;
-          const existing = cardStates.get(id);
-          const cssScale = Number.parseFloat(getComputedStyle(card).getPropertyValue("--feature-card-scale")) || 1;
-          if (existing) {
-            existing.element = card;
-            existing.baseScale = cssScale;
-          } else {
-            cardStates.set(id, { id, element: card, baseScale: cssScale, scale: cssScale, scrollY: 0, hoverY: 0 });
-          }
-        });
-      };
-
       const syncScene = (scene: HTMLElement) => {
         const name = scene.dataset.maskStage;
         if (!name) return;
@@ -144,22 +107,23 @@ export function MotionRuntime() {
 
           scene.querySelectorAll<HTMLElement>("[data-mask-target]").forEach((target) => {
             const targetId = target.dataset.maskTarget;
-            const rects = targetId ? Array.from(svg.querySelectorAll<SVGRectElement>(`[data-mask-rect="${targetId}"]`)) : [];
-            if (!targetId || rects.length !== 2) return;
+            const shape = targetId ? svg.querySelector<SVGGElement>(`[data-mask-motion="${targetId}"]`) : null;
+            const scrollGroup = shape?.querySelector<SVGGElement>(`[data-mask-scroll="${targetId}"]`) ?? null;
+            const hoverGroup = shape?.querySelector<SVGGElement>(`[data-mask-hover="${targetId}"]`) ?? null;
+            const rect = shape?.querySelector<SVGRectElement>(`[data-mask-rect="${targetId}"]`) ?? null;
+            if (!targetId || !scrollGroup || !hoverGroup || !rect) return;
             const offset = offsetWithin(target, scene);
             const radius = Number.parseFloat(getComputedStyle(target).borderRadius) || 16;
             const x = offset.x - planeX;
             const y = offset.y - planeY;
             const targetWidth = target.offsetWidth;
             const targetHeight = target.offsetHeight;
-            rects.forEach((rect) => {
-              rect.setAttribute("x", String(x));
-              rect.setAttribute("y", String(y));
-              rect.setAttribute("width", String(targetWidth));
-              rect.setAttribute("height", String(targetHeight));
-              rect.setAttribute("rx", String(radius));
-              rect.setAttribute("ry", String(radius));
-            });
+            rect.setAttribute("x", String(x));
+            rect.setAttribute("y", String(y));
+            rect.setAttribute("width", String(targetWidth));
+            rect.setAttribute("height", String(targetHeight));
+            rect.setAttribute("rx", String(radius));
+            rect.setAttribute("ry", String(radius));
 
             const key = maskKey(planeId, targetId);
             const existing = maskStates.get(key);
@@ -169,24 +133,27 @@ export function MotionRuntime() {
               scene: name,
               targetId,
               motionChannel,
-              groups: [],
+              scrollGroup,
+              hoverGroup,
               centerX: 0,
               centerY: 0,
               baseScale: cssScale,
-              scale: cssScale,
-              scrollY: 0,
-              hoverY: 0,
+              hovered: false,
             };
-            state.groups = rects.map((rect) => rect.parentElement as unknown as SVGGElement);
+            state.scrollGroup = scrollGroup;
+            state.hoverGroup = hoverGroup;
             state.centerX = x + targetWidth / 2;
             state.centerY = y + targetHeight / 2;
+            state.baseScale = cssScale;
             state.motionChannel = motionChannel;
+            gsap.set(hoverGroup, state.hovered
+              ? { svgOrigin: `${state.centerX} ${state.centerY}` }
+              : { y: 0, scale: cssScale, svgOrigin: `${state.centerX} ${state.centerY}` });
             maskStates.set(key, state);
             const lookupKey = sceneTargetKey(name, targetId);
             const lookup = masksBySceneTarget.get(lookupKey) ?? [];
             if (!lookup.includes(state)) lookup.push(state);
             masksBySceneTarget.set(lookupKey, lookup);
-            renderMaskState(state);
           });
         });
       };
@@ -219,9 +186,6 @@ export function MotionRuntime() {
       const syncAll = () => {
         masksBySceneTarget.clear();
         scenes.forEach(syncScene);
-        if (featuresStage) {
-          syncCardStates(featuresStage);
-        }
       };
       let syncFrame = 0;
       const scheduleSync = () => {
@@ -283,16 +247,12 @@ export function MotionRuntime() {
               const from = (mobile ? 75 : 112) * adjusted + (mobile ? 0 : (index - 2.5) * 5);
               const to = (mobile ? -75 : -701) * adjusted + (mobile ? 0 : (index - 2.5) * 5);
               const targetId = card.dataset.maskTarget ?? card.dataset.maskLink;
-              timeline.fromTo(card, { "--feature-card-y": `${from}px` }, { "--feature-card-y": `${to}px`, ease: "none" }, 0);
+              timeline.fromTo(card, { y: from }, { y: to, ease: "none" }, 0);
               if (!targetId) return;
 
-              const cardState = cardStates.get(targetId);
-              if (cardState) {
-                timeline.fromTo(cardState, { scrollY: from }, { scrollY: to, ease: "none" }, 0);
-              }
               getTargetMasks("features", targetId).forEach((maskState) => {
                 const planeDistance = maskState.motionChannel === "visual" ? imageDistance : maskState.motionChannel === "text" ? textDistance : 0;
-                timeline.fromTo(maskState, { scrollY: from, onUpdate: () => renderMaskState(maskState) }, { scrollY: to - planeDistance, ease: "none", onUpdate: () => renderMaskState(maskState) }, 0);
+                timeline.fromTo(maskState.scrollGroup, { y: from }, { y: to - planeDistance, ease: "none" }, 0);
               });
             });
             return () => timeline.kill();
@@ -326,7 +286,7 @@ export function MotionRuntime() {
             getTargetMasks(name, targetId).forEach((maskState) => {
               const planeFrom = maskState.motionChannel === "visual" ? 30 : maskState.motionChannel === "text" ? 50 : 0;
               const planeTo = maskState.motionChannel === "visual" ? -40 : maskState.motionChannel === "text" ? -80 : 0;
-              timeline.fromTo(maskState, { scrollY: -planeFrom, onUpdate: () => renderMaskState(maskState) }, { scrollY: -planeTo, ease: "none", onUpdate: () => renderMaskState(maskState) }, 0);
+              timeline.fromTo(maskState.scrollGroup, { y: -planeFrom }, { y: -planeTo, ease: "none" }, 0);
             });
           });
         });
@@ -369,7 +329,14 @@ export function MotionRuntime() {
         document.querySelectorAll(".fade-in").forEach((element) => revealObserver?.observe(element));
 
         nearObserver = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => entry.target.classList.toggle("motion-near", entry.isIntersecting));
+          entries.forEach((entry) => {
+            entry.target.classList.toggle("motion-near", entry.isIntersecting);
+            if (entry.isIntersecting && entry.target instanceof HTMLElement && entry.target.hasAttribute("data-mask-stage")) {
+              // content-visibility can resolve the real card positions only when
+              // the scene approaches the viewport. Re-read the mask geometry then.
+              scheduleSync();
+            }
+          });
         }, { rootMargin: "35% 0px", threshold: 0 });
         document.querySelectorAll("[data-motion-near]").forEach((element) => nearObserver?.observe(element));
       }
@@ -381,12 +348,11 @@ export function MotionRuntime() {
           const targetId = target.dataset.maskTarget;
           if (!targetId) return;
           const targetMasks = getTargetMasks(name, targetId);
-          const cardState = cardStates.get(targetId);
-          const isFeature = target.classList.contains("feature-card");
+          const isFeature = target.classList.contains("feature-card-surface") || target.classList.contains("total-focus-motion");
           let hoverScale: number | null = null;
           let hoverY = -8;
           const enter = () => {
-            const baseScale = cardState?.baseScale ?? targetMasks[0]?.baseScale ?? 1;
+            const baseScale = targetMasks[0]?.baseScale ?? 1;
             if (isFeature && hoverScale === null) {
               const style = getComputedStyle(target);
               hoverScale = Number.parseFloat(style.getPropertyValue("--feature-card-hover-scale")) || baseScale * 1.02;
@@ -395,28 +361,34 @@ export function MotionRuntime() {
             const scale = isFeature ? hoverScale ?? baseScale : 1.02;
             const y = isFeature ? hoverY : -8;
             if (isFeature) {
-              gsap.to(target, { "--feature-card-scale": scale, "--feature-card-lift": `${y}px`, duration: 0.55, ease: "power2.out", overwrite: "auto" });
+              gsap.to(target, { y, scale, duration: 0.55, ease: "power2.out", overwrite: "auto" });
             } else {
               gsap.to(target, { y, scale, duration: 0.45, ease: "power3.out", overwrite: "auto" });
             }
-            targetMasks.forEach((maskState) => gsap.to(maskState, { scale, hoverY: y, duration: 0.55, ease: "power2.out", overwrite: "auto", onUpdate: () => renderMaskState(maskState) }));
-            if (cardState) gsap.to(cardState, { scale, hoverY: y, duration: 0.55, ease: "power2.out", overwrite: "auto" });
+            targetMasks.forEach((maskState) => {
+              maskState.hovered = true;
+              gsap.to(maskState.hoverGroup, { y, scale, duration: 0.55, ease: "power2.out", overwrite: "auto" });
+            });
           };
           const leave = () => {
-            const baseScale = cardState?.baseScale ?? targetMasks[0]?.baseScale ?? 1;
+            const baseScale = targetMasks[0]?.baseScale ?? 1;
             if (isFeature) {
-              gsap.to(target, { "--feature-card-scale": baseScale, "--feature-card-lift": "0px", duration: 0.55, ease: "power2.out", overwrite: "auto", onComplete: () => gsap.set(target, { clearProps: "--feature-card-scale,--feature-card-lift" }) });
+              gsap.to(target, { y: 0, scale: baseScale, duration: 0.55, ease: "power2.out", overwrite: "auto", onComplete: () => gsap.set(target, { clearProps: "transform" }) });
             } else {
               gsap.to(target, { y: 0, scale: 1, duration: 0.45, ease: "power3.out", overwrite: "auto" });
             }
-            targetMasks.forEach((maskState) => gsap.to(maskState, { scale: maskState.baseScale, hoverY: 0, duration: 0.55, ease: "power2.out", overwrite: "auto", onUpdate: () => renderMaskState(maskState) }));
-            if (cardState) gsap.to(cardState, { scale: cardState.baseScale, hoverY: 0, duration: 0.55, ease: "power2.out", overwrite: "auto" });
+            targetMasks.forEach((maskState) => {
+              maskState.hovered = false;
+              gsap.to(maskState.hoverGroup, { y: 0, scale: maskState.baseScale, duration: 0.55, ease: "power2.out", overwrite: "auto" });
+            });
           };
           target.addEventListener("pointerenter", enter);
           target.addEventListener("pointerleave", leave);
           cleanups.push(() => {
-            targetMasks.forEach((state) => gsap.killTweensOf(state));
-            if (cardState) gsap.killTweensOf(cardState);
+            targetMasks.forEach((state) => {
+              gsap.killTweensOf(state.scrollGroup);
+              gsap.killTweensOf(state.hoverGroup);
+            });
             gsap.killTweensOf(target);
             target.removeEventListener("pointerenter", enter);
             target.removeEventListener("pointerleave", leave);
@@ -482,7 +454,6 @@ export function MotionRuntime() {
         nearObserver?.disconnect();
         sectionObserver.disconnect();
         maskStates.clear();
-        cardStates.clear();
         context.revert();
         if (lenis) gsap.ticker.remove(tick);
         lenis?.destroy();
@@ -490,7 +461,7 @@ export function MotionRuntime() {
       });
     };
 
-    void start();
+    void start().catch((error) => console.error("Failed to initialize motion runtime", error));
     return () => {
       disposed = true;
       cleanups.reverse().forEach((cleanup) => cleanup());
