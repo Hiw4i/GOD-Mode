@@ -1,168 +1,152 @@
-# Деплой GOD Mode на godmode.vaneev.com
+# Production deployment: godmode.vaneev.com
 
-Проект — статический сайт: HTML, CSS, JS и медиафайлы. **Сборки нет.** Деплой = зеркальная заливка содержимого репозитория в каталог сайта на хостинге по FTP.
+The production site is a Next.js 16 static export hosted by Majordomo. The hosting account exposes a static web root over explicit FTPS and does not run the Node.js `next start` server. For that reason, production uses `output: "export"`; `corepack pnpm build` writes the complete website to `out/`.
 
-Живой адрес: **https://godmode.vaneev.com**
+Live URL: [https://godmode.vaneev.com](https://godmode.vaneev.com)
 
----
+## Connection
 
-## Параметры подключения
-
-| Параметр | Значение |
+| Setting | Value |
 |---|---|
-| Протокол | FTPS explicit (схема `ftpes://`) — проверено, работает вместе с шифрованием канала данных |
-| Хост | `web32.majordomo.ru` — **без буквы «s»** |
-| Порт | `21` |
-| Режим | пассивный |
-| Логин | `f67999_godmode` |
-| Пароль | в файле `deploy/credentials.ps1` — его нет в репозитории, спросить у владельца хостинга |
-| Каталог после входа | `/` — это и есть корень сайта |
-| Сервер | Pure-FTPd, отключает сессию после 15 минут простоя |
-| Что заливать | весь репозиторий, кроме `.git/`, `deploy/`, `DEPLOY.md`, `.gitignore` |
-| Адрес сайта | `https://godmode.vaneev.com` |
-| Панель хостинга | Majordomo HMS, `hms.majordomo.ru` (доступ только у владельца) |
+| Protocol | Explicit FTPS (`ftpes://`) |
+| Host | `web32.majordomo.ru` — not `web32s` |
+| Port | `21` |
+| Mode | Passive |
+| User | `f67999_godmode` |
+| Remote web root | `/` |
+| Credentials | Local `deploy/credentials.ps1`, ignored by Git |
+| Deployment log | Local `deploy/deploy.log`, ignored by Git |
 
-**Учётная запись заперта в каталоге своего проекта.** Сервер прямо сообщает это при входе: `Current restricted directory is /`. Подняться выше по дереву нельзя — соседние сайты на этом хостинге недоступны и не должны быть затронуты. Это не ограничение, которое нужно обходить, а защита.
+The account is chrooted: `/` is the site's own restricted root. Never attempt to leave it or access neighboring hosting accounts.
 
-Про имя хоста стоит запомнить одно: **`web32`, а не `web32s`.** Имя с «s» — это SSH-сервер на соседнем адресе, FTP там не отвечает, и попытка подключения просто виснет до таймаута.
+## Release model
 
----
+The deployment does not synchronize the repository or destructively mirror `/`.
 
-## Первый запуск
-
-### 1. Установить WinSCP
-
-```powershell
-winget install WinSCP.WinSCP
+```text
+/
+├── .htaccess                         active release pointer
+└── .godmode/
+    ├── rollback.htaccess             previous release pointer
+    └── releases/
+        ├── 20260830T...-<git>/        immutable static export
+        └── 20260830T...-<git>/        another release
 ```
 
-После установки закрыть и открыть окно PowerShell заново.
+The sequence is:
 
-### 2. Прописать пароль
+1. Run ESLint, TypeScript, and a production static build.
+2. Upload `out/` into a new immutable release directory.
+3. Save the current `.htaccess` as the rollback pointer.
+4. Upload the next pointer under a unique temporary name.
+5. Rename the temporary pointer to `/.htaccess` on the server.
+6. Request the live home page, a hashed Next.js JavaScript bundle, and an image over HTTPS.
+7. If any smoke test fails, restore the previous pointer and test it again.
+
+The active website changes only at step 5. Uploading a release cannot expose a partially transferred build.
+
+## Initial setup
+
+### PowerShell and WinSCP
+
+Use PowerShell 7 (`pwsh`). Install WinSCP globally:
+
+```powershell
+winget install --id WinSCP.WinSCP --exact
+```
+
+The script also discovers a portable binary at `deploy/tools/winscp/WinSCP.com`. The entire `deploy/tools/` directory is ignored by Git.
+
+### Credentials
 
 ```powershell
 Copy-Item deploy\credentials.example.ps1 deploy\credentials.ps1
 notepad deploy\credentials.ps1
 ```
 
-Заменить `СЮДА_ПАРОЛЬ` на настоящий пароль и сохранить. Файл в `.gitignore` — в репозиторий он не попадёт.
+Set the real password in `$FtpPassword`. Never paste the contents into an issue, chat, command output, commit, or CI log.
 
-### 3. Посмотреть, что произойдёт, ничего не меняя
-
-```powershell
-.\deploy\deploy.ps1 -DryRun
-```
-
-Скрипт подключится и покажет список файлов, которые он бы залил — все 30 файлов проекта. **Не пропускайте этот шаг** — он проверяет и доступ, и то, что путь на сервере верный.
-
-В списке будет ещё строка на удаление `test.txt`. Это проверочный файл, оставленный при настройке доступа; первый деплой уберёт его — так и задумано.
-
-### 4. Залить
+## Dry run
 
 ```powershell
-.\deploy\deploy.ps1
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\deploy\deploy.ps1 -DryRun
 ```
 
-Открыть https://godmode.vaneev.com и убедиться, что сайт на месте.
+Dry run performs all local checks and the static export, verifies that required files exist, and opens a read-only FTPS session. It does not create, upload, rename, or delete anything remotely.
 
----
-
-## Обычный деплой
-
-Дальше каждый раз — одна команда из корня репозитория:
+## Deploy
 
 ```powershell
-.\deploy\deploy.ps1
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\deploy\deploy.ps1
 ```
 
-Скрипт заливает изменённое и **удаляет на сервере то, чего нет локально**. Локальная папка — источник истины. Если сомневаетесь в изменениях — сначала `-DryRun`.
+Success means all of the following completed:
 
----
+- lint passed;
+- TypeScript passed;
+- the static export contains `out/index.html` and `out/404.html`;
+- the release uploaded successfully;
+- the `.htaccess` pointer switched;
+- live HTML, JavaScript, and image smoke tests returned successful non-empty responses.
 
-## Проверка результата
+`-SkipBuild` is available only when the current `out/` was already built and verified in the same working session:
 
 ```powershell
-curl.exe -I https://godmode.vaneev.com/
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\deploy\deploy.ps1 -SkipBuild
 ```
 
-Ожидаемо: `HTTP/1.1 200 OK` и заголовок `Content-Type: text/html`.
+Do not use `-SkipBuild` for an unknown or stale `out/` directory.
 
-Что означают другие ответы:
+## Rollback
 
-- **403** — каталог пуст или в нём нет `index.html`. Файлы не долетели или легли уровнем глубже.
-- **404** на картинках и звуках — проверьте регистр букв в именах. Сервер на Linux, `Statue.png` и `statue.png` — разные файлы. Windows этой разницы не видит, поэтому ошибка проявляется только после заливки.
-- **Старая версия страницы** — кэш браузера, обновите через Ctrl+F5.
+Automatic rollback runs whenever post-switch smoke tests fail. For a manual rollback:
 
----
-
-## Если не подключается
-
-1. **Подключение висит до таймаута** — почти наверняка в `credentials.ps1` написано `web32s` вместо `web32`. Это самая частая ошибка здесь.
-2. **Ошибка TLS-сертификата** — проверьте, что в `credentials.ps1` указано имя хоста, а не IP. Сертификат выписан на имя, и по адресу `185.84.108.18` проверка не проходит. Если подключаться нужно именно по IP, добавьте ключ:
-   ```powershell
-   .\deploy\deploy.ps1 -DryRun -AcceptAnyCertificate
-   ```
-3. **Шифрование не проходит** — запасной вариант без TLS (пароль пойдёт открытым текстом, только как временная мера):
-   ```powershell
-   .\deploy\deploy.ps1 -DryRun -Protocol ftp
-   ```
-4. **Ошибка авторизации** — пароль неверный или был изменён. Не подбирайте его: попросите у владельца хостинга новый.
-5. **Соединение висит на листинге** — обычно блокирует антивирус или брандмауэр. Пассивный режим уже включён в скрипте.
-6. **После входа видно папку `www`** — значит корень оказался уровнем выше. Запустите с явным путём:
-   ```powershell
-   .\deploy\deploy.ps1 -DryRun -RemotePath /www
-   ```
-
-Подробный лог последней попытки: `deploy/deploy.log`.
-
----
-
-## Инструкция для LLM-агента (Claude Code, Codex и подобные)
-
-Этот раздел адресован ассистенту, который работает в этом репозитории.
-
-### Контекст
-
-Статический сайт без сборки. Задача деплоя — синхронизировать содержимое репозитория с FTP-каталогом. Готовый механизм уже есть: `deploy/deploy.ps1`. **Используй его, не изобретай свой.**
-
-### Порядок действий
-
-1. Убедись, что существует `deploy/credentials.ps1`. Если нет — сообщи пользователю, что нужен пароль, и остановись. Не придумывай пароль и не пытайся его подобрать.
-2. Всегда сначала выполни просмотр:
-   ```powershell
-   .\deploy\deploy.ps1 -DryRun
-   ```
-3. Покажи пользователю список изменений и дождись подтверждения, если удаляется больше одного файла или меняется больше десяти.
-4. Выполни деплой:
-   ```powershell
-   .\deploy\deploy.ps1
-   ```
-5. Проверь результат: `curl.exe -I https://godmode.vaneev.com/` — ожидается `200 OK`.
-
-### Жёсткие правила
-
-- **Не выходи за пределы каталога сайта.** Не пытайся перейти в родительские каталоги, читать или менять что-либо вне своей папки. На этом хостинге живут другие сайты владельца.
-- **Не публикуй пароль.** Не выводи содержимое `deploy/credentials.ps1` в ответ, не вставляй пароль в команды в тексте, не коммить его. Репозиторий публичный.
-- **Не выполняй деплой без явной просьбы.** Правка файла и заливка на боевой сайт — разные действия.
-- **Не отключай `-delete` и не «чини» права через FTP-команды.** Если синхронизация ведёт себя не так, разберись в причине и спроси.
-- **Регистр имён файлов имеет значение.** Ссылки в `index.html` должны совпадать с именами файлов буква в букву.
-- В именах файлов есть пробелы и скобки: `sources/music (1).mp3`, `sources/statue for download.png`. В любых командах заключай пути в кавычки.
-
-### Что можно делать свободно
-
-Править HTML, CSS, JS и содержимое `sources/`, запускать `-DryRun`, читать `deploy/deploy.log`, проверять сайт запросами.
-
----
-
-## Устройство репозитория
-
-```
-index.html          главная и единственная страница
-css/                base, components, sections, modals, responsive
-js/                 utils, parallax, animations, ui
-sources/            изображения, обложки и аудио
-deploy/             механизм деплоя — на сервер не заливается
-DEPLOY.md           этот файл
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\deploy\deploy.ps1 -Rollback
 ```
 
-Внешние зависимости страница тянет с CDN (GSAP, Lenis, Lucide) и шрифты с Google Fonts — на хостинге ничего дополнительно ставить не нужно.
+Rollback swaps the active and previous pointers, runs the same HTTPS smoke tests, and restores the original active pointer if the rollback target itself fails. Running `-Rollback` again switches back to the release that was active before the first rollback.
+
+On the first managed deployment, the rollback pointer represents the legacy web root (`RewriteEngine Off`). Later deployments always retain the immediately preceding managed release.
+
+## Verification outside the script
+
+```powershell
+curl.exe --fail --location --show-error https://godmode.vaneev.com/
+curl.exe --fail --head --show-error https://godmode.vaneev.com/sources/Icon_rounded.png
+```
+
+Expected result: HTTP `200`, the GOD Mode page content, and a non-empty image response. Use a cache-busting query string when diagnosing an edge cache:
+
+```powershell
+curl.exe --fail --head "https://godmode.vaneev.com/?check=$(Get-Date -Format FileDateTimeUniversal)"
+```
+
+## Troubleshooting
+
+- **PowerShell says the script is not signed:** invoke it with the full `pwsh -NoProfile -ExecutionPolicy Bypass -File ...` command shown above.
+- **WinSCP is missing:** install it with `winget` or place the official portable executables under `deploy/tools/winscp/`.
+- **Connection times out:** verify `web32.majordomo.ru`. `web32s` is a different SSH endpoint and does not accept this FTP connection.
+- **TLS validation fails:** use the DNS host, not its IP. `-AcceptAnyCertificate` exists for emergency diagnostics and weakens identity verification.
+- **Authentication fails:** stop and obtain the current password from the hosting owner. Do not guess it.
+- **Build fails while resolving a font:** confirm internet access; `next/font/google` resolves JetBrains Mono during build.
+- **Smoke tests return 403 or 500 after switching:** inspect `deploy/deploy.log`. The script should already have restored the previous pointer.
+- **An asset returns 404:** verify filename case and spacing. The production filesystem is case-sensitive.
+- **HTTP works but stale content appears:** use a cache-busting query or hard refresh. Hashed `/_next/static/` assets are release-specific.
+
+## Security and operating rules
+
+- Deployment requires an explicit request because it changes production.
+- Never upload the repository root, `.git/`, `.next/`, `node_modules/`, sources, reports, credentials, logs, or local tools.
+- Never run root-level mirror/delete synchronization against `/`.
+- Do not edit or remove `/.godmode/` manually while a deploy is running.
+- Preserve at least the active and previous release directories. Old inactive releases may be removed manually only after identifying both pointer targets.
+- Prefer explicit FTPS. Plain `-Protocol ftp` sends credentials without TLS and is reserved for owner-approved emergency diagnostics.
+
+## Relevant configuration
+
+- `next.config.ts`: static export, trailing slashes, unoptimized `next/image` output.
+- `package.json`: pinned Node and pnpm versions plus build checks.
+- `deploy/deploy.ps1`: release upload, pointer switch, smoke tests, and rollback.
+- `deploy/credentials.example.ps1`: safe credential template.
+- `.gitignore`: protects real credentials, logs, local WinSCP binaries, dependencies, and generated output.

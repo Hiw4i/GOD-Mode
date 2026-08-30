@@ -7,5 +7,6 @@ dist/
 .env*
 !.env.example
 deploy/credentials.ps1
+deploy/tools/
 *.log
 .DS_Store
