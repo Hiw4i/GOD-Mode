@@ -8,6 +8,7 @@ import { MotionRuntime } from "@/components/motion-runtime";
 import { PairedSceneVisual, XrayPlane } from "@/components/paired-scene-visual";
 import { SpotsCounter } from "@/components/spots-counter";
 import { ambientTracks, downloadPlans, featureOverlapReplicas, features, supportMethods } from "@/lib/content";
+import { APP_VERSION_LABEL } from "@/lib/version";
 import xrayPlanes from "@/lib/generated-xray-planes.json";
 
 const featuresTitlePlane = xrayPlanes["features-title"];
@@ -51,7 +52,7 @@ export default function HomePage() {
             <h1 className="hero-title fade-in d1">GOD MODE</h1>
           </div>
           <div className="hero-statue-wrap" aria-hidden="true">
-            <Image className="hero-statue" src="/sources/statue.png" alt="" width={4264} height={2400} preload decoding="sync" sizes="140vw" />
+            <Image className="hero-statue" src="/sources/statue.webp" alt="" width={4264} height={2400} preload sizes="140vw" />
           </div>
         </section>
 
@@ -174,6 +175,11 @@ export default function HomePage() {
           </div>
         </section>
       </main>
+
+      <footer className="site-footer">
+        <span>GOD MODE</span>
+        <a href="/version.json" aria-label={`GOD Mode build information, ${APP_VERSION_LABEL}`}>{APP_VERSION_LABEL}</a>
+      </footer>
 
       <ModalSystem />
       <MotionRuntime />

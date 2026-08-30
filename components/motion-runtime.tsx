@@ -91,7 +91,11 @@ export function MotionRuntime() {
       const Lenis = lenisModule.default;
       gsap.registerPlugin(ScrollTrigger);
 
-      const lenis = new Lenis({
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      ScrollTrigger.config({ ignoreMobileResize: true, limitCallbacks: true });
+
+      const lenis = prefersReducedMotion ? null : new Lenis({
         duration: 1,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
@@ -100,14 +104,13 @@ export function MotionRuntime() {
         anchors: { offset: 0 },
         autoRaf: false,
         stopInertiaOnNavigate: true,
-        respectReducedMotion: false,
+        respectReducedMotion: true,
       });
 
       const onLenisScroll = () => ScrollTrigger.update();
-      const tick = (time: number) => lenis.raf(time * 1000);
-      lenis.on("scroll", onLenisScroll);
-      gsap.ticker.add(tick);
-      gsap.ticker.lagSmoothing(0);
+      const tick = (time: number) => lenis?.raf(time * 1000);
+      lenis?.on("scroll", onLenisScroll);
+      if (lenis) gsap.ticker.add(tick);
 
       const maskStates = new Map<string, MaskMotionState>();
       const cardStates = new Map<string, CardMotionState>();
@@ -129,7 +132,12 @@ export function MotionRuntime() {
           if (!id) return;
           const existing = cardStates.get(id);
           const cssScale = Number.parseFloat(getComputedStyle(card).getPropertyValue("--feature-card-scale")) || 1;
-          cardStates.set(id, existing ?? { id, element: card, baseScale: cssScale, scale: cssScale, scrollY: 0, hoverY: 0 });
+          if (existing) {
+            existing.element = card;
+            existing.baseScale = cssScale;
+          } else {
+            cardStates.set(id, { id, element: card, baseScale: cssScale, scale: cssScale, scrollY: 0, hoverY: 0 });
+          }
         });
       };
 
@@ -250,6 +258,29 @@ export function MotionRuntime() {
 
       const scenes = Array.from(document.querySelectorAll<HTMLElement>("[data-mask-stage]"));
       const featuresStage = document.querySelector<HTMLElement>('[data-mask-stage="features"]');
+      const deferredPlanes = scenes.flatMap((scene) => Array.from(scene.querySelectorAll<HTMLElement>("[data-xray-plane]")))
+        .filter((plane) => plane.querySelector("[data-paired-src]"));
+      const loadDeferredPlane = (plane: HTMLElement) => {
+        plane.querySelectorAll<SVGImageElement>("[data-paired-src]").forEach((image) => {
+          const source = image.dataset.pairedSrc;
+          if (!source) return;
+          image.setAttribute("href", source);
+          delete image.dataset.pairedSrc;
+        });
+      };
+      let deferredPlaneObserver: IntersectionObserver | null = null;
+      if ("IntersectionObserver" in window) {
+        deferredPlaneObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            loadDeferredPlane(entry.target as HTMLElement);
+            deferredPlaneObserver?.unobserve(entry.target);
+          });
+        }, { rootMargin: "125% 0px", threshold: 0 });
+        deferredPlanes.forEach((plane) => deferredPlaneObserver?.observe(plane));
+      } else {
+        deferredPlanes.forEach(loadDeferredPlane);
+      }
       const syncAll = () => {
         masksBySceneTarget.clear();
         scenes.forEach(syncScene);
@@ -272,7 +303,7 @@ export function MotionRuntime() {
         const hero = document.querySelector<HTMLElement>(".hero");
         const heroContent = document.querySelector<HTMLElement>(".hero-content");
         const heroStatue = document.querySelector<HTMLElement>(".hero-statue-wrap");
-        if (hero && heroContent && heroStatue) {
+        if (!prefersReducedMotion && hero && heroContent && heroStatue) {
           let initialized = false;
           const initializeHeroParallax = () => {
             if (initialized || window.scrollY < 1) return;
@@ -289,7 +320,7 @@ export function MotionRuntime() {
         }
 
         const featuresSection = document.querySelector<HTMLElement>(".how-it-works");
-        if (featuresSection && featuresStage) {
+        if (!prefersReducedMotion && featuresSection && featuresStage) {
           const visual = featuresStage.querySelector<HTMLElement>('[data-xray-motion="visual"]');
           const text = featuresStage.querySelector<HTMLElement>("[data-parallax-text]");
           const label = featuresStage.querySelector<HTMLElement>(".hiw-bg-label");
@@ -338,7 +369,7 @@ export function MotionRuntime() {
           cleanups.push(() => mm.revert());
         }
 
-        ["download", "support"].forEach((name) => {
+        if (!prefersReducedMotion) ["download", "support"].forEach((name) => {
           const section = document.querySelector<HTMLElement>(`[data-mask-stage="${name}"]`);
           if (!section) return;
           const visual = section.querySelector<HTMLElement>('[data-xray-motion="visual"]');
@@ -368,7 +399,7 @@ export function MotionRuntime() {
 
         const ambientCard = document.querySelector<HTMLElement>("#ambientCard");
         const ambientStage = ambientCard?.querySelector<HTMLElement>("[data-ambient-stage]");
-        if (ambientCard && ambientStage) {
+        if (!prefersReducedMotion && canHover && ambientCard && ambientStage) {
           const moveX = gsap.quickTo(ambientStage, "x", { duration: 0.55, ease: "power3" });
           const moveY = gsap.quickTo(ambientStage, "y", { duration: 0.55, ease: "power3" });
           const rotate = gsap.quickTo(ambientStage, "rotation", { duration: 0.55, ease: "power3" });
@@ -388,22 +419,28 @@ export function MotionRuntime() {
         }
       });
 
-      const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-            revealObserver.unobserve(entry.target);
-          }
-        });
-      }, { rootMargin: "0px 0px -8%", threshold: 0.08 });
-      document.querySelectorAll(".fade-in").forEach((element) => revealObserver.observe(element));
+      let revealObserver: IntersectionObserver | null = null;
+      let nearObserver: IntersectionObserver | null = null;
+      if (prefersReducedMotion) {
+        document.querySelectorAll(".fade-in").forEach((element) => element.classList.add("visible"));
+      } else {
+        revealObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              revealObserver?.unobserve(entry.target);
+            }
+          });
+        }, { rootMargin: "0px 0px -8%", threshold: 0.08 });
+        document.querySelectorAll(".fade-in").forEach((element) => revealObserver?.observe(element));
 
-      const nearObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => entry.target.classList.toggle("motion-near", entry.isIntersecting));
-      }, { rootMargin: "35% 0px", threshold: 0 });
-      document.querySelectorAll("[data-motion-near]").forEach((element) => nearObserver.observe(element));
+        nearObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => entry.target.classList.toggle("motion-near", entry.isIntersecting));
+        }, { rootMargin: "35% 0px", threshold: 0 });
+        document.querySelectorAll("[data-motion-near]").forEach((element) => nearObserver?.observe(element));
+      }
 
-      scenes.forEach((scene) => {
+      if (canHover && !prefersReducedMotion) scenes.forEach((scene) => {
         const name = scene.dataset.maskStage;
         if (!name) return;
         scene.querySelectorAll<HTMLElement>("[data-mask-target]").forEach((target) => {
@@ -475,27 +512,48 @@ export function MotionRuntime() {
       const maskDebug = new URLSearchParams(window.location.search).get("maskDebug") === "1";
       document.documentElement.toggleAttribute("data-mask-debug", maskDebug);
 
+      let modalOpen = false;
+      let resumeFrame = 0;
+      const syncLenisState = () => {
+        if (!lenis) return;
+        if (document.hidden || modalOpen) {
+          lenis.stop();
+          return;
+        }
+        lenis.start();
+        if (resumeFrame) window.cancelAnimationFrame(resumeFrame);
+        resumeFrame = window.requestAnimationFrame(() => {
+          resumeFrame = 0;
+          lenis.resize();
+          ScrollTrigger.refresh();
+        });
+      };
       const onModal = (event: Event) => {
-        const isOpen = Boolean((event as CustomEvent<{ open: boolean }>).detail?.open);
-        if (isOpen) lenis.stop(); else lenis.start();
+        modalOpen = Boolean((event as CustomEvent<{ open: boolean }>).detail?.open);
+        syncLenisState();
       };
       window.addEventListener("godmode:modal", onModal);
+      document.addEventListener("visibilitychange", syncLenisState);
 
       cleanups.push(() => {
         window.removeEventListener("godmode:modal", onModal);
+        document.removeEventListener("visibilitychange", syncLenisState);
         document.documentElement.removeAttribute("data-mask-debug");
         ScrollTrigger.removeEventListener("refreshInit", syncAll);
         if (syncFrame) window.cancelAnimationFrame(syncFrame);
+        if (resumeFrame) window.cancelAnimationFrame(resumeFrame);
         resizeObserver.disconnect();
-        revealObserver.disconnect();
-        nearObserver.disconnect();
+        deferredPlaneObserver?.disconnect();
+        revealObserver?.disconnect();
+        nearObserver?.disconnect();
         sectionObserver.disconnect();
         maskStates.clear();
         cardStates.clear();
         overlapStates.clear();
         context.revert();
-        gsap.ticker.remove(tick);
-        lenis.destroy();
+        if (lenis) gsap.ticker.remove(tick);
+        lenis?.destroy();
+        ScrollTrigger.config({ ignoreMobileResize: false, limitCallbacks: false });
       });
     };
 

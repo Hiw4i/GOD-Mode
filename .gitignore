@@ -2,6 +2,7 @@ node_modules/
 .pnpm-store/
 .next/
 out/
+public/version.json
 dist/
 *.tsbuildinfo
 .env*

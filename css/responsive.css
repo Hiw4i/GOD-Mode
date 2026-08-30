@@ -91,6 +91,7 @@
         margin-left: 0;
         margin-right: 0;
         --feature-card-y: 0px;
+        --feature-card-scale: 1;
     }
     .feature-card { padding: 1.05rem; border-radius: 14px; }
     #cruelCard { overflow: visible; }

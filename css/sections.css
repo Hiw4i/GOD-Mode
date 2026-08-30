@@ -222,7 +222,7 @@ nav {
     height: auto;
     z-index: 4;
     pointer-events: none;
-    filter: contrast(1.08) brightness(0.92) drop-shadow(0 36px 44px rgba(0,0,0,0.9));
+    opacity: .96;
     -webkit-mask-image: linear-gradient(to bottom, black 0%, black 72%, transparent 96%);
     mask-image: linear-gradient(to bottom, black 0%, black 72%, transparent 96%);
 }
@@ -401,10 +401,8 @@ nav {
 .float-icon {
     position: absolute;
     object-fit: cover;
-    transition: filter 0.5s ease, opacity 0.8s ease;
+    transition: opacity 0.5s ease;
 }
-
-.total-focus-wrap:hover .float-icon { filter: blur(0px) brightness(1) !important; }
 
 .float-icon--youtube {
     width: clamp(72px, 7.5vw, 98px);
@@ -432,8 +430,7 @@ nav {
     bottom: -10%;
     left: -14%;
     z-index: -3;
-    opacity: 0.52;
-    filter: blur(1.2px) brightness(0.7);
+    opacity: 0.42;
     border-radius: 14px;
 }
 
@@ -460,37 +457,25 @@ nav {
     z-index: 1;
     white-space: nowrap;
     line-height: 1;
-    transition: opacity 0.4s ease, filter 0.4s ease;
+    transform: translateZ(0) scale(.985);
+    transition: opacity 0.4s ease, transform 0.4s ease;
     opacity: 0;
-    filter: blur(0.4px);
 }
 
 .cruel-timer.is-counting {
     opacity: 1;
-    filter: blur(0px);
+    transform: translateZ(0) scale(1);
     animation: timerPulse 3s ease-in-out infinite;
 }
 
 .cruel-timer.is-reset {
     opacity: 0;
-    filter: blur(1.5px);
+    transform: translateZ(0) scale(.97);
 }
 
 @keyframes timerPulse {
-    0%, 100% {
-        text-shadow:
-            0 0 10px rgba(255,255,255,0.5),
-            0 0 30px rgba(255,255,255,0.35),
-            0 0 60px rgba(255,255,255,0.2),
-            0 0 100px rgba(255,255,255,0.1);
-    }
-    50% {
-        text-shadow:
-            0 0 14px rgba(255,255,255,0.65),
-            0 0 40px rgba(255,255,255,0.45),
-            0 0 80px rgba(255,255,255,0.28),
-            0 0 120px rgba(255,255,255,0.15);
-    }
+    0%, 100% { opacity: .9; }
+    50% { opacity: 1; }
 }
 
 /* ===== AMBIENT SOUNDSCAPE ===== */
@@ -498,6 +483,7 @@ nav {
     --ambient-tilt-x: 0deg;
     --ambient-tilt-y: 0deg;
     overflow: visible;
+    height: 182px;
     min-height: 182px;
 }
 #ambientCard:hover { --feature-card-lift: -8px; --feature-card-scale: 1.21; }
@@ -519,6 +505,10 @@ nav {
     height: clamp(112px, 10vw, 138px);
     transform-style: preserve-3d;
     transform: rotate(-3deg) translateY(12px);
+}
+
+@media (min-width: 681px) {
+    .ambient-player-stage { bottom: calc(clamp(-1.6rem, -2vw, -1rem) + 5px); }
 }
 
 .ambient-player-frame {
@@ -549,12 +539,11 @@ nav {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: .7;
-    filter: saturate(.72) contrast(1.12) brightness(.7);
-    transition: transform .7s cubic-bezier(.16,1,.3,1), filter .45s ease;
+    opacity: .55;
+    transition: transform .7s cubic-bezier(.16,1,.3,1), opacity .45s ease;
 }
 
-.ambient-player.is-playing .ambient-cover { transform: scale(1.08); filter: saturate(.88) contrast(1.1) brightness(.78); }
+.ambient-player.is-playing .ambient-cover { transform: scale(1.08); opacity: .68; }
 
 .ambient-player-shade {
     position: absolute;

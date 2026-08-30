@@ -43,6 +43,9 @@ jobs:
       - name: Check peer dependencies
         run: pnpm peers check
 
+      - name: Check application version
+        run: pnpm version:check
+
       - name: Lint
         run: pnpm lint
 

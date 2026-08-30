@@ -21,6 +21,20 @@ const iconPlanes = [
   { name: "instagram", displayWidth: 66 },
 ];
 
+async function generateHero() {
+  const input = path.join(sourceRoot, "statue.png");
+  const info = await metadata(input, "hero statue");
+  const output = await sharp(input)
+    .webp({ quality: 88, alphaQuality: 100, effort: 6, smartSubsample: true })
+    .toBuffer();
+  await Promise.all([
+    assertGeometry(output, info.width, info.height, "hero statue"),
+    assertAlphaPreserved(input, output, "hero statue"),
+  ]);
+  await writeFile(path.join(publicRoot, "statue.webp"), output);
+  console.log(`✓ hero statue: ${info.width}x${info.height}, webp=${output.byteLength} bytes`);
+}
+
 function xml(value) {
   return value.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[character]);
 }
@@ -141,6 +155,7 @@ async function generateCardReplica() {
 }
 
 await mkdir(publicRoot, { recursive: true });
+await generateHero();
 
 for (const basename of statuePairs) {
   const sharpInput = path.join(sourceRoot, `${basename}.png`);

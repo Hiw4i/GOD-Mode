@@ -29,6 +29,11 @@ corepack pnpm typecheck
 corepack pnpm build
 ```
 
+The application version follows SemVer and is sourced from `package.json`.
+Every version must have a matching `CHANGELOG.md` section. Builds expose their
+version and Git commit at `/version.json`; run `corepack pnpm version:check` to
+validate release metadata independently.
+
 `next build` creates the deployable static export in `out/`. The site intentionally avoids runtime-only Next.js features because the production hosting provides static files over FTPS, not a Node.js process.
 
 ## Continuous integration
