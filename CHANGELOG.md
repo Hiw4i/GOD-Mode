@@ -4,6 +4,23 @@ All notable changes to GOD Mode are documented here. The project follows
 [Semantic Versioning](https://semver.org/) and the structure from
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.1] - 2026-08-31
+
+### Added
+
+- Added an initial loading screen that preloads and decodes site imagery and fonts before revealing the page.
+
+### Changed
+
+- Removed reveal-on-scroll effects and deferred section imagery to reduce repeat loading and scrolling stutter.
+- Refreshed the Hero, Features, Download, and Support statue artwork and regenerated their optimized WebP assets.
+- Refined the Hero-to-Features transition, spacing, and Features intro-label visibility.
+
+### Fixed
+
+- Forced generated section titles to use the bundled Space Grotesk font instead of a system fallback.
+- Removed excess empty space below the Cruel Stopwatch description.
+
 ## [0.3.0] - 2026-08-30
 
 ### Changed

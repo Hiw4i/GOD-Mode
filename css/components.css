@@ -51,6 +51,7 @@
 
 /* ===== SHARED SECTION BACKGROUND ===== */
 .section-bg-text {
+    font-family: var(--font);
     font-weight: 700;
     letter-spacing: -6px;
     color: #fff;
@@ -167,31 +168,3 @@
     color: #16a34a;
     background: rgba(22,163,74,0.1);
 }
-
-/* ===== ANIMATIONS (scroll reveal) ===== */
-.fade-in {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
-}
-
-.fade-in.visible { opacity: 1; transform: translateY(0); }
-
-.fade-in.d1 { transition-delay: 0.1s; }
-.fade-in.d2 { transition-delay: 0.2s; }
-.fade-in.d3 { transition-delay: 0.3s; }
-.fade-in.d4 { transition-delay: 0.4s; }
-.fade-in.d5 { transition-delay: 0.5s; }
-
-.feature-card-motion.fade-in {
-    opacity: 0;
-    transform: none;
-    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1);
-}
-
-.feature-card-motion.fade-in.visible {
-    opacity: 1;
-    transform: none;
-}
-
-.download-card.fade-in.visible { transform: translateY(0); }

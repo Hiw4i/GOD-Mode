@@ -47,29 +47,29 @@ export default function HomePage() {
       <main>
         <section className="hero" id="hero">
           <div className="hero-content">
-            <div className="hero-label fade-in">Deep Focus System</div>
-            <h1 className="hero-title fade-in d1">GOD MODE</h1>
+            <div className="hero-label">Deep Focus System</div>
+            <h1 className="hero-title">GOD MODE</h1>
           </div>
           <div className="hero-statue-wrap" aria-hidden="true">
-            <Image className="hero-statue" src="/sources/statue.webp" alt="" width={4264} height={2400} preload sizes="140vw" />
+            <Image className="hero-statue" src="/sources/statue for hero.webp?v=20260831-statues" alt="" width={4264} height={2400} preload sizes="140vw" />
           </div>
         </section>
 
         <section className="how-it-works" id="features">
           <div className="features-stage" data-mask-stage="features" data-motion-near>
             <div className="how-it-works-bg">
+              <div className="hiw-bg-label">Ready to unlock your real potential?</div>
               <div className="hiw-bg-text" data-parallax-text>
-                <div className="hiw-bg-label">Ready to unlock your real potential?</div>
                 <span className="xray-text-word">
                   <span className="xray-text-proxy">FEATURES</span>
-                  <XrayPlane id="features-title" scene="features" className="xray-text-plane" sharpSrc="/sources/features-title.webp?v=20260830-xray3" blurredSrc="/sources/features-title (blured).webp?v=20260830-xray3" width={featuresTitlePlane.width} height={featuresTitlePlane.height} contentBox={featuresTitlePlane.contentBox} targets={features.map((feature) => feature.id)} motionChannel="text" />
+                  <XrayPlane id="features-title" scene="features" className="xray-text-plane" sharpSrc="/sources/features-title.webp?v=20260831-fontfix" blurredSrc="/sources/features-title (blured).webp?v=20260831-fontfix" width={featuresTitlePlane.width} height={featuresTitlePlane.height} contentBox={featuresTitlePlane.contentBox} targets={features.map((feature) => feature.id)} motionChannel="text" />
                 </span>
               </div>
               <PairedSceneVisual
                 scene="features"
                 className="hiw-bg-img"
-                sharpSrc="/sources/statue for features.webp?v=20260830-2"
-                blurredSrc="/sources/statue for features (blured).webp?v=20260830-2"
+                sharpSrc="/sources/statue for features.webp?v=20260831-statues"
+                blurredSrc="/sources/statue for features (blured).webp?v=20260831-statues"
                 width={719}
                 height={1080}
                 alt="Features"
@@ -79,10 +79,10 @@ export default function HomePage() {
             <div className="how-it-works-content">
               <div className="feature-cards">
                 {features.map((feature) => {
-                  const className = `feature-card feature-card-motion fade-in d${feature.delay}${feature.align === "right" ? " is-right" : ""}`;
+                  const className = `feature-card feature-card-motion${feature.align === "right" ? " is-right" : ""}`;
                   if (feature.kind === "focus") {
                     return (
-                      <div key={feature.id} className="total-focus-wrap feature-card-motion fade-in d1" data-feature-card data-speed={feature.speed} data-mask-link={feature.id} data-motion-near>
+                      <div key={feature.id} className="total-focus-wrap feature-card-motion" data-feature-card data-speed={feature.speed} data-mask-link={feature.id} data-motion-near>
                         <div className="total-focus-motion" data-feature-id={feature.id} data-mask-target={feature.id}>
                           <FloatingFeatureIcons />
                           <article className="feature-card-surface glass-card">
@@ -117,16 +117,16 @@ export default function HomePage() {
               <div className="download-bg-label section-bg-label">Prove your commitment to change. Lifetime focus costs less than 3 cups of coffee.</div>
               <span className="xray-text-word">
                 <span className="xray-text-proxy">DOWNLOAD</span>
-                <XrayPlane id="download-title" scene="download" className="xray-text-plane" sharpSrc="/sources/download-title.webp?v=20260830-xray3" blurredSrc="/sources/download-title (blured).webp?v=20260830-xray3" width={downloadTitlePlane.width} height={downloadTitlePlane.height} contentBox={downloadTitlePlane.contentBox} targets={downloadPlans.map((plan) => `plan-${plan.id}`)} motionChannel="text" />
+                <XrayPlane id="download-title" scene="download" className="xray-text-plane" sharpSrc="/sources/download-title.webp?v=20260831-fontfix" blurredSrc="/sources/download-title (blured).webp?v=20260831-fontfix" width={downloadTitlePlane.width} height={downloadTitlePlane.height} contentBox={downloadTitlePlane.contentBox} targets={downloadPlans.map((plan) => `plan-${plan.id}`)} motionChannel="text" />
               </span>
             </div>
             <PairedSceneVisual
               scene="download"
               className="download-bg-img section-bg-img"
-              sharpSrc="/sources/statue for download.webp?v=20260830-2"
-              blurredSrc="/sources/statue for download (blured).webp?v=20260830-3"
-              width={745}
-              height={758}
+              sharpSrc="/sources/statue for download.webp?v=20260831-statues"
+              blurredSrc="/sources/statue for download (blured).webp?v=20260831-statues"
+              width={900}
+              height={800}
               alt="Download"
               targets={downloadPlans.map((plan) => `plan-${plan.id}`)}
             />
@@ -156,10 +156,10 @@ export default function HomePage() {
             <PairedSceneVisual
               scene="support"
               className="support-bg-img section-bg-img"
-              sharpSrc="/sources/statue for support.webp?v=20260830-2"
-              blurredSrc="/sources/statue for support (blured).webp?v=20260830-3"
-              width={958}
-              height={715}
+              sharpSrc="/sources/statue for support.webp?v=20260831-statues"
+              blurredSrc="/sources/statue for support (blured).webp?v=20260831-statues"
+              width={1050}
+              height={800}
               alt="Support"
               targets={supportMethods.map((method) => `support-${method.id}`)}
             />

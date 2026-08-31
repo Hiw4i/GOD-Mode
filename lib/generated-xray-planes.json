@@ -1,22 +1,22 @@
 {
   "features-title": {
-    "width": 2536,
-    "height": 1309,
+    "width": 2555,
+    "height": 1313,
     "contentBox": {
       "x": 540,
       "y": 540,
-      "width": 1456,
-      "height": 229
+      "width": 1475,
+      "height": 233
     }
   },
   "download-title": {
-    "width": 2492,
-    "height": 1309,
+    "width": 2715,
+    "height": 1313,
     "contentBox": {
       "x": 540,
       "y": 540,
-      "width": 1412,
-      "height": 229
+      "width": 1635,
+      "height": 233
     }
   }
 }

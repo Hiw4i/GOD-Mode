@@ -50,7 +50,7 @@
 }
 
 @media (max-width: 680px) {
-    .how-it-works { min-height: 0; content-visibility: visible; }
+    .how-it-works { min-height: 0; }
     .features-stage {
         position: relative;
         top: auto;
@@ -65,7 +65,7 @@
     .features-stage::after { display: none; }
     .how-it-works-content { position: relative; inset: auto; }
     .hiw-bg-text { top: 18rem; font-size: clamp(4.5rem, 22vw, 7.8rem); }
-    .hiw-bg-label { bottom: calc(100% + 30rem); font-size: 0.45rem; letter-spacing: 1.5px; }
+    .hiw-bg-label { top: 2rem; bottom: auto; font-size: 0.45rem; letter-spacing: 1.5px; }
     .download-bg-label, .support-bg-label { bottom: calc(100% + 1.1rem); }
     .hiw-bg-img { top: 56rem; width: clamp(320px, 92vw, 460px); }
     .download-bg-img { bottom: 9rem; }

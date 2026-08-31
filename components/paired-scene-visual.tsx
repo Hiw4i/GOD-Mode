@@ -67,8 +67,6 @@ export function XrayPlane({ id, scene, sharpSrc, blurredSrc, width, height, cont
         "--xray-plane-left": `${(-contentBox.x / contentBox.width) * 100}%`,
       } as CSSProperties)
     : { aspectRatio: `${width} / ${height}` };
-  const deferImages = scene !== "features";
-
   return (
     <div
       className={`xray-plane paired-scene-visual ${className}`}
@@ -96,8 +94,8 @@ export function XrayPlane({ id, scene, sharpSrc, blurredSrc, width, height, cont
           <PlaneMask id={sharpMaskId} layer="sharp" width={width} height={height} planeId={id} targets={targets} />
           <PlaneMask id={blurMaskId} layer="blur" width={width} height={height} planeId={id} targets={targets} />
         </defs>
-        <image className="paired-scene-sharp" data-paired-image="sharp" data-paired-src={deferImages ? sharpSrc : undefined} href={deferImages ? undefined : sharpSrc} x="0" y="0" width={width} height={height} preserveAspectRatio="none" mask={`url(#${sharpMaskId})`} />
-        <image className="paired-scene-blur" data-paired-image="blur" data-paired-src={deferImages ? blurredSrc : undefined} href={deferImages ? undefined : blurredSrc} x="0" y="0" width={width} height={height} preserveAspectRatio="none" mask={`url(#${blurMaskId})`} />
+        <image className="paired-scene-sharp" data-paired-image="sharp" href={sharpSrc} x="0" y="0" width={width} height={height} preserveAspectRatio="none" mask={`url(#${sharpMaskId})`} />
+        <image className="paired-scene-blur" data-paired-image="blur" href={blurredSrc} x="0" y="0" width={width} height={height} preserveAspectRatio="none" mask={`url(#${blurMaskId})`} />
       </svg>
     </div>
   );

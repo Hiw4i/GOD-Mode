@@ -2,6 +2,36 @@
 
 import { useEffect } from "react";
 
+const PARALLAX_CONFIG = {
+  features: {
+    visualDistance: -242,
+    textDistance: -309,
+    labelDistance: { mobile: -10, desktop: -94 },
+    cardFrom: { mobile: 75, desktop: 112 },
+    cardTo: { mobile: -75, desktop: -701 },
+    cardIndexOffset: { mobile: 0, desktop: 5 },
+    scrub: 0.35,
+  },
+  download: {
+    visualFrom: 30,
+    visualTo: -40,
+    textFrom: 50,
+    textTo: -80,
+    scrub: 0.35,
+  },
+  support: {
+    visualFrom: 30,
+    visualTo: -40,
+    textFrom: 50,
+    textTo: -80,
+    scrub: 0.35,
+  },
+  hero: {
+    contentY: 0.45,
+    statueY: 0.2,
+  },
+} as const;
+
 function offsetWithin(element: HTMLElement, ancestor: HTMLElement) {
   let x = 0;
   let y = 0;
@@ -46,7 +76,7 @@ export function MotionRuntime() {
       ScrollTrigger.config({ ignoreMobileResize: true, limitCallbacks: true });
 
       const lenis = prefersReducedMotion || usesNativeMobileScroll ? null : new Lenis({
-        duration: 1,
+        duration: 0.8,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
         wheelMultiplier: 0.9,
@@ -160,29 +190,6 @@ export function MotionRuntime() {
 
       const scenes = Array.from(document.querySelectorAll<HTMLElement>("[data-mask-stage]"));
       const featuresStage = document.querySelector<HTMLElement>('[data-mask-stage="features"]');
-      const deferredPlanes = scenes.flatMap((scene) => Array.from(scene.querySelectorAll<HTMLElement>("[data-xray-plane]")))
-        .filter((plane) => plane.querySelector("[data-paired-src]"));
-      const loadDeferredPlane = (plane: HTMLElement) => {
-        plane.querySelectorAll<SVGImageElement>("[data-paired-src]").forEach((image) => {
-          const source = image.dataset.pairedSrc;
-          if (!source) return;
-          image.setAttribute("href", source);
-          delete image.dataset.pairedSrc;
-        });
-      };
-      let deferredPlaneObserver: IntersectionObserver | null = null;
-      if ("IntersectionObserver" in window) {
-        deferredPlaneObserver = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            loadDeferredPlane(entry.target as HTMLElement);
-            deferredPlaneObserver?.unobserve(entry.target);
-          });
-        }, { rootMargin: "125% 0px", threshold: 0 });
-        deferredPlanes.forEach((plane) => deferredPlaneObserver?.observe(plane));
-      } else {
-        deferredPlanes.forEach(loadDeferredPlane);
-      }
       const syncAll = () => {
         masksBySceneTarget.clear();
         scenes.forEach(syncScene);
@@ -208,8 +215,8 @@ export function MotionRuntime() {
             initialized = true;
             window.removeEventListener("scroll", initializeHeroParallax);
             gsap.timeline({ scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: true } })
-              .to(heroContent, { y: () => innerHeight * 0.45, opacity: 0, ease: "none" }, 0)
-              .to(heroStatue, { y: () => innerHeight * 0.2, ease: "none" }, 0);
+              .to(heroContent, { y: () => innerHeight * PARALLAX_CONFIG.hero.contentY, opacity: 0, ease: "none" }, 0)
+              .to(heroStatue, { y: () => innerHeight * PARALLAX_CONFIG.hero.statueY, ease: "none" }, 0);
             ScrollTrigger.refresh();
           };
           window.addEventListener("scroll", initializeHeroParallax, { passive: true });
@@ -230,22 +237,22 @@ export function MotionRuntime() {
               scrollTrigger: {
                 trigger: featuresSection,
                 start: "top top",
-                end: "bottom bottom",
-                scrub: 0.35,
+                end: "bottom top",
+                scrub: PARALLAX_CONFIG.features.scrub,
                 onToggle: ({ isActive }) => featuresStage.classList.toggle("motion-active", isActive),
               },
             });
-            const imageDistance = mobile ? -132 : -242;
-            const textDistance = -309;
+            const imageDistance = mobile ? -132 : PARALLAX_CONFIG.features.visualDistance;
+            const textDistance = PARALLAX_CONFIG.features.textDistance;
             if (visual) timeline.to(visual, { y: imageDistance, ease: "none" }, 0);
             if (text) timeline.to(text, { y: textDistance, ease: "none" }, 0);
-            if (label) timeline.to(label, { y: mobile ? -10 : -94, ease: "none" }, 0);
+            if (label) timeline.to(label, { y: mobile ? PARALLAX_CONFIG.features.labelDistance.mobile : PARALLAX_CONFIG.features.labelDistance.desktop, ease: "none" }, 0);
 
             cards.forEach((card, index) => {
               const speed = Number(card.dataset.speed ?? 1);
               const adjusted = mobile ? speed - 0.5 : speed;
-              const from = (mobile ? 75 : 112) * adjusted + (mobile ? 0 : (index - 2.5) * 5);
-              const to = (mobile ? -75 : -701) * adjusted + (mobile ? 0 : (index - 2.5) * 5);
+              const from = PARALLAX_CONFIG.features.cardFrom[mobile ? "mobile" : "desktop"] * adjusted + (mobile ? 0 : (index - 2.5) * PARALLAX_CONFIG.features.cardIndexOffset.desktop);
+              const to = PARALLAX_CONFIG.features.cardTo[mobile ? "mobile" : "desktop"] * adjusted + (mobile ? 0 : (index - 2.5) * PARALLAX_CONFIG.features.cardIndexOffset.desktop);
               const targetId = card.dataset.maskTarget ?? card.dataset.maskLink;
               timeline.fromTo(card, { y: from }, { y: to, ease: "none" }, 0);
               if (!targetId) return;
@@ -268,24 +275,25 @@ export function MotionRuntime() {
           if (!section) return;
           const visual = section.querySelector<HTMLElement>('[data-xray-motion="visual"]');
           const text = section.querySelector<HTMLElement>("[data-parallax-text]");
+          const config = name === "download" ? PARALLAX_CONFIG.download : PARALLAX_CONFIG.support;
           const timeline = gsap.timeline({
             scrollTrigger: {
               trigger: section,
               start: "top bottom",
               end: "bottom top",
-              scrub: 0.35,
+              scrub: config.scrub,
               onToggle: ({ isActive }) => section.classList.toggle("motion-active", isActive),
             },
           });
-          if (visual) timeline.fromTo(visual, { y: 30 }, { y: -40, ease: "none" }, 0);
-          if (text) timeline.fromTo(text, { y: 50 }, { y: -80, ease: "none" }, 0);
+          if (visual) timeline.fromTo(visual, { y: config.visualFrom }, { y: config.visualTo, ease: "none" }, 0);
+          if (text) timeline.fromTo(text, { y: config.textFrom }, { y: config.textTo, ease: "none" }, 0);
 
           section.querySelectorAll<HTMLElement>("[data-mask-target]").forEach((target) => {
             const targetId = target.dataset.maskTarget;
             if (!targetId) return;
             getTargetMasks(name, targetId).forEach((maskState) => {
-              const planeFrom = maskState.motionChannel === "visual" ? 30 : maskState.motionChannel === "text" ? 50 : 0;
-              const planeTo = maskState.motionChannel === "visual" ? -40 : maskState.motionChannel === "text" ? -80 : 0;
+              const planeFrom = maskState.motionChannel === "visual" ? config.visualFrom : maskState.motionChannel === "text" ? config.textFrom : 0;
+              const planeTo = maskState.motionChannel === "visual" ? config.visualTo : maskState.motionChannel === "text" ? config.textTo : 0;
               timeline.fromTo(maskState.scrollGroup, { y: -planeFrom }, { y: -planeTo, ease: "none" }, 0);
             });
           });
@@ -313,27 +321,12 @@ export function MotionRuntime() {
         }
       });
 
-      let revealObserver: IntersectionObserver | null = null;
       let nearObserver: IntersectionObserver | null = null;
-      if (prefersReducedMotion) {
-        document.querySelectorAll(".fade-in").forEach((element) => element.classList.add("visible"));
-      } else {
-        revealObserver = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("visible");
-              revealObserver?.unobserve(entry.target);
-            }
-          });
-        }, { rootMargin: "0px 0px -8%", threshold: 0.08 });
-        document.querySelectorAll(".fade-in").forEach((element) => revealObserver?.observe(element));
-
+      if (!prefersReducedMotion) {
         nearObserver = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
             entry.target.classList.toggle("motion-near", entry.isIntersecting);
             if (entry.isIntersecting && entry.target instanceof HTMLElement && entry.target.hasAttribute("data-mask-stage")) {
-              // content-visibility can resolve the real card positions only when
-              // the scene approaches the viewport. Re-read the mask geometry then.
               scheduleSync();
             }
           });
@@ -406,7 +399,14 @@ export function MotionRuntime() {
       }, { rootMargin: "-35% 0px -55%", threshold: [0, 0.1, 0.5] });
       document.querySelectorAll("section[id]").forEach((section) => sectionObserver.observe(section));
 
-      const resizeObserver = new ResizeObserver(scheduleSync);
+      let resizeFrame = 0;
+      const resizeObserver = new ResizeObserver(() => {
+        if (resizeFrame) return;
+        resizeFrame = window.requestAnimationFrame(() => {
+          resizeFrame = 0;
+          scheduleSync();
+        });
+      });
       scenes.forEach((scene) => {
         resizeObserver.observe(scene);
         scene.querySelectorAll<HTMLElement>("[data-xray-plane], [data-mask-target]").forEach((element) => resizeObserver.observe(element));
@@ -447,10 +447,9 @@ export function MotionRuntime() {
         document.documentElement.removeAttribute("data-mask-debug");
         ScrollTrigger.removeEventListener("refreshInit", syncAll);
         if (syncFrame) window.cancelAnimationFrame(syncFrame);
+        if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
         if (resumeFrame) window.cancelAnimationFrame(resumeFrame);
         resizeObserver.disconnect();
-        deferredPlaneObserver?.disconnect();
-        revealObserver?.disconnect();
         nearObserver?.disconnect();
         sectionObserver.disconnect();
         maskStates.clear();

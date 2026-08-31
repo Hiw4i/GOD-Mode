@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
+import { SiteImageLoader } from "@/components/site-image-loader";
 import { APP_VERSION } from "@/lib/version";
 import "lenis/dist/lenis.css";
 import "./globals.css";
@@ -49,7 +50,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${jetBrainsMono.variable}`} data-app-version={APP_VERSION}>
-      <body>{children}</body>
+      <body><SiteImageLoader />{children}</body>
     </html>
   );
 }

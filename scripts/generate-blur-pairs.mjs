@@ -6,6 +6,7 @@ const projectRoot = process.cwd();
 const sourceRoot = path.join(projectRoot, "sources");
 const publicRoot = path.join(projectRoot, "public", "sources");
 const manifestPath = path.join(projectRoot, "lib", "generated-xray-planes.json");
+const spaceGroteskFont = path.join(projectRoot, "app", "fonts", "space-grotesk-variable.ttf");
 process.env.FONTCONFIG_FILE = path.join(projectRoot, "scripts", "fontconfig.xml");
 process.env.FONTCONFIG_PATH = path.join(projectRoot, "scripts");
 const { default: sharp } = await import("sharp");
@@ -22,17 +23,30 @@ const iconPlanes = [
 ];
 
 async function generateHero() {
-  const input = path.join(sourceRoot, "statue.png");
-  const info = await metadata(input, "hero statue");
-  const output = await sharp(input)
-    .webp({ quality: 88, alphaQuality: 100, effort: 6, smartSubsample: true })
-    .toBuffer();
-  await Promise.all([
-    assertGeometry(output, info.width, info.height, "hero statue"),
-    assertAlphaPreserved(input, output, "hero statue"),
+  const sharpInput = path.join(sourceRoot, "statue for hero.png");
+  const blurInput = path.join(sourceRoot, "statue for hero (blured).png");
+  const [sharpMeta, blurMeta] = await Promise.all([
+    metadata(sharpInput, "hero statue sharp"),
+    metadata(blurInput, "hero statue blur"),
   ]);
-  await writeFile(path.join(publicRoot, "statue.webp"), output);
-  console.log(`✓ hero statue: ${info.width}x${info.height}, webp=${output.byteLength} bytes`);
+  if (sharpMeta.width !== blurMeta.width || sharpMeta.height !== blurMeta.height) {
+    throw new Error(`Geometry mismatch for "hero statue": sharp=${sharpMeta.width}x${sharpMeta.height}, blur=${blurMeta.width}x${blurMeta.height}.`);
+  }
+  const [sharpOutput, blurOutput] = await Promise.all([
+    sharp(sharpInput).webp({ quality: 88, alphaQuality: 100, effort: 6, smartSubsample: true }).toBuffer(),
+    sharp(blurInput).webp({ quality: 82, alphaQuality: 100, effort: 6, smartSubsample: true }).toBuffer(),
+  ]);
+  await Promise.all([
+    assertGeometry(sharpOutput, sharpMeta.width, sharpMeta.height, "hero statue sharp"),
+    assertGeometry(blurOutput, sharpMeta.width, sharpMeta.height, "hero statue blur"),
+    assertAlphaPreserved(sharpInput, sharpOutput, "hero statue sharp"),
+    assertAlphaPreserved(blurInput, blurOutput, "hero statue blur"),
+  ]);
+  await Promise.all([
+    writeFile(path.join(publicRoot, "statue for hero.webp"), sharpOutput),
+    writeFile(path.join(publicRoot, "statue for hero (blured).webp"), blurOutput),
+  ]);
+  console.log(`✓ hero statue: ${sharpMeta.width}x${sharpMeta.height}, sharp=${sharpOutput.byteLength} bytes, blur=${blurOutput.byteLength} bytes`);
 }
 
 function xml(value) {
@@ -85,27 +99,59 @@ async function generateTextPlane(definition) {
   const { name, text, letterSpacing } = definition;
   const fontSize = 320;
   const padding = 540;
-  const sourceSvg = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="5000" height="720"><text x="80" y="500" fill="#fff" font-family="Space Grotesk" font-size="${fontSize}" font-weight="700" letter-spacing="${letterSpacing}">${xml(text)}</text></svg>`);
-  const { info: tightInfo } = await sharp(sourceSvg, { density: 72 })
-    .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 1 })
+  const pangoLetterSpacing = Math.round(letterSpacing * 1024);
+  const textMarkup = `<span foreground="#ffffff" letter_spacing="${pangoLetterSpacing}">${xml(text)}</span>`;
+  const { data: tightPng, info: tightInfo } = await sharp({
+    text: {
+      text: textMarkup,
+      font: `Space Grotesk Bold ${fontSize}`,
+      fontfile: spaceGroteskFont,
+      dpi: 72,
+      rgba: true,
+    },
+  })
     .png()
     .toBuffer({ resolveWithObject: true });
+  if (name === "download-title" && tightInfo.width < 1550) {
+    throw new Error(`Space Grotesk was not applied to "${name}" (rendered width=${tightInfo.width}px).`);
+  }
   const width = tightInfo.width + padding * 2;
   const height = tightInfo.height + padding * 2;
-  const textX = 80 + (tightInfo.trimOffsetLeft ?? 0) + padding;
-  const textY = 500 + (tightInfo.trimOffsetTop ?? 0) + padding;
-  const renderTextSvg = (coreBlur) => {
-    const coreNode = coreBlur > 0 ? `<feGaussianBlur in="SourceGraphic" stdDeviation="${coreBlur}" result="core"/>` : "";
-    const coreResult = coreBlur > 0 ? "core" : "SourceGraphic";
-    const near = Math.hypot(32, coreBlur).toFixed(2);
-    const middle = Math.hypot(90, coreBlur).toFixed(2);
-    const far = Math.hypot(180, coreBlur).toFixed(2);
-    return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><defs><filter id="glow" x="-100%" y="-250%" width="300%" height="600%" color-interpolation-filters="sRGB">${coreNode}<feGaussianBlur in="SourceAlpha" stdDeviation="${far}" result="farBlur"/><feFlood flood-color="#fff" flood-opacity=".16" result="farColor"/><feComposite in="farColor" in2="farBlur" operator="in" result="farGlow"/><feGaussianBlur in="SourceAlpha" stdDeviation="${middle}" result="middleBlur"/><feFlood flood-color="#fff" flood-opacity=".32" result="middleColor"/><feComposite in="middleColor" in2="middleBlur" operator="in" result="middleGlow"/><feGaussianBlur in="SourceAlpha" stdDeviation="${near}" result="nearBlur"/><feFlood flood-color="#fff" flood-opacity=".58" result="nearColor"/><feComposite in="nearColor" in2="nearBlur" operator="in" result="nearGlow"/><feMerge><feMergeNode in="farGlow"/><feMergeNode in="middleGlow"/><feMergeNode in="nearGlow"/><feMergeNode in="${coreResult}"/></feMerge></filter></defs><text x="${textX}" y="${textY}" fill="#fff" font-family="Space Grotesk" font-size="${fontSize}" font-weight="700" letter-spacing="${letterSpacing}" filter="url(#glow)">${xml(text)}</text></svg>`);
+  const blank = { create: { width, height, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } };
+  const basePng = await sharp(blank)
+    .composite([{ input: tightPng, left: padding, top: padding }])
+    .png()
+    .toBuffer();
+  const makeGlow = async (radius, opacity) => {
+    const blurredAlpha = await sharp(basePng)
+      .blur(Math.min(radius, 100))
+      .extractChannel("alpha")
+      .raw()
+      .toBuffer();
+    const alpha = Buffer.allocUnsafe(blurredAlpha.length);
+    for (let index = 0; index < blurredAlpha.length; index += 1) {
+      alpha[index] = Math.round(blurredAlpha[index] * opacity);
+    }
+    return sharp({ create: { width, height, channels: 3, background: "#fff" } })
+      .joinChannel(alpha, { raw: { width, height, channels: 1 } })
+      .png()
+      .toBuffer();
   };
-  const sharpPng = await sharp(renderTextSvg(0)).png().toBuffer();
+  const renderTextPlane = async (coreBlur) => {
+    const [farGlow, middleGlow, nearGlow, core] = await Promise.all([
+      makeGlow(Math.hypot(180, coreBlur), 0.035),
+      makeGlow(Math.hypot(90, coreBlur), 0.1),
+      makeGlow(Math.hypot(32, coreBlur), 0.28),
+      coreBlur > 0 ? sharp(basePng).blur(coreBlur).png().toBuffer() : basePng,
+    ]);
+    return sharp(blank)
+      .composite([{ input: farGlow }, { input: middleGlow }, { input: nearGlow }, { input: core }])
+      .png()
+      .toBuffer();
+  };
+  const [sharpPng, blurredPng] = await Promise.all([renderTextPlane(0), renderTextPlane(18)]);
   const composedAlpha = await sharp(sharpPng).ensureAlpha().extractChannel("alpha").stats();
   if (composedAlpha.channels[0].min === 255) throw new Error(`${name} glow unexpectedly filled the whole alpha canvas.`);
-  const blurredPng = await sharp(renderTextSvg(18)).png().toBuffer();
   await Promise.all([
     assertTransparentFrame(sharpPng, `${name} sharp`),
     assertTransparentFrame(blurredPng, `${name} blur`),
