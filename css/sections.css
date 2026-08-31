@@ -117,8 +117,6 @@ nav {
     height: auto;
     z-index: 2;
     pointer-events: none;
-    mask-image: linear-gradient(to bottom, transparent 0%, black 4%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 4%);
 }
 
 /* ===== HOW IT WORKS (FEATURES) ===== */
@@ -224,8 +222,6 @@ nav {
     z-index: 4;
     pointer-events: none;
     opacity: .96;
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 72%, transparent 96%);
-    mask-image: linear-gradient(to bottom, black 0%, black 72%, transparent 96%);
 }
 
 .how-it-works-content {

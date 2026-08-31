@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import type { ResponsiveImageVariant } from "@/lib/responsive-images";
 
 export type XrayMotionChannel = "visual" | "text" | "static";
 
@@ -12,8 +13,8 @@ export interface XrayContentBox {
 export interface XrayPlaneDefinition {
   id: string;
   scene: string;
-  sharpSrc: string;
-  blurredSrc: string;
+  sharpSources: readonly ResponsiveImageVariant[];
+  blurredSources: readonly ResponsiveImageVariant[];
   width: number;
   height: number;
   contentBox?: XrayContentBox;
@@ -56,7 +57,7 @@ function PlaneMask({ id, layer, width, height, planeId, targets }: MaskLayerProp
   );
 }
 
-export function XrayPlane({ id, scene, sharpSrc, blurredSrc, width, height, contentBox, targets, motionChannel, className, alt = "", centered = false }: XrayPlaneProps) {
+export function XrayPlane({ id, scene, sharpSources, blurredSources, width, height, contentBox, targets, motionChannel, className, alt = "", centered = false }: XrayPlaneProps) {
   const safeId = safeSvgId(id);
   const sharpMaskId = `xray-sharp-mask-${safeId}`;
   const blurMaskId = `xray-blur-mask-${safeId}`;
@@ -94,9 +95,10 @@ export function XrayPlane({ id, scene, sharpSrc, blurredSrc, width, height, cont
           <PlaneMask id={sharpMaskId} layer="sharp" width={width} height={height} planeId={id} targets={targets} />
           <PlaneMask id={blurMaskId} layer="blur" width={width} height={height} planeId={id} targets={targets} />
         </defs>
-        <image className="paired-scene-sharp" data-paired-image="sharp" href={sharpSrc} x="0" y="0" width={width} height={height} preserveAspectRatio="none" mask={`url(#${sharpMaskId})`} />
-        <image className="paired-scene-blur" data-paired-image="blur" href={blurredSrc} x="0" y="0" width={width} height={height} preserveAspectRatio="none" mask={`url(#${blurMaskId})`} />
+        <image className="paired-scene-sharp" data-paired-image="sharp" data-paired-sources={JSON.stringify(sharpSources)} x="0" y="0" width={width} height={height} preserveAspectRatio="none" mask={`url(#${sharpMaskId})`} />
+        <image className="paired-scene-blur" data-paired-image="blur" data-paired-sources={JSON.stringify(blurredSources)} x="0" y="0" width={width} height={height} preserveAspectRatio="none" mask={`url(#${blurMaskId})`} />
       </svg>
+      <canvas className="paired-scene-webgl" data-scene-webgl={id} aria-hidden="true" />
     </div>
   );
 }

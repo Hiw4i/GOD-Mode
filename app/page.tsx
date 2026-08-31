@@ -8,10 +8,50 @@ import { PairedSceneVisual, XrayPlane } from "@/components/paired-scene-visual";
 import { SpotsCounter } from "@/components/spots-counter";
 import { ambientTracks, downloadPlans, features, supportMethods } from "@/lib/content";
 import { APP_VERSION_LABEL } from "@/lib/version";
+import { variantSrcSet, type ResponsiveImageVariant } from "@/lib/responsive-images";
+import imageAssets from "@/lib/generated-image-assets.json";
 import xrayPlanes from "@/lib/generated-xray-planes.json";
 
 const featuresTitlePlane = xrayPlanes["features-title"];
 const downloadTitlePlane = xrayPlanes["download-title"];
+const sceneAssets = imageAssets.planes;
+
+function ResponsivePicture({
+  variants,
+  className,
+  alt,
+  sizes,
+  loading = "lazy",
+  fetchPriority,
+  critical = false,
+}: {
+  variants: readonly ResponsiveImageVariant[];
+  className: string;
+  alt: string;
+  sizes: string;
+  loading?: "eager" | "lazy";
+  fetchPriority?: "high" | "low" | "auto";
+  critical?: boolean;
+}) {
+  const fallback = variants.at(-1)!;
+  return (
+    <picture>
+      <source type="image/webp" srcSet={variantSrcSet(variants)} sizes={sizes} />
+      <Image
+        className={className}
+        src={fallback.src}
+        alt={alt}
+        width={fallback.width}
+        height={fallback.height}
+        sizes={sizes}
+        loading={loading}
+        fetchPriority={fetchPriority}
+        data-site-critical={critical ? "hero" : undefined}
+        unoptimized
+      />
+    </picture>
+  );
+}
 
 function AppleIcon() {
   return (
@@ -22,12 +62,12 @@ function AppleIcon() {
 }
 
 function FloatingFeatureIcons({ blurred = false }: { blurred?: boolean }) {
-  const suffix = blurred ? " (blured).webp" : ".jpg";
+  const layer = blurred ? "blurred" : "sharp";
   return (
     <div className={`floating-icons${blurred ? " floating-icons--blur" : ""}`} data-icon-xray={blurred ? "blur" : "sharp"} aria-hidden="true">
-      <Image className="float-icon float-icon--youtube" src={`/sources/youtube${suffix}`} alt="" width={98} height={98} />
-      <Image className="float-icon float-icon--tiktok" src={`/sources/tiktok${suffix}`} alt="" width={84} height={84} />
-      <Image className="float-icon float-icon--instagram" src={`/sources/instagram${suffix}`} alt="" width={66} height={66} />
+      <ResponsivePicture variants={imageAssets.icons.youtube[layer]} className="float-icon float-icon--youtube" alt="" sizes="98px" />
+      <ResponsivePicture variants={imageAssets.icons.tiktok[layer]} className="float-icon float-icon--tiktok" alt="" sizes="84px" />
+      <ResponsivePicture variants={imageAssets.icons.instagram[layer]} className="float-icon float-icon--instagram" alt="" sizes="66px" />
     </div>
   );
 }
@@ -51,7 +91,15 @@ export default function HomePage() {
             <h1 className="hero-title">GOD MODE</h1>
           </div>
           <div className="hero-statue-wrap" aria-hidden="true">
-            <Image className="hero-statue" src="/sources/statue for hero.webp?v=20260831-statues" alt="" width={4264} height={2400} preload sizes="140vw" />
+            <ResponsivePicture
+              variants={imageAssets.hero.sharp}
+              className="hero-statue"
+              alt=""
+              sizes="(max-width: 410px) 310vw, (max-width: 680px) 290vw, 140vw"
+              loading="eager"
+              fetchPriority="high"
+              critical
+            />
           </div>
         </section>
 
@@ -62,16 +110,16 @@ export default function HomePage() {
               <div className="hiw-bg-text" data-parallax-text>
                 <span className="xray-text-word">
                   <span className="xray-text-proxy">FEATURES</span>
-                  <XrayPlane id="features-title" scene="features" className="xray-text-plane" sharpSrc="/sources/features-title.webp?v=20260831-fontfix" blurredSrc="/sources/features-title (blured).webp?v=20260831-fontfix" width={featuresTitlePlane.width} height={featuresTitlePlane.height} contentBox={featuresTitlePlane.contentBox} targets={features.map((feature) => feature.id)} motionChannel="text" />
+                  <XrayPlane id="features-title" scene="features" className="xray-text-plane" sharpSources={sceneAssets["features-title"].sharp} blurredSources={sceneAssets["features-title"].blurred} width={featuresTitlePlane.width} height={featuresTitlePlane.height} contentBox={featuresTitlePlane.contentBox} targets={features.map((feature) => feature.id)} motionChannel="text" />
                 </span>
               </div>
               <PairedSceneVisual
                 scene="features"
                 className="hiw-bg-img"
-                sharpSrc="/sources/statue for features.webp?v=20260831-statues"
-                blurredSrc="/sources/statue for features (blured).webp?v=20260831-statues"
-                width={719}
-                height={1080}
+                sharpSources={sceneAssets["features-statue"].sharp}
+                blurredSources={sceneAssets["features-statue"].blurred}
+                width={sceneAssets["features-statue"].width}
+                height={sceneAssets["features-statue"].height}
                 alt="Features"
                 targets={features.map((feature) => feature.id)}
               />
@@ -117,16 +165,16 @@ export default function HomePage() {
               <div className="download-bg-label section-bg-label">Prove your commitment to change. Lifetime focus costs less than 3 cups of coffee.</div>
               <span className="xray-text-word">
                 <span className="xray-text-proxy">DOWNLOAD</span>
-                <XrayPlane id="download-title" scene="download" className="xray-text-plane" sharpSrc="/sources/download-title.webp?v=20260831-fontfix" blurredSrc="/sources/download-title (blured).webp?v=20260831-fontfix" width={downloadTitlePlane.width} height={downloadTitlePlane.height} contentBox={downloadTitlePlane.contentBox} targets={downloadPlans.map((plan) => `plan-${plan.id}`)} motionChannel="text" />
+                <XrayPlane id="download-title" scene="download" className="xray-text-plane" sharpSources={sceneAssets["download-title"].sharp} blurredSources={sceneAssets["download-title"].blurred} width={downloadTitlePlane.width} height={downloadTitlePlane.height} contentBox={downloadTitlePlane.contentBox} targets={downloadPlans.map((plan) => `plan-${plan.id}`)} motionChannel="text" />
               </span>
             </div>
             <PairedSceneVisual
               scene="download"
               className="download-bg-img section-bg-img"
-              sharpSrc="/sources/statue for download.webp?v=20260831-statues"
-              blurredSrc="/sources/statue for download (blured).webp?v=20260831-statues"
-              width={900}
-              height={800}
+              sharpSources={sceneAssets["download-statue"].sharp}
+              blurredSources={sceneAssets["download-statue"].blurred}
+              width={sceneAssets["download-statue"].width}
+              height={sceneAssets["download-statue"].height}
               alt="Download"
               targets={downloadPlans.map((plan) => `plan-${plan.id}`)}
             />
@@ -156,10 +204,10 @@ export default function HomePage() {
             <PairedSceneVisual
               scene="support"
               className="support-bg-img section-bg-img"
-              sharpSrc="/sources/statue for support.webp?v=20260831-statues"
-              blurredSrc="/sources/statue for support (blured).webp?v=20260831-statues"
-              width={1050}
-              height={800}
+              sharpSources={sceneAssets["support-statue"].sharp}
+              blurredSources={sceneAssets["support-statue"].blurred}
+              width={sceneAssets["support-statue"].width}
+              height={sceneAssets["support-statue"].height}
               alt="Support"
               targets={supportMethods.map((method) => `support-${method.id}`)}
             />

@@ -1,4 +1,5 @@
-import { copyFile, mkdir, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import process from "node:process";
 
@@ -6,10 +7,14 @@ const projectRoot = process.cwd();
 const sourceRoot = path.join(projectRoot, "sources");
 const publicRoot = path.join(projectRoot, "public", "sources");
 const manifestPath = path.join(projectRoot, "lib", "generated-xray-planes.json");
+const assetManifestPath = path.join(projectRoot, "lib", "generated-image-assets.json");
 const spaceGroteskFont = path.join(projectRoot, "app", "fonts", "space-grotesk-variable.ttf");
 process.env.FONTCONFIG_FILE = path.join(projectRoot, "scripts", "fontconfig.xml");
 process.env.FONTCONFIG_PATH = path.join(projectRoot, "scripts");
 const { default: sharp } = await import("sharp");
+const packageJson = JSON.parse(await readFile(path.join(projectRoot, "package.json"), "utf8"));
+const assetVersion = packageJson.version;
+const maximumAssetWidth = 1920;
 
 const statuePairs = ["statue for features", "statue for download", "statue for support"];
 const textPlanes = [
@@ -22,6 +27,57 @@ const iconPlanes = [
   { name: "instagram", displayWidth: 66 },
 ];
 
+function publicAssetUrl(filename, content) {
+  const digest = createHash("sha256").update(content).digest("hex").slice(0, 10);
+  return `/sources/${encodeURIComponent(filename)}?v=${assetVersion}-${digest}`;
+}
+
+function responsiveWidths(sourceWidth, preferredWidths) {
+  const maximumWidth = Math.min(sourceWidth, maximumAssetWidth);
+  return [...new Set([...preferredWidths.filter((width) => width < maximumWidth), maximumWidth])].sort((a, b) => a - b);
+}
+
+async function applyVerticalAlphaFade(input, width, height, stops) {
+  const gradientStops = stops
+    .map(({ offset, opacity }) => `<stop offset="${offset}%" stop-color="white" stop-opacity="${opacity}"/>`)
+    .join("");
+  const alphaMask = Buffer.from(`<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">${gradientStops}</linearGradient></defs><rect width="100%" height="100%" fill="url(#fade)"/></svg>`);
+  return sharp(input).ensureAlpha().composite([{ input: alphaMask, blend: "dest-in" }]).png().toBuffer();
+}
+
+async function encodePairVariants({ basename, sharpInput, blurredInput, sourceWidth, sourceHeight, widths, sharpQuality, blurredQuality, requireAlpha = true }) {
+  const maximumWidth = Math.max(...widths);
+  const variants = { sharp: [], blurred: [] };
+
+  for (const width of widths) {
+    const height = Math.round((sourceHeight * width) / sourceWidth);
+    const suffix = width === maximumWidth ? "" : `-w${width}`;
+    const sharpFilename = `${basename}${suffix}.webp`;
+    const blurredFilename = `${basename} (blured)${suffix}.webp`;
+    const resize = width === sourceWidth ? undefined : { width, height, fit: "fill" };
+    const sharpPipeline = sharp(sharpInput);
+    const blurredPipeline = sharp(blurredInput);
+    if (resize) {
+      sharpPipeline.resize(resize);
+      blurredPipeline.resize(resize);
+    }
+    const [sharpOutput, blurredOutput] = await Promise.all([
+      sharpPipeline.webp({ quality: sharpQuality, alphaQuality: 100, effort: 6, smartSubsample: true }).toBuffer(),
+      blurredPipeline.webp({ quality: blurredQuality, alphaQuality: 100, effort: 6, smartSubsample: true }).toBuffer(),
+    ]);
+    await Promise.all([
+      assertGeometry(sharpOutput, width, height, `${basename} sharp ${width}`, requireAlpha),
+      assertGeometry(blurredOutput, width, height, `${basename} blur ${width}`, requireAlpha),
+      writeFile(path.join(publicRoot, sharpFilename), sharpOutput),
+      writeFile(path.join(publicRoot, blurredFilename), blurredOutput),
+    ]);
+    variants.sharp.push({ src: publicAssetUrl(sharpFilename, sharpOutput), width, height, bytes: sharpOutput.byteLength });
+    variants.blurred.push({ src: publicAssetUrl(blurredFilename, blurredOutput), width, height, bytes: blurredOutput.byteLength });
+  }
+
+  return variants;
+}
+
 async function generateHero() {
   const sharpInput = path.join(sourceRoot, "statue for hero.png");
   const blurInput = path.join(sourceRoot, "statue for hero (blured).png");
@@ -32,21 +88,24 @@ async function generateHero() {
   if (sharpMeta.width !== blurMeta.width || sharpMeta.height !== blurMeta.height) {
     throw new Error(`Geometry mismatch for "hero statue": sharp=${sharpMeta.width}x${sharpMeta.height}, blur=${blurMeta.width}x${blurMeta.height}.`);
   }
-  const [sharpOutput, blurOutput] = await Promise.all([
-    sharp(sharpInput).webp({ quality: 88, alphaQuality: 100, effort: 6, smartSubsample: true }).toBuffer(),
-    sharp(blurInput).webp({ quality: 82, alphaQuality: 100, effort: 6, smartSubsample: true }).toBuffer(),
+  const widths = responsiveWidths(sharpMeta.width, [960, 1280, 1600]);
+  const heroFade = [{ offset: 0, opacity: 0 }, { offset: 4, opacity: 1 }, { offset: 100, opacity: 1 }];
+  const [sharpFaded, blurredFaded] = await Promise.all([
+    applyVerticalAlphaFade(sharpInput, sharpMeta.width, sharpMeta.height, heroFade),
+    applyVerticalAlphaFade(blurInput, blurMeta.width, blurMeta.height, heroFade),
   ]);
-  await Promise.all([
-    assertGeometry(sharpOutput, sharpMeta.width, sharpMeta.height, "hero statue sharp"),
-    assertGeometry(blurOutput, sharpMeta.width, sharpMeta.height, "hero statue blur"),
-    assertAlphaPreserved(sharpInput, sharpOutput, "hero statue sharp"),
-    assertAlphaPreserved(blurInput, blurOutput, "hero statue blur"),
-  ]);
-  await Promise.all([
-    writeFile(path.join(publicRoot, "statue for hero.webp"), sharpOutput),
-    writeFile(path.join(publicRoot, "statue for hero (blured).webp"), blurOutput),
-  ]);
-  console.log(`✓ hero statue: ${sharpMeta.width}x${sharpMeta.height}, sharp=${sharpOutput.byteLength} bytes, blur=${blurOutput.byteLength} bytes`);
+  const variants = await encodePairVariants({
+    basename: "statue for hero",
+    sharpInput: sharpFaded,
+    blurredInput: blurredFaded,
+    sourceWidth: sharpMeta.width,
+    sourceHeight: sharpMeta.height,
+    widths,
+    sharpQuality: 88,
+    blurredQuality: 82,
+  });
+  console.log(`✓ hero statue: ${widths.join(", ")}px variants (source ${sharpMeta.width}x${sharpMeta.height})`);
+  return { width: Math.max(...widths), height: variants.sharp.at(-1).height, ...variants };
 }
 
 function xml(value) {
@@ -65,14 +124,6 @@ async function assertGeometry(input, expectedWidth, expectedHeight, label, requi
     throw new Error(`Geometry mismatch for "${label}": expected=${expectedWidth}x${expectedHeight}, output=${result.width}x${result.height}.`);
   }
   if (requireAlpha && !result.hasAlpha) throw new Error(`"${label}" must preserve an alpha channel.`);
-}
-
-async function assertAlphaPreserved(source, encoded, label) {
-  const [sourceAlpha, encodedAlpha] = await Promise.all([
-    sharp(source).ensureAlpha().extractChannel("alpha").raw().toBuffer(),
-    sharp(encoded).ensureAlpha().extractChannel("alpha").raw().toBuffer(),
-  ]);
-  if (!sourceAlpha.equals(encodedAlpha)) throw new Error(`The WebP encoder changed the alpha channel for "${label}".`);
 }
 
 async function assertTransparentFrame(input, label, maximumAlpha = 2) {
@@ -156,20 +207,34 @@ async function generateTextPlane(definition) {
     assertTransparentFrame(sharpPng, `${name} sharp`),
     assertTransparentFrame(blurredPng, `${name} blur`),
   ]);
-  const [sharpWebp, blurredWebp] = await Promise.all([
-    sharp(sharpPng).webp({ quality: 92, alphaQuality: 100, effort: 6 }).toBuffer(),
-    sharp(blurredPng).webp({ quality: 84, alphaQuality: 100, effort: 6 }).toBuffer(),
-  ]);
-  await Promise.all([
-    assertGeometry(sharpWebp, width, height, `${name} sharp`),
-    assertGeometry(blurredWebp, width, height, `${name} blur`),
-  ]);
-  await Promise.all([
-    writeFile(path.join(publicRoot, `${name}.webp`), sharpWebp),
-    writeFile(path.join(publicRoot, `${name} (blured).webp`), blurredWebp),
-  ]);
-  console.log(`✓ ${name}: ${width}x${height}, sharp=${sharpWebp.byteLength} bytes, blur=${blurredWebp.byteLength} bytes`);
-  return { width, height, contentBox: { x: padding, y: padding, width: tightInfo.width, height: tightInfo.height } };
+  const widths = responsiveWidths(width, [960, 1440]);
+  const variants = await encodePairVariants({
+    basename: name,
+    sharpInput: sharpPng,
+    blurredInput: blurredPng,
+    sourceWidth: width,
+    sourceHeight: height,
+    widths,
+    sharpQuality: 92,
+    blurredQuality: 84,
+  });
+  const outputWidth = Math.max(...widths);
+  const scale = outputWidth / width;
+  const outputHeight = variants.sharp.at(-1).height;
+  console.log(`✓ ${name}: ${widths.join(", ")}px variants (source ${width}x${height})`);
+  return {
+    plane: {
+      width: outputWidth,
+      height: outputHeight,
+      contentBox: {
+        x: Math.round(padding * scale),
+        y: Math.round(padding * scale),
+        width: Math.round(tightInfo.width * scale),
+        height: Math.round(tightInfo.height * scale),
+      },
+    },
+    assets: { width: outputWidth, height: outputHeight, ...variants },
+  };
 }
 
 async function generateIconPlane(definition) {
@@ -177,41 +242,100 @@ async function generateIconPlane(definition) {
   const info = await metadata(input, definition.name);
   const sourceScale = info.width / definition.displayWidth;
   const blurRadius = Math.max(0.3, Math.min(100, 7 * sourceScale));
-  const output = await sharp(input).blur(blurRadius).webp({ quality: 82, effort: 6 }).toBuffer();
-  await assertGeometry(output, info.width, info.height, `${definition.name} blur`, false);
-  await writeFile(path.join(publicRoot, `${definition.name} (blured).webp`), output);
-  console.log(`✓ ${definition.name}: ${info.width}x${info.height}, source blur=${blurRadius.toFixed(1)}px`);
+  const blurredInput = await sharp(input).blur(blurRadius).png().toBuffer();
+  const widths = responsiveWidths(Math.min(info.width, 256), [128]);
+  const variants = await encodePairVariants({
+    basename: definition.name,
+    sharpInput: input,
+    blurredInput,
+    sourceWidth: info.width,
+    sourceHeight: info.height,
+    widths,
+    sharpQuality: 88,
+    blurredQuality: 82,
+    requireAlpha: false,
+  });
+  console.log(`✓ ${definition.name}: ${widths.join(", ")}px variants, source blur=${blurRadius.toFixed(1)}px`);
+  return { width: Math.max(...widths), height: variants.sharp.at(-1).height, ...variants };
+}
+
+async function generateGlassNoise() {
+  const size = 128;
+  const pixels = Buffer.allocUnsafe(size * size * 4);
+  let seed = 0x6d2b79f5;
+  const random = () => {
+    seed ^= seed << 13;
+    seed ^= seed >>> 17;
+    seed ^= seed << 5;
+    return (seed >>> 0) / 0xffffffff;
+  };
+  for (let offset = 0; offset < pixels.length; offset += 4) {
+    const value = Math.round(82 + random() * 92);
+    pixels[offset] = value;
+    pixels[offset + 1] = value;
+    pixels[offset + 2] = value;
+    pixels[offset + 3] = Math.round(20 + random() * 18);
+  }
+  const output = await sharp(pixels, { raw: { width: size, height: size, channels: 4 } })
+    .webp({ lossless: true, effort: 6 })
+    .toBuffer();
+  await writeFile(path.join(publicRoot, "glass-noise.webp"), output);
+  console.log(`✓ glass noise: ${size}x${size}px (${output.byteLength} bytes)`);
 }
 
 await mkdir(publicRoot, { recursive: true });
-await generateHero();
+const assetManifest = {
+  hero: await generateHero(),
+  planes: {},
+  icons: {},
+};
 
 for (const basename of statuePairs) {
   const sharpInput = path.join(sourceRoot, `${basename}.png`);
   const blurInput = path.join(sourceRoot, `${basename} (blured).png`);
   const sharpPngOutput = path.join(publicRoot, `${basename}.png`);
-  const sharpWebpOutput = path.join(publicRoot, `${basename}.webp`);
-  const blurOutput = path.join(publicRoot, `${basename} (blured).webp`);
   const [sharpMeta, blurMeta] = await Promise.all([metadata(sharpInput, `${basename} sharp`), metadata(blurInput, `${basename} blur`)]);
   if (sharpMeta.width !== blurMeta.width || sharpMeta.height !== blurMeta.height) {
     throw new Error(`Geometry mismatch for "${basename}": sharp=${sharpMeta.width}x${sharpMeta.height}, blur=${blurMeta.width}x${blurMeta.height}.`);
   }
   if (!sharpMeta.hasAlpha || !blurMeta.hasAlpha) throw new Error(`Both images in the "${basename}" pair must preserve an alpha channel.`);
-  const [{ data: sharpData }, { data: blurData }] = await Promise.all([
-    sharp(sharpInput).webp({ quality: 90, alphaQuality: 100, effort: 6, smartSubsample: true }).toBuffer({ resolveWithObject: true }),
-    sharp(blurInput).webp({ quality: 82, alphaQuality: 100, effort: 6, smartSubsample: true }).toBuffer({ resolveWithObject: true }),
-  ]);
-  await Promise.all([
-    assertGeometry(sharpData, sharpMeta.width, sharpMeta.height, `${basename} sharp`),
-    assertGeometry(blurData, sharpMeta.width, sharpMeta.height, `${basename} blur`),
-    assertAlphaPreserved(sharpInput, sharpData, `${basename} sharp`),
-    assertAlphaPreserved(blurInput, blurData, `${basename} blur`),
-  ]);
-  await Promise.all([copyFile(sharpInput, sharpPngOutput), writeFile(sharpWebpOutput, sharpData), writeFile(blurOutput, blurData)]);
-  console.log(`✓ ${basename}: ${sharpMeta.width}x${sharpMeta.height}, sharp=${sharpData.byteLength} bytes, blur=${blurData.byteLength} bytes`);
+  const widths = responsiveWidths(sharpMeta.width, [480, 720, 960, 1280]);
+  let sharpVariantInput = sharpInput;
+  let blurredVariantInput = blurInput;
+  if (basename === "statue for features") {
+    const featureFade = [{ offset: 0, opacity: 1 }, { offset: 72, opacity: 1 }, { offset: 96, opacity: 0 }, { offset: 100, opacity: 0 }];
+    [sharpVariantInput, blurredVariantInput] = await Promise.all([
+      applyVerticalAlphaFade(sharpInput, sharpMeta.width, sharpMeta.height, featureFade),
+      applyVerticalAlphaFade(blurInput, blurMeta.width, blurMeta.height, featureFade),
+    ]);
+  }
+  const variants = await encodePairVariants({
+    basename,
+    sharpInput: sharpVariantInput,
+    blurredInput: blurredVariantInput,
+    sourceWidth: sharpMeta.width,
+    sourceHeight: sharpMeta.height,
+    widths,
+    sharpQuality: 90,
+    blurredQuality: 82,
+  });
+  await copyFile(sharpInput, sharpPngOutput);
+  const scene = basename.replace("statue for ", "");
+  assetManifest.planes[`${scene}-statue`] = {
+    width: Math.max(...widths),
+    height: variants.sharp.at(-1).height,
+    ...variants,
+  };
+  console.log(`✓ ${basename}: ${widths.join(", ")}px variants`);
 }
 
 const textManifest = {};
-for (const plane of textPlanes) textManifest[plane.name] = await generateTextPlane(plane);
+for (const plane of textPlanes) {
+  const generated = await generateTextPlane(plane);
+  textManifest[plane.name] = generated.plane;
+  assetManifest.planes[plane.name] = generated.assets;
+}
 await writeFile(manifestPath, `${JSON.stringify(textManifest, null, 2)}\n`);
-for (const icon of iconPlanes) await generateIconPlane(icon);
+for (const icon of iconPlanes) assetManifest.icons[icon.name] = await generateIconPlane(icon);
+await generateGlassNoise();
+await writeFile(assetManifestPath, `${JSON.stringify(assetManifest, null, 2)}\n`);

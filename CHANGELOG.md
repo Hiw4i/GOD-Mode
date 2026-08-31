@@ -4,6 +4,24 @@ All notable changes to GOD Mode are documented here. The project follows
 [Semantic Versioning](https://semver.org/) and the structure from
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.2] - 2026-08-31
+
+### Added
+
+- Added an event-driven WebGL2/WebGL1 renderer for the sharp-to-blur card masks with an automatic SVG fallback.
+- Added responsive image manifests, content-hashed asset URLs, and diagnostic `renderer=webgl|svg` modes.
+
+### Changed
+
+- Limited public scene artwork to 1920 px and added device-appropriate responsive variants.
+- Deferred offscreen scene textures, capped render DPR, and released inactive WebGL resources.
+- Baked statue fades into image alpha and replaced blended SVG noise with a lightweight static texture.
+- Reduced the loader timeout while preserving the branded Hero and Features preload.
+
+### Fixed
+
+- Reduced decoded-image memory and repeated SVG compositing that caused scrolling stalls on weaker devices.
+
 ## [0.3.1] - 2026-08-31
 
 ### Added

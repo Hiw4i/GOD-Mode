@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import { parseImageVariants, renderDprCap, selectImageVariant } from "@/lib/responsive-images";
+import { createSceneRenderer, type SceneMaskState, type SceneRenderer } from "@/lib/scene-renderer";
 
 const PARALLAX_CONFIG = {
   features: {
@@ -55,6 +57,14 @@ type MaskMotionState = {
   centerY: number;
   baseScale: number;
   hovered: boolean;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  radius: number;
+  scrollY: number;
+  hoverY: number;
+  hoverScale: number;
 };
 
 export function MotionRuntime() {
@@ -96,6 +106,97 @@ export function MotionRuntime() {
       const maskKey = (planeId: string, targetId: string) => `${planeId}:${targetId}`;
       const sceneTargetKey = (scene: string, targetId: string) => `${scene}:${targetId}`;
       const masksBySceneTarget = new Map<string, MaskMotionState[]>();
+      const masksByPlane = new Map<string, MaskMotionState[]>();
+      const planeRenderers = new Map<string, SceneRenderer>();
+      const rendererPreference = new URLSearchParams(window.location.search).get("renderer") === "svg" ? "svg" : "webgl";
+      document.documentElement.dataset.sceneRenderer = rendererPreference;
+
+      let rendererFrame = 0;
+      const pendingRendererPlanes = new Set<string>();
+      const resolvedMask = (state: MaskMotionState): SceneMaskState => {
+        const scale = state.hoverScale;
+        return {
+          x: state.centerX + (state.x - state.centerX) * scale,
+          y: state.centerY + (state.y - state.centerY) * scale + state.scrollY + state.hoverY,
+          width: state.width * scale,
+          height: state.height * scale,
+          radius: state.radius * scale,
+        };
+      };
+      const renderPlane = (planeId: string) => {
+        const renderer = planeRenderers.get(planeId);
+        if (!renderer) return;
+        renderer.setMaskState((masksByPlane.get(planeId) ?? []).map(resolvedMask));
+        renderer.render();
+      };
+      const schedulePlaneRender = (planeId: string) => {
+        if (!planeRenderers.has(planeId)) return;
+        pendingRendererPlanes.add(planeId);
+        if (rendererFrame) return;
+        rendererFrame = window.requestAnimationFrame(() => {
+          rendererFrame = 0;
+          pendingRendererPlanes.forEach(renderPlane);
+          pendingRendererPlanes.clear();
+        });
+      };
+
+      const restoreSvgImages = (plane: HTMLElement) => {
+        plane.querySelectorAll<SVGImageElement>("[data-paired-image]").forEach((image) => {
+          const source = image.dataset.pairedLoaded;
+          if (source) image.setAttribute("href", source);
+        });
+      };
+      const suspendSvgImages = (plane: HTMLElement) => {
+        plane.querySelectorAll<SVGImageElement>("[data-paired-image]").forEach((image) => image.removeAttribute("href"));
+      };
+      const deactivatePlaneRenderer = (planeId: string) => {
+        const renderer = planeRenderers.get(planeId);
+        const plane = document.querySelector<HTMLElement>(`[data-xray-plane="${planeId}"]`);
+        if (!renderer || !plane) return;
+        planeRenderers.delete(planeId);
+        renderer.dispose();
+        delete plane.dataset.rendererActive;
+        restoreSvgImages(plane);
+      };
+      const deactivateSceneRenderers = (scene: string) => {
+        document.querySelectorAll<HTMLElement>(`[data-xray-scene="${scene}"]`).forEach((plane) => {
+          const planeId = plane.dataset.xrayPlane;
+          if (planeId) deactivatePlaneRenderer(planeId);
+        });
+      };
+
+      const ensurePlaneRenderer = (plane: HTMLElement) => {
+        if (rendererPreference === "svg") return;
+        const planeId = plane.dataset.xrayPlane;
+        const canvas = plane.querySelector<HTMLCanvasElement>("[data-scene-webgl]");
+        const sharpImage = plane.querySelector<SVGImageElement>('[data-paired-image="sharp"]');
+        const blurredImage = plane.querySelector<SVGImageElement>('[data-paired-image="blur"]');
+        const sharpSource = sharpImage?.dataset.pairedLoaded;
+        const blurredSource = blurredImage?.dataset.pairedLoaded;
+        if (!planeId || !canvas || !sharpSource || !blurredSource) return;
+
+        let renderer = planeRenderers.get(planeId) ?? null;
+        if (!renderer) {
+          renderer = createSceneRenderer(canvas, {
+            onReady: () => {
+              if (planeRenderers.get(planeId) !== renderer) return;
+              renderPlane(planeId);
+              plane.dataset.rendererActive = "webgl";
+              plane.dataset.rendererMode = renderer?.mode ?? "webgl";
+              suspendSvgImages(plane);
+            },
+            onFallback: () => deactivatePlaneRenderer(planeId),
+          });
+          if (!renderer) {
+            document.documentElement.dataset.sceneRenderer = "svg";
+            return;
+          }
+          planeRenderers.set(planeId, renderer);
+        }
+        renderer.resize(plane.offsetWidth, plane.offsetHeight, renderDprCap());
+        renderer.setMaskState((masksByPlane.get(planeId) ?? []).map(resolvedMask));
+        renderer.setSources(sharpSource, blurredSource);
+      };
 
       const getTargetMasks = (scene: string, targetId: string) => masksBySceneTarget.get(sceneTargetKey(scene, targetId)) ?? [];
       const syncScene = (scene: HTMLElement) => {
@@ -169,13 +270,27 @@ export function MotionRuntime() {
               centerY: 0,
               baseScale: cssScale,
               hovered: false,
+              x,
+              y,
+              width: targetWidth,
+              height: targetHeight,
+              radius,
+              scrollY: 0,
+              hoverY: 0,
+              hoverScale: cssScale,
             };
             state.scrollGroup = scrollGroup;
             state.hoverGroup = hoverGroup;
             state.centerX = x + targetWidth / 2;
             state.centerY = y + targetHeight / 2;
+            state.x = x;
+            state.y = y;
+            state.width = targetWidth;
+            state.height = targetHeight;
+            state.radius = radius;
             state.baseScale = cssScale;
             state.motionChannel = motionChannel;
+            if (!state.hovered) state.hoverScale = cssScale;
             gsap.set(hoverGroup, state.hovered
               ? { svgOrigin: `${state.centerX} ${state.centerY}` }
               : { y: 0, scale: cssScale, svgOrigin: `${state.centerX} ${state.centerY}` });
@@ -184,14 +299,53 @@ export function MotionRuntime() {
             const lookup = masksBySceneTarget.get(lookupKey) ?? [];
             if (!lookup.includes(state)) lookup.push(state);
             masksBySceneTarget.set(lookupKey, lookup);
+            const planeLookup = masksByPlane.get(planeId) ?? [];
+            if (!planeLookup.includes(state)) planeLookup.push(state);
+            masksByPlane.set(planeId, planeLookup);
           });
+          schedulePlaneRender(planeId);
         });
       };
 
       const scenes = Array.from(document.querySelectorAll<HTMLElement>("[data-mask-stage]"));
       const featuresStage = document.querySelector<HTMLElement>('[data-mask-stage="features"]');
+      const loadPlaneImages = (plane: HTMLElement, activateRenderer = false) => {
+        const renderedWidth = plane.offsetWidth;
+        if (!renderedWidth) return;
+        plane.querySelectorAll<SVGImageElement>("[data-paired-sources]").forEach((image) => {
+          const variants = parseImageVariants(image.dataset.pairedSources);
+          if (variants.length === 0) return;
+          const selected = selectImageVariant(variants, renderedWidth, renderDprCap());
+          if (image.dataset.pairedLoaded === selected.src) return;
+          image.setAttribute("href", selected.src);
+          image.dataset.pairedLoaded = selected.src;
+        });
+        plane.dataset.pairedLoaded = "true";
+        if (activateRenderer) ensurePlaneRenderer(plane);
+      };
+      const loadSceneImages = (scene: HTMLElement, activateRenderer = false) => {
+        scene.querySelectorAll<HTMLElement>("[data-xray-plane]").forEach((plane) => loadPlaneImages(plane, activateRenderer));
+      };
+      const deferredPlanes = scenes
+        .flatMap((scene) => Array.from(scene.querySelectorAll<HTMLElement>("[data-xray-plane]")))
+        .filter((plane) => plane.dataset.xrayScene !== "features");
+      if (featuresStage) loadSceneImages(featuresStage, true);
+      let deferredPlaneObserver: IntersectionObserver | null = null;
+      if ("IntersectionObserver" in window) {
+        deferredPlaneObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            loadPlaneImages(entry.target as HTMLElement);
+            deferredPlaneObserver?.unobserve(entry.target);
+          });
+        }, { rootMargin: "125% 0px", threshold: 0 });
+        deferredPlanes.forEach((plane) => deferredPlaneObserver?.observe(plane));
+      } else {
+        deferredPlanes.forEach((plane) => loadPlaneImages(plane));
+      }
       const syncAll = () => {
         masksBySceneTarget.clear();
+        masksByPlane.clear();
         scenes.forEach(syncScene);
       };
       let syncFrame = 0;
@@ -260,6 +414,11 @@ export function MotionRuntime() {
               getTargetMasks("features", targetId).forEach((maskState) => {
                 const planeDistance = maskState.motionChannel === "visual" ? imageDistance : maskState.motionChannel === "text" ? textDistance : 0;
                 timeline.fromTo(maskState.scrollGroup, { y: from }, { y: to - planeDistance, ease: "none" }, 0);
+                timeline.fromTo(maskState, { scrollY: from }, {
+                  scrollY: to - planeDistance,
+                  ease: "none",
+                  onUpdate: () => schedulePlaneRender(maskState.planeId),
+                }, 0);
               });
             });
             return () => timeline.kill();
@@ -295,6 +454,11 @@ export function MotionRuntime() {
               const planeFrom = maskState.motionChannel === "visual" ? config.visualFrom : maskState.motionChannel === "text" ? config.textFrom : 0;
               const planeTo = maskState.motionChannel === "visual" ? config.visualTo : maskState.motionChannel === "text" ? config.textTo : 0;
               timeline.fromTo(maskState.scrollGroup, { y: -planeFrom }, { y: -planeTo, ease: "none" }, 0);
+              timeline.fromTo(maskState, { scrollY: -planeFrom }, {
+                scrollY: -planeTo,
+                ease: "none",
+                onUpdate: () => schedulePlaneRender(maskState.planeId),
+              }, 0);
             });
           });
         });
@@ -322,17 +486,20 @@ export function MotionRuntime() {
       });
 
       let nearObserver: IntersectionObserver | null = null;
-      if (!prefersReducedMotion) {
-        nearObserver = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            entry.target.classList.toggle("motion-near", entry.isIntersecting);
-            if (entry.isIntersecting && entry.target instanceof HTMLElement && entry.target.hasAttribute("data-mask-stage")) {
-              scheduleSync();
-            }
-          });
-        }, { rootMargin: "35% 0px", threshold: 0 });
-        document.querySelectorAll("[data-motion-near]").forEach((element) => nearObserver?.observe(element));
-      }
+      nearObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle("motion-near", !prefersReducedMotion && entry.isIntersecting);
+          if (!(entry.target instanceof HTMLElement) || !entry.target.hasAttribute("data-mask-stage")) return;
+          const sceneName = entry.target.dataset.maskStage;
+          if (entry.isIntersecting) {
+            loadSceneImages(entry.target, true);
+            scheduleSync();
+          } else if (sceneName) {
+            deactivateSceneRenderers(sceneName);
+          }
+        });
+      }, { rootMargin: "35% 0px", threshold: 0 });
+      document.querySelectorAll("[data-motion-near]").forEach((element) => nearObserver?.observe(element));
 
       if (canHover && !prefersReducedMotion) scenes.forEach((scene) => {
         const name = scene.dataset.maskStage;
@@ -361,6 +528,14 @@ export function MotionRuntime() {
             targetMasks.forEach((maskState) => {
               maskState.hovered = true;
               gsap.to(maskState.hoverGroup, { y, scale, duration: 0.55, ease: "power2.out", overwrite: "auto" });
+              gsap.to(maskState, {
+                hoverY: y,
+                hoverScale: scale,
+                duration: 0.55,
+                ease: "power2.out",
+                overwrite: "auto",
+                onUpdate: () => schedulePlaneRender(maskState.planeId),
+              });
             });
           };
           const leave = () => {
@@ -373,6 +548,14 @@ export function MotionRuntime() {
             targetMasks.forEach((maskState) => {
               maskState.hovered = false;
               gsap.to(maskState.hoverGroup, { y: 0, scale: maskState.baseScale, duration: 0.55, ease: "power2.out", overwrite: "auto" });
+              gsap.to(maskState, {
+                hoverY: 0,
+                hoverScale: maskState.baseScale,
+                duration: 0.55,
+                ease: "power2.out",
+                overwrite: "auto",
+                onUpdate: () => schedulePlaneRender(maskState.planeId),
+              });
             });
           };
           target.addEventListener("pointerenter", enter);
@@ -381,6 +564,7 @@ export function MotionRuntime() {
             targetMasks.forEach((state) => {
               gsap.killTweensOf(state.scrollGroup);
               gsap.killTweensOf(state.hoverGroup);
+              gsap.killTweensOf(state);
             });
             gsap.killTweensOf(target);
             target.removeEventListener("pointerenter", enter);
@@ -400,7 +584,12 @@ export function MotionRuntime() {
       document.querySelectorAll("section[id]").forEach((section) => sectionObserver.observe(section));
 
       let resizeFrame = 0;
-      const resizeObserver = new ResizeObserver(() => {
+      const resizeObserver = new ResizeObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!(entry.target instanceof HTMLElement) || entry.target.dataset.pairedLoaded !== "true") return;
+          const planeId = entry.target.dataset.xrayPlane;
+          loadPlaneImages(entry.target, Boolean(planeId && planeRenderers.has(planeId)));
+        });
         if (resizeFrame) return;
         resizeFrame = window.requestAnimationFrame(() => {
           resizeFrame = 0;
@@ -447,11 +636,17 @@ export function MotionRuntime() {
         document.documentElement.removeAttribute("data-mask-debug");
         ScrollTrigger.removeEventListener("refreshInit", syncAll);
         if (syncFrame) window.cancelAnimationFrame(syncFrame);
+        if (rendererFrame) window.cancelAnimationFrame(rendererFrame);
         if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
         if (resumeFrame) window.cancelAnimationFrame(resumeFrame);
         resizeObserver.disconnect();
+        deferredPlaneObserver?.disconnect();
         nearObserver?.disconnect();
         sectionObserver.disconnect();
+        planeRenderers.forEach((renderer) => renderer.dispose());
+        planeRenderers.clear();
+        pendingRendererPlanes.clear();
+        document.documentElement.removeAttribute("data-scene-renderer");
         maskStates.clear();
         context.revert();
         if (lenis) gsap.ticker.remove(tick);
