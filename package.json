@@ -1,6 +1,6 @@
 {
   "name": "god-mode-landing",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "private": true,
   "packageManager": "pnpm@11.24.0",
   "engines": {

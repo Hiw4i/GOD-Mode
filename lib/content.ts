@@ -21,7 +21,7 @@ export interface DownloadPlan {
 }
 
 export interface SupportMethod {
-  id: "tbank" | "crypto";
+  id: "card" | "crypto";
   symbol: string;
   title: string;
   subtitle: string;
@@ -138,7 +138,7 @@ export const downloadPlans: DownloadPlan[] = [
 ];
 
 export const supportMethods: SupportMethod[] = [
-  { id: "tbank", symbol: "₽", title: "T-bank", subtitle: "Direct Transfer (RU)" },
+  { id: "card", symbol: "$", title: "Card", subtitle: "Visa, MasterCard, СБП, PayPal, Apple Pay" },
   { id: "crypto", symbol: "₿", title: "Crypto", subtitle: "USDT / BTC / ETH / SOL" },
 ];
 

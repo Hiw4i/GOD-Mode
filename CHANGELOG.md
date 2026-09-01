@@ -4,6 +4,16 @@ All notable changes to GOD Mode are documented here. The project follows
 [Semantic Versioning](https://semver.org/) and the structure from
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.3] - 2026-09-01
+
+### Changed
+
+- Refined the Download and Support section copy and clarified the card support method.
+
+### Fixed
+
+- Made the fixed navigation reliably highlight Features and later sections during smooth scrolling.
+
 ## [0.3.2] - 2026-08-31
 
 ### Added

@@ -162,7 +162,7 @@ export default function HomePage() {
         <section className="download-section" id="download" data-mask-stage="download" data-motion-near>
           <div className="download-bg">
             <div className="download-bg-text section-bg-text" data-parallax-text>
-              <div className="download-bg-label section-bg-label">Prove your commitment to change. Lifetime focus costs less than 3 cups of coffee.</div>
+              <div className="download-bg-label section-bg-label">Focus is a choice</div>
               <span className="xray-text-word">
                 <span className="xray-text-proxy">DOWNLOAD</span>
                 <XrayPlane id="download-title" scene="download" className="xray-text-plane" sharpSources={sceneAssets["download-title"].sharp} blurredSources={sceneAssets["download-title"].blurred} width={downloadTitlePlane.width} height={downloadTitlePlane.height} contentBox={downloadTitlePlane.contentBox} targets={downloadPlans.map((plan) => `plan-${plan.id}`)} motionChannel="text" />
@@ -200,7 +200,7 @@ export default function HomePage() {
 
         <section className="support-section" id="support" data-mask-stage="support" data-motion-near>
           <div className="support-bg">
-            <div className="support-bg-text section-bg-text" data-parallax-text><div className="support-bg-label section-bg-label">Help build a life-changing tool</div>SUPPORT</div>
+            <div className="support-bg-text section-bg-text" data-parallax-text><div className="support-bg-label section-bg-label">For those who want to give more</div>SUPPORT</div>
             <PairedSceneVisual
               scene="support"
               className="support-bg-img section-bg-img"
@@ -216,9 +216,9 @@ export default function HomePage() {
             <div className="support-cards">
               {supportMethods.map((method) => (
                 <article key={method.id} className="support-card glass-card" data-mask-target={`support-${method.id}`}>
-                  <div className={`support-card-icon ${method.id === "tbank" ? "rub" : "btc"}`}>{method.symbol}</div>
+                  <div className={`support-card-icon ${method.id === "card" ? "rub" : "btc"}`}>{method.symbol}</div>
                   <h3 className="support-card-title">{method.title}</h3><p className="support-card-sub">{method.subtitle}</p>
-                  {method.id === "tbank" ? <a href="https://tbank.ru/cf/1ntWnJ2SQaO" target="_blank" rel="noopener noreferrer" className="btn btn-outline">Link <ExternalLink className="btn-external-icon" /></a> : <button className="btn btn-outline" type="button" data-open-modal="crypto">View Addresses</button>}
+                  {method.id === "card" ? <a href="https://tbank.ru/cf/1ntWnJ2SQaO" target="_blank" rel="noopener noreferrer" className="btn btn-outline">Link <ExternalLink className="btn-external-icon" /></a> : <button className="btn btn-outline" type="button" data-open-modal="crypto">View Addresses</button>}
                 </article>
               ))}
             </div>

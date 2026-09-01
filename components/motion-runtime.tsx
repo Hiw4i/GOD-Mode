@@ -575,13 +575,26 @@ export function MotionRuntime() {
 
       const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(".nav-right a"));
       const navLogo = document.querySelector<HTMLElement>(".nav-logo");
-      const sectionObserver = new IntersectionObserver((entries) => {
-        const current = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      const pageSections = Array.from(document.querySelectorAll<HTMLElement>("section[id]"));
+      let navFrame = 0;
+      const updateActiveNav = () => {
+        navFrame = 0;
+        const activationLine = window.innerHeight * 0.25;
+        let current = pageSections[0];
+        pageSections.forEach((section) => {
+          if (section.getBoundingClientRect().top <= activationLine) current = section;
+        });
         if (!current) return;
-        navLinks.forEach((link) => link.classList.toggle("active", link.hash === `#${current.target.id}`));
-        navLogo?.classList.toggle("scrolled", current.target.id !== "hero");
-      }, { rootMargin: "-35% 0px -55%", threshold: [0, 0.1, 0.5] });
-      document.querySelectorAll("section[id]").forEach((section) => sectionObserver.observe(section));
+        navLinks.forEach((link) => link.classList.toggle("active", link.hash === `#${current.id}`));
+        navLogo?.classList.toggle("scrolled", current.id !== "hero");
+      };
+      const scheduleActiveNavUpdate = () => {
+        if (navFrame) return;
+        navFrame = window.requestAnimationFrame(updateActiveNav);
+      };
+      window.addEventListener("scroll", scheduleActiveNavUpdate, { passive: true });
+      window.addEventListener("resize", scheduleActiveNavUpdate);
+      updateActiveNav();
 
       let resizeFrame = 0;
       const resizeObserver = new ResizeObserver((entries) => {
@@ -639,10 +652,12 @@ export function MotionRuntime() {
         if (rendererFrame) window.cancelAnimationFrame(rendererFrame);
         if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
         if (resumeFrame) window.cancelAnimationFrame(resumeFrame);
+        if (navFrame) window.cancelAnimationFrame(navFrame);
+        window.removeEventListener("scroll", scheduleActiveNavUpdate);
+        window.removeEventListener("resize", scheduleActiveNavUpdate);
         resizeObserver.disconnect();
         deferredPlaneObserver?.disconnect();
         nearObserver?.disconnect();
-        sectionObserver.disconnect();
         planeRenderers.forEach((renderer) => renderer.dispose());
         planeRenderers.clear();
         pendingRendererPlanes.clear();
