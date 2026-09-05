@@ -4,6 +4,27 @@ All notable changes to GOD Mode are documented here. The project follows
 [Semantic Versioning](https://semver.org/) and the structure from
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.4.0] - 2026-09-05
+
+### Added
+
+- Added an early weak-device detector that disables blur filters before first paint.
+- Added a static no-blur fallback for weak devices and browsers without `backdrop-filter` support.
+- Added sticky full-viewport mobile backgrounds with safe-area-aware layout and bottom-sheet modals.
+
+### Changed
+
+- Replaced the WebGL/X-ray paired scene renderer with static responsive imagery and simplified parallax.
+- Replaced the blur-pair asset pipeline with single-variant image generation and versioned hashed URLs.
+- Simplified glass-card styling to a lightweight backdrop blur with cached inline SVG grain.
+- Reworked mobile Features, Download, and Support sections for stable scrolling and readable overlays.
+- Removed the initial site loader screen.
+
+### Removed
+
+- Removed the WebGL scene renderer, paired scene visuals, X-ray planes, and blur-pair generation scripts.
+- Removed pre-generated blurred statue, title, and icon variants.
+
 ## [0.3.3] - 2026-09-01
 
 ### Changed

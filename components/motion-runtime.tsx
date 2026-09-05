@@ -1,71 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
-import { parseImageVariants, renderDprCap, selectImageVariant } from "@/lib/responsive-images";
-import { createSceneRenderer, type SceneMaskState, type SceneRenderer } from "@/lib/scene-renderer";
+
+const MOBILE_LAYOUT_QUERY = "(max-width: 768px)";
 
 const PARALLAX_CONFIG = {
   features: {
     visualDistance: -242,
     textDistance: -309,
     labelDistance: { mobile: -10, desktop: -94 },
-    cardFrom: { mobile: 75, desktop: 112 },
-    cardTo: { mobile: -75, desktop: -701 },
-    cardIndexOffset: { mobile: 0, desktop: 5 },
+    cardFrom: 112,
+    cardTo: -701,
+    cardIndexOffset: 5,
     scrub: 0.35,
   },
-  download: {
-    visualFrom: 30,
-    visualTo: -40,
-    textFrom: 50,
-    textTo: -80,
-    scrub: 0.35,
-  },
-  support: {
-    visualFrom: 30,
-    visualTo: -40,
-    textFrom: 50,
-    textTo: -80,
-    scrub: 0.35,
-  },
-  hero: {
-    contentY: 0.45,
-    statueY: 0.2,
-  },
+  download: { visualFrom: 30, visualTo: -40, textFrom: 50, textTo: -80, scrub: 0.35 },
+  support: { visualFrom: 30, visualTo: -40, textFrom: 50, textTo: -80, scrub: 0.35 },
+  hero: { contentY: 0.45, statueY: 0.2 },
 } as const;
-
-function offsetWithin(element: HTMLElement, ancestor: HTMLElement) {
-  let x = 0;
-  let y = 0;
-  let current: HTMLElement | null = element;
-  while (current && current !== ancestor) {
-    x += current.offsetLeft;
-    y += current.offsetTop;
-    current = current.offsetParent as HTMLElement | null;
-  }
-  return { x, y };
-}
-
-type MaskMotionState = {
-  planeId: string;
-  scene: string;
-  targetId: string;
-  motionChannel: "visual" | "text" | "static";
-  scrollGroup: SVGGElement;
-  hoverGroup: SVGGElement;
-  centerX: number;
-  centerY: number;
-  baseScale: number;
-  hovered: boolean;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  radius: number;
-  scrollY: number;
-  hoverY: number;
-  hoverScale: number;
-};
 
 export function MotionRuntime() {
   useEffect(() => {
@@ -73,7 +25,11 @@ export function MotionRuntime() {
     const cleanups: Array<() => void> = [];
 
     const start = async () => {
-      const [{ gsap }, scrollModule, lenisModule] = await Promise.all([import("gsap"), import("gsap/ScrollTrigger"), import("lenis")]);
+      const [{ gsap }, scrollModule, lenisModule] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+        import("lenis"),
+      ]);
       if (disposed) return;
 
       const ScrollTrigger = scrollModule.ScrollTrigger;
@@ -82,7 +38,8 @@ export function MotionRuntime() {
 
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-      const usesNativeMobileScroll = window.matchMedia("(max-width: 768px), (hover: none), (pointer: coarse)").matches;
+      const mobileLayoutMedia = window.matchMedia(MOBILE_LAYOUT_QUERY);
+      const usesNativeMobileScroll = window.matchMedia(`${MOBILE_LAYOUT_QUERY}, (hover: none), (pointer: coarse)`).matches;
       ScrollTrigger.config({ ignoreMobileResize: true, limitCallbacks: true });
 
       const lenis = prefersReducedMotion || usesNativeMobileScroll ? null : new Lenis({
@@ -101,262 +58,6 @@ export function MotionRuntime() {
       const tick = (time: number) => lenis?.raf(time * 1000);
       lenis?.on("scroll", onLenisScroll);
       if (lenis) gsap.ticker.add(tick);
-
-      const maskStates = new Map<string, MaskMotionState>();
-      const maskKey = (planeId: string, targetId: string) => `${planeId}:${targetId}`;
-      const sceneTargetKey = (scene: string, targetId: string) => `${scene}:${targetId}`;
-      const masksBySceneTarget = new Map<string, MaskMotionState[]>();
-      const masksByPlane = new Map<string, MaskMotionState[]>();
-      const planeRenderers = new Map<string, SceneRenderer>();
-      const rendererPreference = new URLSearchParams(window.location.search).get("renderer") === "svg" ? "svg" : "webgl";
-      document.documentElement.dataset.sceneRenderer = rendererPreference;
-
-      let rendererFrame = 0;
-      const pendingRendererPlanes = new Set<string>();
-      const resolvedMask = (state: MaskMotionState): SceneMaskState => {
-        const scale = state.hoverScale;
-        return {
-          x: state.centerX + (state.x - state.centerX) * scale,
-          y: state.centerY + (state.y - state.centerY) * scale + state.scrollY + state.hoverY,
-          width: state.width * scale,
-          height: state.height * scale,
-          radius: state.radius * scale,
-        };
-      };
-      const renderPlane = (planeId: string) => {
-        const renderer = planeRenderers.get(planeId);
-        if (!renderer) return;
-        renderer.setMaskState((masksByPlane.get(planeId) ?? []).map(resolvedMask));
-        renderer.render();
-      };
-      const schedulePlaneRender = (planeId: string) => {
-        if (!planeRenderers.has(planeId)) return;
-        pendingRendererPlanes.add(planeId);
-        if (rendererFrame) return;
-        rendererFrame = window.requestAnimationFrame(() => {
-          rendererFrame = 0;
-          pendingRendererPlanes.forEach(renderPlane);
-          pendingRendererPlanes.clear();
-        });
-      };
-
-      const restoreSvgImages = (plane: HTMLElement) => {
-        plane.querySelectorAll<SVGImageElement>("[data-paired-image]").forEach((image) => {
-          const source = image.dataset.pairedLoaded;
-          if (source) image.setAttribute("href", source);
-        });
-      };
-      const suspendSvgImages = (plane: HTMLElement) => {
-        plane.querySelectorAll<SVGImageElement>("[data-paired-image]").forEach((image) => image.removeAttribute("href"));
-      };
-      const deactivatePlaneRenderer = (planeId: string) => {
-        const renderer = planeRenderers.get(planeId);
-        const plane = document.querySelector<HTMLElement>(`[data-xray-plane="${planeId}"]`);
-        if (!renderer || !plane) return;
-        planeRenderers.delete(planeId);
-        renderer.dispose();
-        delete plane.dataset.rendererActive;
-        restoreSvgImages(plane);
-      };
-      const deactivateSceneRenderers = (scene: string) => {
-        document.querySelectorAll<HTMLElement>(`[data-xray-scene="${scene}"]`).forEach((plane) => {
-          const planeId = plane.dataset.xrayPlane;
-          if (planeId) deactivatePlaneRenderer(planeId);
-        });
-      };
-
-      const ensurePlaneRenderer = (plane: HTMLElement) => {
-        if (rendererPreference === "svg") return;
-        const planeId = plane.dataset.xrayPlane;
-        const canvas = plane.querySelector<HTMLCanvasElement>("[data-scene-webgl]");
-        const sharpImage = plane.querySelector<SVGImageElement>('[data-paired-image="sharp"]');
-        const blurredImage = plane.querySelector<SVGImageElement>('[data-paired-image="blur"]');
-        const sharpSource = sharpImage?.dataset.pairedLoaded;
-        const blurredSource = blurredImage?.dataset.pairedLoaded;
-        if (!planeId || !canvas || !sharpSource || !blurredSource) return;
-
-        let renderer = planeRenderers.get(planeId) ?? null;
-        if (!renderer) {
-          renderer = createSceneRenderer(canvas, {
-            onReady: () => {
-              if (planeRenderers.get(planeId) !== renderer) return;
-              renderPlane(planeId);
-              plane.dataset.rendererActive = "webgl";
-              plane.dataset.rendererMode = renderer?.mode ?? "webgl";
-              suspendSvgImages(plane);
-            },
-            onFallback: () => deactivatePlaneRenderer(planeId),
-          });
-          if (!renderer) {
-            document.documentElement.dataset.sceneRenderer = "svg";
-            return;
-          }
-          planeRenderers.set(planeId, renderer);
-        }
-        renderer.resize(plane.offsetWidth, plane.offsetHeight, renderDprCap());
-        renderer.setMaskState((masksByPlane.get(planeId) ?? []).map(resolvedMask));
-        renderer.setSources(sharpSource, blurredSource);
-      };
-
-      const getTargetMasks = (scene: string, targetId: string) => masksBySceneTarget.get(sceneTargetKey(scene, targetId)) ?? [];
-      const syncScene = (scene: HTMLElement) => {
-        const name = scene.dataset.maskStage;
-        if (!name) return;
-        scene.querySelectorAll<HTMLElement>(`[data-xray-scene="${name}"]`).forEach((plane) => {
-          const planeId = plane.dataset.xrayPlane;
-          const svg = planeId ? plane.querySelector<SVGSVGElement>(`[data-mask-backdrop="${planeId}"]`) : null;
-          const images = svg ? Array.from(svg.querySelectorAll<SVGImageElement>("[data-paired-image]")) : [];
-          if (!planeId || !svg || images.length !== 2) return;
-
-          const width = plane.offsetWidth;
-          const height = plane.offsetHeight;
-          if (!width || !height) return;
-          svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-          svg.querySelectorAll<SVGMaskElement>("[data-card-mask]").forEach((mask) => {
-            mask.setAttribute("width", String(width));
-            mask.setAttribute("height", String(height));
-          });
-          svg.querySelectorAll<SVGRectElement>("[data-mask-base]").forEach((base) => {
-            base.setAttribute("width", String(width));
-            base.setAttribute("height", String(height));
-          });
-          images.forEach((image) => {
-            image.setAttribute("x", "0");
-            image.setAttribute("y", "0");
-            image.setAttribute("width", String(width));
-            image.setAttribute("height", String(height));
-          });
-
-          const planeOffset = offsetWithin(plane, scene);
-          const planeX = plane.dataset.centered === "true" ? planeOffset.x - plane.offsetWidth / 2 : planeOffset.x;
-          const motionChannel = (plane.dataset.xrayMotion ?? "static") as MaskMotionState["motionChannel"];
-          // Text planes are vertically centered with a static CSS translateY(-50%).
-          // offsetTop intentionally ignores transforms, so include that one fixed
-          // translation in the cached layout geometry. Animated movement remains
-          // in MaskMotionState and never requires per-frame layout reads.
-          const planeY = planeOffset.y - (motionChannel === "text" ? plane.offsetHeight / 2 : 0);
-
-          scene.querySelectorAll<HTMLElement>("[data-mask-target]").forEach((target) => {
-            const targetId = target.dataset.maskTarget;
-            const shape = targetId ? svg.querySelector<SVGGElement>(`[data-mask-motion="${targetId}"]`) : null;
-            const scrollGroup = shape?.querySelector<SVGGElement>(`[data-mask-scroll="${targetId}"]`) ?? null;
-            const hoverGroup = shape?.querySelector<SVGGElement>(`[data-mask-hover="${targetId}"]`) ?? null;
-            const rect = shape?.querySelector<SVGRectElement>(`[data-mask-rect="${targetId}"]`) ?? null;
-            if (!targetId || !scrollGroup || !hoverGroup || !rect) return;
-            const offset = offsetWithin(target, scene);
-            const radius = Number.parseFloat(getComputedStyle(target).borderRadius) || 16;
-            const x = offset.x - planeX;
-            const y = offset.y - planeY;
-            const targetWidth = target.offsetWidth;
-            const targetHeight = target.offsetHeight;
-            rect.setAttribute("x", String(x));
-            rect.setAttribute("y", String(y));
-            rect.setAttribute("width", String(targetWidth));
-            rect.setAttribute("height", String(targetHeight));
-            rect.setAttribute("rx", String(radius));
-            rect.setAttribute("ry", String(radius));
-
-            const key = maskKey(planeId, targetId);
-            const existing = maskStates.get(key);
-            const cssScale = Number.parseFloat(getComputedStyle(target).getPropertyValue("--feature-card-scale")) || 1;
-            const state: MaskMotionState = existing ?? {
-              planeId,
-              scene: name,
-              targetId,
-              motionChannel,
-              scrollGroup,
-              hoverGroup,
-              centerX: 0,
-              centerY: 0,
-              baseScale: cssScale,
-              hovered: false,
-              x,
-              y,
-              width: targetWidth,
-              height: targetHeight,
-              radius,
-              scrollY: 0,
-              hoverY: 0,
-              hoverScale: cssScale,
-            };
-            state.scrollGroup = scrollGroup;
-            state.hoverGroup = hoverGroup;
-            state.centerX = x + targetWidth / 2;
-            state.centerY = y + targetHeight / 2;
-            state.x = x;
-            state.y = y;
-            state.width = targetWidth;
-            state.height = targetHeight;
-            state.radius = radius;
-            state.baseScale = cssScale;
-            state.motionChannel = motionChannel;
-            if (!state.hovered) state.hoverScale = cssScale;
-            gsap.set(hoverGroup, state.hovered
-              ? { svgOrigin: `${state.centerX} ${state.centerY}` }
-              : { y: 0, scale: cssScale, svgOrigin: `${state.centerX} ${state.centerY}` });
-            maskStates.set(key, state);
-            const lookupKey = sceneTargetKey(name, targetId);
-            const lookup = masksBySceneTarget.get(lookupKey) ?? [];
-            if (!lookup.includes(state)) lookup.push(state);
-            masksBySceneTarget.set(lookupKey, lookup);
-            const planeLookup = masksByPlane.get(planeId) ?? [];
-            if (!planeLookup.includes(state)) planeLookup.push(state);
-            masksByPlane.set(planeId, planeLookup);
-          });
-          schedulePlaneRender(planeId);
-        });
-      };
-
-      const scenes = Array.from(document.querySelectorAll<HTMLElement>("[data-mask-stage]"));
-      const featuresStage = document.querySelector<HTMLElement>('[data-mask-stage="features"]');
-      const loadPlaneImages = (plane: HTMLElement, activateRenderer = false) => {
-        const renderedWidth = plane.offsetWidth;
-        if (!renderedWidth) return;
-        plane.querySelectorAll<SVGImageElement>("[data-paired-sources]").forEach((image) => {
-          const variants = parseImageVariants(image.dataset.pairedSources);
-          if (variants.length === 0) return;
-          const selected = selectImageVariant(variants, renderedWidth, renderDprCap());
-          if (image.dataset.pairedLoaded === selected.src) return;
-          image.setAttribute("href", selected.src);
-          image.dataset.pairedLoaded = selected.src;
-        });
-        plane.dataset.pairedLoaded = "true";
-        if (activateRenderer) ensurePlaneRenderer(plane);
-      };
-      const loadSceneImages = (scene: HTMLElement, activateRenderer = false) => {
-        scene.querySelectorAll<HTMLElement>("[data-xray-plane]").forEach((plane) => loadPlaneImages(plane, activateRenderer));
-      };
-      const deferredPlanes = scenes
-        .flatMap((scene) => Array.from(scene.querySelectorAll<HTMLElement>("[data-xray-plane]")))
-        .filter((plane) => plane.dataset.xrayScene !== "features");
-      if (featuresStage) loadSceneImages(featuresStage, true);
-      let deferredPlaneObserver: IntersectionObserver | null = null;
-      if ("IntersectionObserver" in window) {
-        deferredPlaneObserver = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            loadPlaneImages(entry.target as HTMLElement);
-            deferredPlaneObserver?.unobserve(entry.target);
-          });
-        }, { rootMargin: "125% 0px", threshold: 0 });
-        deferredPlanes.forEach((plane) => deferredPlaneObserver?.observe(plane));
-      } else {
-        deferredPlanes.forEach((plane) => loadPlaneImages(plane));
-      }
-      const syncAll = () => {
-        masksBySceneTarget.clear();
-        masksByPlane.clear();
-        scenes.forEach(syncScene);
-      };
-      let syncFrame = 0;
-      const scheduleSync = () => {
-        if (syncFrame) return;
-        syncFrame = window.requestAnimationFrame(() => {
-          syncFrame = 0;
-          syncAll();
-        });
-      };
-      syncAll();
 
       const context = gsap.context(() => {
         const hero = document.querySelector<HTMLElement>(".hero");
@@ -379,12 +80,13 @@ export function MotionRuntime() {
         }
 
         const featuresSection = document.querySelector<HTMLElement>(".how-it-works");
+        const featuresStage = document.querySelector<HTMLElement>(".features-stage");
         if (!prefersReducedMotion && featuresSection && featuresStage) {
-          const visual = featuresStage.querySelector<HTMLElement>('[data-xray-motion="visual"]');
+          const visual = featuresStage.querySelector<HTMLElement>("[data-parallax-visual]");
           const text = featuresStage.querySelector<HTMLElement>("[data-parallax-text]");
           const label = featuresStage.querySelector<HTMLElement>(".hiw-bg-label");
           const cards = Array.from(featuresStage.querySelectorAll<HTMLElement>("[data-feature-card]"));
-          const mm = gsap.matchMedia();
+          const media = gsap.matchMedia();
 
           const createFeatureTimeline = (mobile: boolean) => {
             const timeline = gsap.timeline({
@@ -396,76 +98,62 @@ export function MotionRuntime() {
                 onToggle: ({ isActive }) => featuresStage.classList.toggle("motion-active", isActive),
               },
             });
-            const imageDistance = mobile ? -132 : PARALLAX_CONFIG.features.visualDistance;
-            const textDistance = PARALLAX_CONFIG.features.textDistance;
+            const imageDistance = mobile ? -42 : PARALLAX_CONFIG.features.visualDistance;
             if (visual) timeline.to(visual, { y: imageDistance, ease: "none" }, 0);
-            if (text) timeline.to(text, { y: textDistance, ease: "none" }, 0);
+            if (text) timeline.to(text, { y: mobile ? -30 : PARALLAX_CONFIG.features.textDistance, ease: "none" }, 0);
             if (label) timeline.to(label, { y: mobile ? PARALLAX_CONFIG.features.labelDistance.mobile : PARALLAX_CONFIG.features.labelDistance.desktop, ease: "none" }, 0);
 
-            cards.forEach((card, index) => {
-              const speed = Number(card.dataset.speed ?? 1);
-              const adjusted = mobile ? speed - 0.5 : speed;
-              const from = PARALLAX_CONFIG.features.cardFrom[mobile ? "mobile" : "desktop"] * adjusted + (mobile ? 0 : (index - 2.5) * PARALLAX_CONFIG.features.cardIndexOffset.desktop);
-              const to = PARALLAX_CONFIG.features.cardTo[mobile ? "mobile" : "desktop"] * adjusted + (mobile ? 0 : (index - 2.5) * PARALLAX_CONFIG.features.cardIndexOffset.desktop);
-              const targetId = card.dataset.maskTarget ?? card.dataset.maskLink;
-              timeline.fromTo(card, { y: from }, { y: to, ease: "none" }, 0);
-              if (!targetId) return;
-
-              getTargetMasks("features", targetId).forEach((maskState) => {
-                const planeDistance = maskState.motionChannel === "visual" ? imageDistance : maskState.motionChannel === "text" ? textDistance : 0;
-                timeline.fromTo(maskState.scrollGroup, { y: from }, { y: to - planeDistance, ease: "none" }, 0);
-                timeline.fromTo(maskState, { scrollY: from }, {
-                  scrollY: to - planeDistance,
-                  ease: "none",
-                  onUpdate: () => schedulePlaneRender(maskState.planeId),
-                }, 0);
+            if (!mobile) {
+              cards.forEach((card, index) => {
+                const speed = Number(card.dataset.speed ?? 1);
+                const offset = (index - 2.5) * PARALLAX_CONFIG.features.cardIndexOffset;
+                timeline.fromTo(
+                  card,
+                  { y: PARALLAX_CONFIG.features.cardFrom * speed + offset },
+                  { y: PARALLAX_CONFIG.features.cardTo * speed + offset, ease: "none" },
+                  0,
+                );
               });
-            });
+            }
             return () => timeline.kill();
           };
 
-          mm.add("(min-width: 681px)", () => createFeatureTimeline(false));
-          mm.add("(max-width: 680px)", () => createFeatureTimeline(true));
-          cleanups.push(() => mm.revert());
+          media.add("(min-width: 769px)", () => createFeatureTimeline(false));
+          media.add(MOBILE_LAYOUT_QUERY, () => createFeatureTimeline(true));
+          cleanups.push(() => media.revert());
         }
 
         if (!prefersReducedMotion) ["download", "support"].forEach((name) => {
-          const section = document.querySelector<HTMLElement>(`[data-mask-stage="${name}"]`);
+          const section = document.querySelector<HTMLElement>(`[data-motion-scene="${name}"]`);
           if (!section) return;
-          const visual = section.querySelector<HTMLElement>('[data-xray-motion="visual"]');
+          const visual = section.querySelector<HTMLElement>("[data-parallax-visual]");
           const text = section.querySelector<HTMLElement>("[data-parallax-text]");
           const config = name === "download" ? PARALLAX_CONFIG.download : PARALLAX_CONFIG.support;
-          const timeline = gsap.timeline({
-            scrollTrigger: {
-              trigger: section,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: config.scrub,
-              onToggle: ({ isActive }) => section.classList.toggle("motion-active", isActive),
-            },
-          });
-          if (visual) timeline.fromTo(visual, { y: config.visualFrom }, { y: config.visualTo, ease: "none" }, 0);
-          if (text) timeline.fromTo(text, { y: config.textFrom }, { y: config.textTo, ease: "none" }, 0);
+          const media = gsap.matchMedia();
 
-          section.querySelectorAll<HTMLElement>("[data-mask-target]").forEach((target) => {
-            const targetId = target.dataset.maskTarget;
-            if (!targetId) return;
-            getTargetMasks(name, targetId).forEach((maskState) => {
-              const planeFrom = maskState.motionChannel === "visual" ? config.visualFrom : maskState.motionChannel === "text" ? config.textFrom : 0;
-              const planeTo = maskState.motionChannel === "visual" ? config.visualTo : maskState.motionChannel === "text" ? config.textTo : 0;
-              timeline.fromTo(maskState.scrollGroup, { y: -planeFrom }, { y: -planeTo, ease: "none" }, 0);
-              timeline.fromTo(maskState, { scrollY: -planeFrom }, {
-                scrollY: -planeTo,
-                ease: "none",
-                onUpdate: () => schedulePlaneRender(maskState.planeId),
-              }, 0);
+          const createSceneTimeline = (mobile: boolean) => {
+            const timeline = gsap.timeline({
+              scrollTrigger: {
+                trigger: section,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: config.scrub,
+                onToggle: ({ isActive }) => section.classList.toggle("motion-active", isActive),
+              },
             });
-          });
+            if (visual) timeline.fromTo(visual, { y: mobile ? 14 : config.visualFrom }, { y: mobile ? -22 : config.visualTo, ease: "none" }, 0);
+            if (text) timeline.fromTo(text, { y: mobile ? 16 : config.textFrom }, { y: mobile ? -24 : config.textTo, ease: "none" }, 0);
+            return () => timeline.kill();
+          };
+
+          media.add("(min-width: 769px)", () => createSceneTimeline(false));
+          media.add(MOBILE_LAYOUT_QUERY, () => createSceneTimeline(true));
+          cleanups.push(() => media.revert());
         });
 
         const ambientCard = document.querySelector<HTMLElement>("#ambientCard");
         const ambientStage = ambientCard?.querySelector<HTMLElement>("[data-ambient-stage]");
-        if (!prefersReducedMotion && canHover && ambientCard && ambientStage) {
+        if (!prefersReducedMotion && canHover && !mobileLayoutMedia.matches && ambientCard && ambientStage) {
           const moveX = gsap.quickTo(ambientStage, "x", { duration: 0.55, ease: "power3" });
           const moveY = gsap.quickTo(ambientStage, "y", { duration: 0.55, ease: "power3" });
           const rotate = gsap.quickTo(ambientStage, "rotation", { duration: 0.55, ease: "power3" });
@@ -473,7 +161,9 @@ export function MotionRuntime() {
             const rect = ambientCard.getBoundingClientRect();
             const x = (event.clientX - rect.left) / rect.width - 0.5;
             const y = (event.clientY - rect.top) / rect.height - 0.5;
-            moveX(x * 18); moveY(y * 14); rotate(x * 2.4 - 3);
+            moveX(x * 18);
+            moveY(y * 14);
+            rotate(x * 2.4 - 3);
           };
           const onLeave = () => { moveX(0); moveY(0); rotate(-3); };
           ambientCard.addEventListener("pointermove", onMove);
@@ -485,93 +175,35 @@ export function MotionRuntime() {
         }
       });
 
-      let nearObserver: IntersectionObserver | null = null;
-      nearObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          entry.target.classList.toggle("motion-near", !prefersReducedMotion && entry.isIntersecting);
-          if (!(entry.target instanceof HTMLElement) || !entry.target.hasAttribute("data-mask-stage")) return;
-          const sceneName = entry.target.dataset.maskStage;
-          if (entry.isIntersecting) {
-            loadSceneImages(entry.target, true);
-            scheduleSync();
-          } else if (sceneName) {
-            deactivateSceneRenderers(sceneName);
-          }
-        });
+      const nearObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => entry.target.classList.toggle("motion-near", !prefersReducedMotion && entry.isIntersecting));
       }, { rootMargin: "35% 0px", threshold: 0 });
-      document.querySelectorAll("[data-motion-near]").forEach((element) => nearObserver?.observe(element));
+      document.querySelectorAll("[data-motion-near]").forEach((element) => nearObserver.observe(element));
 
-      if (canHover && !prefersReducedMotion) scenes.forEach((scene) => {
-        const name = scene.dataset.maskStage;
-        if (!name) return;
-        scene.querySelectorAll<HTMLElement>("[data-mask-target]").forEach((target) => {
-          const targetId = target.dataset.maskTarget;
-          if (!targetId) return;
-          const targetMasks = getTargetMasks(name, targetId);
-          const isFeature = target.classList.contains("feature-card-surface") || target.classList.contains("total-focus-motion");
-          let hoverScale: number | null = null;
-          let hoverY = -8;
-          const enter = () => {
-            const baseScale = targetMasks[0]?.baseScale ?? 1;
-            if (isFeature && hoverScale === null) {
-              const style = getComputedStyle(target);
-              hoverScale = Number.parseFloat(style.getPropertyValue("--feature-card-hover-scale")) || baseScale * 1.02;
-              hoverY = Number.parseFloat(style.getPropertyValue("--feature-card-hover-lift")) || -8;
-            }
-            const scale = isFeature ? hoverScale ?? baseScale : 1.02;
-            const y = isFeature ? hoverY : -8;
-            if (isFeature) {
-              gsap.to(target, { y, scale, duration: 0.55, ease: "power2.out", overwrite: "auto" });
-            } else {
-              gsap.to(target, { y, scale, duration: 0.45, ease: "power3.out", overwrite: "auto" });
-            }
-            targetMasks.forEach((maskState) => {
-              maskState.hovered = true;
-              gsap.to(maskState.hoverGroup, { y, scale, duration: 0.55, ease: "power2.out", overwrite: "auto" });
-              gsap.to(maskState, {
-                hoverY: y,
-                hoverScale: scale,
-                duration: 0.55,
-                ease: "power2.out",
-                overwrite: "auto",
-                onUpdate: () => schedulePlaneRender(maskState.planeId),
-              });
-            });
-          };
-          const leave = () => {
-            const baseScale = targetMasks[0]?.baseScale ?? 1;
-            if (isFeature) {
-              gsap.to(target, { y: 0, scale: baseScale, duration: 0.55, ease: "power2.out", overwrite: "auto", onComplete: () => gsap.set(target, { clearProps: "transform" }) });
-            } else {
-              gsap.to(target, { y: 0, scale: 1, duration: 0.45, ease: "power3.out", overwrite: "auto" });
-            }
-            targetMasks.forEach((maskState) => {
-              maskState.hovered = false;
-              gsap.to(maskState.hoverGroup, { y: 0, scale: maskState.baseScale, duration: 0.55, ease: "power2.out", overwrite: "auto" });
-              gsap.to(maskState, {
-                hoverY: 0,
-                hoverScale: maskState.baseScale,
-                duration: 0.55,
-                ease: "power2.out",
-                overwrite: "auto",
-                onUpdate: () => schedulePlaneRender(maskState.planeId),
-              });
-            });
-          };
+      if (canHover && !prefersReducedMotion && !mobileLayoutMedia.matches) {
+        document.querySelectorAll<HTMLElement>("[data-hover-target]").forEach((target) => {
+          const style = getComputedStyle(target);
+          const baseScale = Number.parseFloat(style.getPropertyValue("--feature-card-scale")) || 1;
+          const hoverScale = Number.parseFloat(style.getPropertyValue("--feature-card-hover-scale")) || baseScale * 1.02;
+          const hoverY = Number.parseFloat(style.getPropertyValue("--feature-card-hover-lift")) || -8;
+          const enter = () => gsap.to(target, { y: hoverY, scale: hoverScale, duration: 0.5, ease: "power2.out", overwrite: "auto" });
+          const leave = () => gsap.to(target, {
+            y: 0,
+            scale: baseScale,
+            duration: 0.5,
+            ease: "power2.out",
+            overwrite: "auto",
+            onComplete: () => gsap.set(target, { clearProps: "transform" }),
+          });
           target.addEventListener("pointerenter", enter);
           target.addEventListener("pointerleave", leave);
           cleanups.push(() => {
-            targetMasks.forEach((state) => {
-              gsap.killTweensOf(state.scrollGroup);
-              gsap.killTweensOf(state.hoverGroup);
-              gsap.killTweensOf(state);
-            });
             gsap.killTweensOf(target);
             target.removeEventListener("pointerenter", enter);
             target.removeEventListener("pointerleave", leave);
           });
         });
-      });
+      }
 
       const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(".nav-right a"));
       const navLogo = document.querySelector<HTMLElement>(".nav-logo");
@@ -596,29 +228,10 @@ export function MotionRuntime() {
       window.addEventListener("resize", scheduleActiveNavUpdate);
       updateActiveNav();
 
-      let resizeFrame = 0;
-      const resizeObserver = new ResizeObserver((entries) => {
-        entries.forEach((entry) => {
-          if (!(entry.target instanceof HTMLElement) || entry.target.dataset.pairedLoaded !== "true") return;
-          const planeId = entry.target.dataset.xrayPlane;
-          loadPlaneImages(entry.target, Boolean(planeId && planeRenderers.has(planeId)));
-        });
-        if (resizeFrame) return;
-        resizeFrame = window.requestAnimationFrame(() => {
-          resizeFrame = 0;
-          scheduleSync();
-        });
-      });
-      scenes.forEach((scene) => {
-        resizeObserver.observe(scene);
-        scene.querySelectorAll<HTMLElement>("[data-xray-plane], [data-mask-target]").forEach((element) => resizeObserver.observe(element));
-      });
-      void document.fonts.ready.then(() => { if (!disposed) scheduleSync(); });
-      ScrollTrigger.addEventListener("refreshInit", syncAll);
+      const onLayoutChange = () => ScrollTrigger.refresh();
+      mobileLayoutMedia.addEventListener("change", onLayoutChange);
+      void document.fonts.ready.then(() => { if (!disposed) ScrollTrigger.refresh(); });
       ScrollTrigger.refresh();
-
-      const maskDebug = new URLSearchParams(window.location.search).get("maskDebug") === "1";
-      document.documentElement.toggleAttribute("data-mask-debug", maskDebug);
 
       let modalOpen = false;
       let resumeFrame = 0;
@@ -646,23 +259,12 @@ export function MotionRuntime() {
       cleanups.push(() => {
         window.removeEventListener("godmode:modal", onModal);
         document.removeEventListener("visibilitychange", syncLenisState);
-        document.documentElement.removeAttribute("data-mask-debug");
-        ScrollTrigger.removeEventListener("refreshInit", syncAll);
-        if (syncFrame) window.cancelAnimationFrame(syncFrame);
-        if (rendererFrame) window.cancelAnimationFrame(rendererFrame);
-        if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
         if (resumeFrame) window.cancelAnimationFrame(resumeFrame);
         if (navFrame) window.cancelAnimationFrame(navFrame);
         window.removeEventListener("scroll", scheduleActiveNavUpdate);
         window.removeEventListener("resize", scheduleActiveNavUpdate);
-        resizeObserver.disconnect();
-        deferredPlaneObserver?.disconnect();
-        nearObserver?.disconnect();
-        planeRenderers.forEach((renderer) => renderer.dispose());
-        planeRenderers.clear();
-        pendingRendererPlanes.clear();
-        document.documentElement.removeAttribute("data-scene-renderer");
-        maskStates.clear();
+        mobileLayoutMedia.removeEventListener("change", onLayoutChange);
+        nearObserver.disconnect();
         context.revert();
         if (lenis) gsap.ticker.remove(tick);
         lenis?.destroy();

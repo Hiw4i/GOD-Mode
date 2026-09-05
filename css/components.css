@@ -1,41 +1,18 @@
 /* ===== GLASS CARD ===== */
 .glass-card {
-    background: linear-gradient(145deg, rgba(34,34,34,0.72), rgba(13,13,13,0.48));
+    --glass-blur: 12px;
+    background: var(--grain), rgba(16,16,16,0.5);
+    background-size: 120px 120px, auto;
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    backdrop-filter: blur(var(--glass-blur));
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: var(--glass-radius, 16px);
     overflow: hidden;
     transition: border-color 0.6s ease, box-shadow 0.6s ease;
     isolation: isolate;
     position: relative;
-}
-
-.glass-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: var(--glass-radius, 16px);
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent 50%, rgba(255,255,255,0.05));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    transition: background 0.6s ease;
-}
-
-.glass-card::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.08), transparent 50%);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.6s ease;
-    z-index: 0;
+    contain: layout style;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.045);
 }
 
 .glass-card:hover {
@@ -43,11 +20,18 @@
     box-shadow: 0 20px 60px rgba(0,0,0,0.4);
 }
 
-.glass-card:hover::before {
-    background: linear-gradient(135deg, rgba(255,255,255,0.25), transparent 50%, rgba(255,255,255,0.1));
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+    html .glass-card {
+        background:
+            var(--grain),
+            linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0) 26%),
+            linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0) 46%, rgba(212,69,26,0.035) 100%),
+            linear-gradient(0deg, rgba(0,0,0,0.28), rgba(0,0,0,0) 34%),
+            #101010;
+        background-size: 120px 120px, auto, auto, auto, auto;
+        border-color: rgba(255,255,255,0.11);
+    }
 }
-
-.glass-card:hover::after { opacity: 1; }
 
 /* ===== SHARED SECTION BACKGROUND ===== */
 .section-bg-text {

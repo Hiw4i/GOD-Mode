@@ -4,17 +4,11 @@ import { AmbientPlayer } from "@/components/ambient-player";
 import { CruelStopwatch } from "@/components/cruel-stopwatch";
 import { ModalSystem } from "@/components/modal-system";
 import { MotionRuntime } from "@/components/motion-runtime";
-import { PairedSceneVisual, XrayPlane } from "@/components/paired-scene-visual";
 import { SpotsCounter } from "@/components/spots-counter";
 import { ambientTracks, downloadPlans, features, supportMethods } from "@/lib/content";
 import { APP_VERSION_LABEL } from "@/lib/version";
 import { variantSrcSet, type ResponsiveImageVariant } from "@/lib/responsive-images";
 import imageAssets from "@/lib/generated-image-assets.json";
-import xrayPlanes from "@/lib/generated-xray-planes.json";
-
-const featuresTitlePlane = xrayPlanes["features-title"];
-const downloadTitlePlane = xrayPlanes["download-title"];
-const sceneAssets = imageAssets.planes;
 
 function ResponsivePicture({
   variants,
@@ -23,7 +17,7 @@ function ResponsivePicture({
   sizes,
   loading = "lazy",
   fetchPriority,
-  critical = false,
+  parallaxVisual = false,
 }: {
   variants: readonly ResponsiveImageVariant[];
   className: string;
@@ -31,7 +25,7 @@ function ResponsivePicture({
   sizes: string;
   loading?: "eager" | "lazy";
   fetchPriority?: "high" | "low" | "auto";
-  critical?: boolean;
+  parallaxVisual?: boolean;
 }) {
   const fallback = variants.at(-1)!;
   return (
@@ -46,7 +40,7 @@ function ResponsivePicture({
         sizes={sizes}
         loading={loading}
         fetchPriority={fetchPriority}
-        data-site-critical={critical ? "hero" : undefined}
+        data-parallax-visual={parallaxVisual ? "" : undefined}
         unoptimized
       />
     </picture>
@@ -61,13 +55,12 @@ function AppleIcon() {
   );
 }
 
-function FloatingFeatureIcons({ blurred = false }: { blurred?: boolean }) {
-  const layer = blurred ? "blurred" : "sharp";
+function FloatingFeatureIcons() {
   return (
-    <div className={`floating-icons${blurred ? " floating-icons--blur" : ""}`} data-icon-xray={blurred ? "blur" : "sharp"} aria-hidden="true">
-      <ResponsivePicture variants={imageAssets.icons.youtube[layer]} className="float-icon float-icon--youtube" alt="" sizes="98px" />
-      <ResponsivePicture variants={imageAssets.icons.tiktok[layer]} className="float-icon float-icon--tiktok" alt="" sizes="84px" />
-      <ResponsivePicture variants={imageAssets.icons.instagram[layer]} className="float-icon float-icon--instagram" alt="" sizes="66px" />
+    <div className="floating-icons" aria-hidden="true">
+      <ResponsivePicture variants={imageAssets.icons.youtube.variants} className="float-icon float-icon--youtube" alt="" sizes="98px" />
+      <ResponsivePicture variants={imageAssets.icons.tiktok.variants} className="float-icon float-icon--tiktok" alt="" sizes="84px" />
+      <ResponsivePicture variants={imageAssets.icons.instagram.variants} className="float-icon float-icon--instagram" alt="" sizes="66px" />
     </div>
   );
 }
@@ -92,36 +85,27 @@ export default function HomePage() {
           </div>
           <div className="hero-statue-wrap" aria-hidden="true">
             <ResponsivePicture
-              variants={imageAssets.hero.sharp}
+              variants={imageAssets.hero.variants}
               className="hero-statue"
               alt=""
               sizes="(max-width: 410px) 310vw, (max-width: 680px) 290vw, 140vw"
               loading="eager"
               fetchPriority="high"
-              critical
             />
           </div>
         </section>
 
         <section className="how-it-works" id="features">
-          <div className="features-stage" data-mask-stage="features" data-motion-near>
+          <div className="features-stage" data-motion-near>
             <div className="how-it-works-bg">
               <div className="hiw-bg-label">Ready to unlock your real potential?</div>
-              <div className="hiw-bg-text" data-parallax-text>
-                <span className="xray-text-word">
-                  <span className="xray-text-proxy">FEATURES</span>
-                  <XrayPlane id="features-title" scene="features" className="xray-text-plane" sharpSources={sceneAssets["features-title"].sharp} blurredSources={sceneAssets["features-title"].blurred} width={featuresTitlePlane.width} height={featuresTitlePlane.height} contentBox={featuresTitlePlane.contentBox} targets={features.map((feature) => feature.id)} motionChannel="text" />
-                </span>
-              </div>
-              <PairedSceneVisual
-                scene="features"
+              <div className="hiw-bg-text" data-parallax-text>FEATURES</div>
+              <ResponsivePicture
+                variants={imageAssets.statues.features.variants}
                 className="hiw-bg-img"
-                sharpSources={sceneAssets["features-statue"].sharp}
-                blurredSources={sceneAssets["features-statue"].blurred}
-                width={sceneAssets["features-statue"].width}
-                height={sceneAssets["features-statue"].height}
                 alt="Features"
-                targets={features.map((feature) => feature.id)}
+                sizes="(max-width: 768px) 92vw, 34vw"
+                parallaxVisual
               />
             </div>
             <div className="how-it-works-content">
@@ -130,11 +114,10 @@ export default function HomePage() {
                   const className = `feature-card feature-card-motion${feature.align === "right" ? " is-right" : ""}`;
                   if (feature.kind === "focus") {
                     return (
-                      <div key={feature.id} className="total-focus-wrap feature-card-motion" data-feature-card data-speed={feature.speed} data-mask-link={feature.id} data-motion-near>
-                        <div className="total-focus-motion" data-feature-id={feature.id} data-mask-target={feature.id}>
+                      <div key={feature.id} className="total-focus-wrap feature-card-motion" data-feature-card data-speed={feature.speed} data-motion-near>
+                        <div className="total-focus-motion" data-feature-id={feature.id} data-hover-target>
                           <FloatingFeatureIcons />
                           <article className="feature-card-surface glass-card">
-                            <FloatingFeatureIcons blurred />
                             <h3>{feature.title}</h3><p>{feature.description}</p>
                           </article>
                         </div>
@@ -142,8 +125,8 @@ export default function HomePage() {
                     );
                   }
                   return (
-                    <article key={feature.id} className={className} data-feature-card data-speed={feature.speed} data-mask-link={feature.id} data-motion-near>
-                      <div id={feature.kind === "ambient" ? "ambientCard" : feature.kind === "timer" ? "cruelCard" : undefined} className="feature-card-surface glass-card" data-feature-id={feature.id} data-mask-target={feature.id}>
+                    <article key={feature.id} className={className} data-feature-card data-speed={feature.speed} data-motion-near>
+                      <div id={feature.kind === "ambient" ? "ambientCard" : feature.kind === "timer" ? "cruelCard" : undefined} className="feature-card-surface glass-card" data-feature-id={feature.id} data-hover-target>
                         {feature.kind === "ambient" ? (
                           <><div className="ambient-card-copy"><h3>{feature.title}</h3><p>{feature.description}</p></div><AmbientPlayer tracks={ambientTracks} /></>
                         ) : (
@@ -159,30 +142,24 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="download-section" id="download" data-mask-stage="download" data-motion-near>
+        <section className="download-section" id="download" data-motion-scene="download" data-motion-near>
           <div className="download-bg">
             <div className="download-bg-text section-bg-text" data-parallax-text>
               <div className="download-bg-label section-bg-label">Focus is a choice</div>
-              <span className="xray-text-word">
-                <span className="xray-text-proxy">DOWNLOAD</span>
-                <XrayPlane id="download-title" scene="download" className="xray-text-plane" sharpSources={sceneAssets["download-title"].sharp} blurredSources={sceneAssets["download-title"].blurred} width={downloadTitlePlane.width} height={downloadTitlePlane.height} contentBox={downloadTitlePlane.contentBox} targets={downloadPlans.map((plan) => `plan-${plan.id}`)} motionChannel="text" />
-              </span>
+              DOWNLOAD
             </div>
-            <PairedSceneVisual
-              scene="download"
+            <ResponsivePicture
+              variants={imageAssets.statues.download.variants}
               className="download-bg-img section-bg-img"
-              sharpSources={sceneAssets["download-statue"].sharp}
-              blurredSources={sceneAssets["download-statue"].blurred}
-              width={sceneAssets["download-statue"].width}
-              height={sceneAssets["download-statue"].height}
               alt="Download"
-              targets={downloadPlans.map((plan) => `plan-${plan.id}`)}
+              sizes="(max-width: 768px) 132vw, 40vw"
+              parallaxVisual
             />
           </div>
           <div className="download-content">
             <div className="download-cards">
               {downloadPlans.map((plan) => (
-                <article key={plan.id} className={`download-card glass-card ${plan.premium ? "premium-card" : "free-card"}`} data-mask-target={`plan-${plan.id}`}>
+                <article key={plan.id} className={`download-card glass-card ${plan.premium ? "premium-card" : "free-card"}`} data-hover-target>
                   <h3 className="download-card-title">{plan.title}</h3>
                   {plan.premium ? (
                     <><p className="spots-desc">First 1000 legends get lifetime access for free</p><SpotsCounter /><div className="price-display"><span className="price-old">{plan.oldPrice}</span><span className="price-new">{plan.price}</span><span className="price-period">{plan.period}</span></div></>
@@ -198,24 +175,21 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="support-section" id="support" data-mask-stage="support" data-motion-near>
+        <section className="support-section" id="support" data-motion-scene="support" data-motion-near>
           <div className="support-bg">
             <div className="support-bg-text section-bg-text" data-parallax-text><div className="support-bg-label section-bg-label">For those who want to give more</div>SUPPORT</div>
-            <PairedSceneVisual
-              scene="support"
+            <ResponsivePicture
+              variants={imageAssets.statues.support.variants}
               className="support-bg-img section-bg-img"
-              sharpSources={sceneAssets["support-statue"].sharp}
-              blurredSources={sceneAssets["support-statue"].blurred}
-              width={sceneAssets["support-statue"].width}
-              height={sceneAssets["support-statue"].height}
               alt="Support"
-              targets={supportMethods.map((method) => `support-${method.id}`)}
+              sizes="(max-width: 768px) 158vw, 55vw"
+              parallaxVisual
             />
           </div>
           <div className="support-content">
             <div className="support-cards">
               {supportMethods.map((method) => (
-                <article key={method.id} className="support-card glass-card" data-mask-target={`support-${method.id}`}>
+                <article key={method.id} className="support-card glass-card" data-hover-target>
                   <div className={`support-card-icon ${method.id === "card" ? "rub" : "btc"}`}>{method.symbol}</div>
                   <h3 className="support-card-title">{method.title}</h3><p className="support-card-sub">{method.subtitle}</p>
                   {method.id === "card" ? <a href="https://tbank.ru/cf/1ntWnJ2SQaO" target="_blank" rel="noopener noreferrer" className="btn btn-outline">Link <ExternalLink className="btn-external-icon" /></a> : <button className="btn btn-outline" type="button" data-open-modal="crypto">View Addresses</button>}

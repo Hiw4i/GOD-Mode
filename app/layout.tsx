@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
-import { SiteImageLoader } from "@/components/site-image-loader";
+import Script from "next/script";
 import { APP_VERSION } from "@/lib/version";
 import "lenis/dist/lenis.css";
 import "./globals.css";
@@ -50,7 +50,12 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${jetBrainsMono.variable}`} data-app-version={APP_VERSION}>
-      <body><SiteImageLoader />{children}</body>
+      <body>
+        <Script id="weak-device-detect" strategy="beforeInteractive">
+          {`try{var n=navigator,c=n.hardwareConcurrency||8,m=n.deviceMemory||8;if(c<=2||(c<=4&&m<=4)){document.documentElement.setAttribute('data-no-blur','')}}catch(e){}`}
+        </Script>
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-<fontconfig>
-  <dir prefix="cwd">app/fonts</dir>
-  <cachedir prefix="cwd">.fontconfig-cache</cachedir>
-  <config></config>
-</fontconfig>

@@ -10,6 +10,10 @@ img { user-select: none; -webkit-user-select: none; }
     --border: rgba(234,234,234,0.08);
     --font: 'Space Grotesk', sans-serif;
     --glass-radius: 16px;
+    /* Fine grayscale grain (120px inline SVG tile). Static background layer,
+       always on — including over blur: paints once, stays cached, no filters,
+       no animation. Opacity is baked into the SVG so no extra element needed. */
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
 }
 
 html.lenis, html.lenis body { height: auto; }
@@ -31,3 +35,64 @@ body {
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 2px; }
+
+/* Very weak devices only: drop every blur filter to keep scrolling smooth.
+   The `data-no-blur` flag is set on <html> by the early head script in
+   app/layout.tsx before first paint. Grain stays on (it is part of the base
+   backgrounds); here only the glass depth is replaced with a darker static
+   stack: zero per-frame cost, no filters, no animations, one background paint. */
+html[data-no-blur] .glass-card,
+html[data-no-blur] .modal-overlay,
+html[data-no-blur] .modal {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+html[data-no-blur] .glass-card {
+    background:
+        var(--grain),
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0) 26%),
+        linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0) 46%, rgba(212,69,26,0.035) 100%),
+        linear-gradient(0deg, rgba(0,0,0,0.28), rgba(0,0,0,0) 34%),
+        #101010;
+    background-size: 120px 120px, auto, auto, auto, auto;
+    border-color: rgba(255,255,255,0.11);
+    box-shadow: 0 18px 50px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+html[data-no-blur] .modal-overlay {
+    background:
+        radial-gradient(120% 90% at 50% 18%, rgba(255,255,255,0.06), rgba(0,0,0,0) 55%),
+        linear-gradient(180deg, rgba(0,0,0,0.8), rgba(0,0,0,0.87));
+}
+html[data-no-blur] .modal {
+    background:
+        var(--grain),
+        linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0) 30%),
+        linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0) 48%, rgba(212,69,26,0.035) 100%),
+        #131313;
+    background-size: 120px 120px, auto, auto, auto;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
+}
+
+/* Browsers without backdrop-filter support: same static treatment.
+   `html` prefix beats the translucent mobile `.glass-card` in responsive.css. */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+    html .modal-overlay {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background:
+            radial-gradient(120% 90% at 50% 18%, rgba(255,255,255,0.06), rgba(0,0,0,0) 55%),
+            linear-gradient(180deg, rgba(0,0,0,0.8), rgba(0,0,0,0.87));
+    }
+    html .modal {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background:
+            var(--grain),
+            linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0) 30%),
+            linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0) 48%, rgba(212,69,26,0.035) 100%),
+            #131313;
+        background-size: 120px 120px, auto, auto, auto;
+        border: 1px solid rgba(255,255,255,0.12);
+    }
+}

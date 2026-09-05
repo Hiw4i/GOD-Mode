@@ -25,63 +25,6 @@ body {
 button, input { font: inherit; }
 button { color: inherit; }
 
-html.site-preloading { overflow: hidden; }
-
-.site-loader {
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
-    display: grid;
-    place-content: center;
-    justify-items: center;
-    gap: 1.15rem;
-    padding: 2rem;
-    background: #0a0a0a;
-    opacity: 1;
-    visibility: visible;
-    transition: opacity .45s ease, visibility .45s ease;
-}
-
-.site-loader--done {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.site-loader__brand {
-    color: var(--text);
-    font-size: clamp(1rem, 3vw, 1.35rem);
-    font-weight: 600;
-    letter-spacing: .28em;
-    text-transform: uppercase;
-}
-
-.site-loader__brand span { color: var(--accent); }
-
-.site-loader__track {
-    width: min(340px, 72vw);
-    height: 2px;
-    overflow: hidden;
-    background: rgba(255,255,255,.12);
-}
-
-.site-loader__bar {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background: #fff;
-    box-shadow: 0 0 18px rgba(255,255,255,.65);
-    transform-origin: left center;
-    transition: transform .18s ease-out;
-}
-
-.site-loader__value {
-    color: rgba(255,255,255,.42);
-    font-family: var(--font-mono-local);
-    font-size: .65rem;
-    letter-spacing: .14em;
-}
-
 /* The hero keeps its original crop, but the animated transform lives on a wrapper. */
 .hero-statue-wrap {
     position: absolute;
@@ -101,80 +44,10 @@ html.site-preloading { overflow: hidden; }
     transform: none;
 }
 
-/* The sharp and blurred statues share one box and one transform. */
-.paired-scene-visual {
-    isolation: isolate;
-    pointer-events: none;
-}
-.paired-scene-canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    pointer-events: none;
-}
-.paired-scene-webgl {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    visibility: hidden;
-    pointer-events: none;
-}
-.paired-scene-visual[data-renderer-active="webgl"] .paired-scene-webgl { visibility: visible; }
-.paired-scene-visual[data-renderer-active="webgl"] .paired-scene-canvas { visibility: hidden; }
-.xray-text-word {
-    position: relative;
-    display: inline-block;
-    line-height: inherit;
-}
-.xray-text-proxy {
-    visibility: hidden;
-    white-space: nowrap;
-}
-.xray-text-plane {
-    position: absolute;
-    top: 50%;
-    left: var(--xray-plane-left, 0%);
-    width: var(--xray-plane-width, 100%);
-    height: auto;
-    transform: translateY(-50%);
-    z-index: 1;
-    overflow: visible;
-}
 .download-bg-img,
 .support-bg-img { z-index: 1; }
 .download-content,
 .support-content { z-index: 3; }
-
-html[data-mask-debug="true"] .glass-card {
-    background: transparent !important;
-}
-html[data-mask-debug="true"] .glass-card::after {
-    opacity: 0 !important;
-}
-html[data-mask-debug="true"] .floating-icons--blur {
-    outline: 1px solid rgba(0, 180, 255, .8);
-}
-
-/* Cheap glass finish over the masked image: tint, border, highlight and static grain. */
-.glass-card {
-    background: linear-gradient(145deg, rgba(30,30,30,.64), rgba(10,10,10,.46));
-    box-shadow: 0 20px 60px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.035);
-}
-.glass-card::after {
-    inset: 0;
-    width: auto;
-    height: auto;
-    opacity: .34;
-    z-index: 0;
-    background-image:
-        url("/sources/glass-noise.webp"),
-        radial-gradient(circle at 25% 15%, rgba(255,255,255,.11), transparent 48%);
-    background-size: 128px 128px, 100% 100%;
-}
-.glass-card > * { position: relative; z-index: 1; }
-.glass-card:hover { border-color: rgba(255,255,255,.22); }
 
 .motion-near.feature-card-motion,
 .motion-near.feature-card-motion > .feature-card-surface,
@@ -194,13 +67,6 @@ html[data-mask-debug="true"] .floating-icons--blur {
 @keyframes floatTwo { 0%,100% { transform: translate3d(0,0,0) rotate(22deg); } 50% { transform: translate3d(-7px,12px,0) rotate(10deg); } }
 @keyframes floatThree { 0%,100% { transform: translate3d(0,0,0) rotate(-8deg); } 50% { transform: translate3d(4px,-8px,0) rotate(3deg); } }
 
-.floating-icons--blur {
-    z-index: 0 !important;
-    pointer-events: none;
-}
-.floating-icons--blur .float-icon {
-    opacity: 1;
-}
 .cruel-timer { font-family: var(--font-mono-local); }
 .ambient-track-name { font-family: var(--font-mono-local); }
 .ambient-cover { z-index: 0 !important; }

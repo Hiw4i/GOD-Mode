@@ -2,277 +2,103 @@
   "hero": {
     "width": 1920,
     "height": 1081,
-    "sharp": [
+    "variants": [
       {
-        "src": "/sources/statue%20for%20hero-w960.webp?v=0.3.3-d38e7397ab",
+        "src": "/sources/statue%20for%20hero-w960.webp?v=0.4.0-d38e7397ab",
         "width": 960,
         "height": 540,
         "bytes": 13664
       },
       {
-        "src": "/sources/statue%20for%20hero-w1280.webp?v=0.3.3-4166daf341",
+        "src": "/sources/statue%20for%20hero-w1280.webp?v=0.4.0-4166daf341",
         "width": 1280,
         "height": 720,
         "bytes": 19460
       },
       {
-        "src": "/sources/statue%20for%20hero-w1600.webp?v=0.3.3-7ed25b20d7",
+        "src": "/sources/statue%20for%20hero-w1600.webp?v=0.4.0-7ed25b20d7",
         "width": 1600,
         "height": 901,
         "bytes": 25616
       },
       {
-        "src": "/sources/statue%20for%20hero.webp?v=0.3.3-fd4c5fbf3a",
+        "src": "/sources/statue%20for%20hero.webp?v=0.4.0-fd4c5fbf3a",
         "width": 1920,
         "height": 1081,
         "bytes": 31490
       }
-    ],
-    "blurred": [
-      {
-        "src": "/sources/statue%20for%20hero%20(blured)-w960.webp?v=0.3.3-5505130fd3",
-        "width": 960,
-        "height": 540,
-        "bytes": 9464
-      },
-      {
-        "src": "/sources/statue%20for%20hero%20(blured)-w1280.webp?v=0.3.3-548f815d38",
-        "width": 1280,
-        "height": 720,
-        "bytes": 13352
-      },
-      {
-        "src": "/sources/statue%20for%20hero%20(blured)-w1600.webp?v=0.3.3-77a7987ce2",
-        "width": 1600,
-        "height": 901,
-        "bytes": 17386
-      },
-      {
-        "src": "/sources/statue%20for%20hero%20(blured).webp?v=0.3.3-c4f5bed8c2",
-        "width": 1920,
-        "height": 1081,
-        "bytes": 21086
-      }
     ]
   },
-  "planes": {
-    "features-statue": {
+  "statues": {
+    "features": {
       "width": 719,
       "height": 1080,
-      "sharp": [
+      "variants": [
         {
-          "src": "/sources/statue%20for%20features-w480.webp?v=0.3.3-539897a8ce",
+          "src": "/sources/statue%20for%20features-w480.webp?v=0.4.0-539897a8ce",
           "width": 480,
           "height": 721,
           "bytes": 62728
         },
         {
-          "src": "/sources/statue%20for%20features.webp?v=0.3.3-84aeec8af2",
+          "src": "/sources/statue%20for%20features.webp?v=0.4.0-84aeec8af2",
           "width": 719,
           "height": 1080,
           "bytes": 101476
         }
-      ],
-      "blurred": [
-        {
-          "src": "/sources/statue%20for%20features%20(blured)-w480.webp?v=0.3.3-76d42898f7",
-          "width": 480,
-          "height": 721,
-          "bytes": 29878
-        },
-        {
-          "src": "/sources/statue%20for%20features%20(blured).webp?v=0.3.3-4ae4745460",
-          "width": 719,
-          "height": 1080,
-          "bytes": 39564
-        }
       ]
     },
-    "download-statue": {
+    "download": {
       "width": 900,
       "height": 800,
-      "sharp": [
+      "variants": [
         {
-          "src": "/sources/statue%20for%20download-w480.webp?v=0.3.3-c5768c2d99",
+          "src": "/sources/statue%20for%20download-w480.webp?v=0.4.0-c5768c2d99",
           "width": 480,
           "height": 427,
           "bytes": 24640
         },
         {
-          "src": "/sources/statue%20for%20download-w720.webp?v=0.3.3-66836f3081",
+          "src": "/sources/statue%20for%20download-w720.webp?v=0.4.0-66836f3081",
           "width": 720,
           "height": 640,
           "bytes": 44746
         },
         {
-          "src": "/sources/statue%20for%20download.webp?v=0.3.3-c49da50d8f",
+          "src": "/sources/statue%20for%20download.webp?v=0.4.0-c49da50d8f",
           "width": 900,
           "height": 800,
           "bytes": 59448
         }
-      ],
-      "blurred": [
-        {
-          "src": "/sources/statue%20for%20download%20(blured)-w480.webp?v=0.3.3-5145f59d43",
-          "width": 480,
-          "height": 427,
-          "bytes": 20058
-        },
-        {
-          "src": "/sources/statue%20for%20download%20(blured)-w720.webp?v=0.3.3-2a86c503d8",
-          "width": 720,
-          "height": 640,
-          "bytes": 34270
-        },
-        {
-          "src": "/sources/statue%20for%20download%20(blured).webp?v=0.3.3-c566f11186",
-          "width": 900,
-          "height": 800,
-          "bytes": 31252
-        }
       ]
     },
-    "support-statue": {
+    "support": {
       "width": 1050,
       "height": 800,
-      "sharp": [
+      "variants": [
         {
-          "src": "/sources/statue%20for%20support-w480.webp?v=0.3.3-6e1031a722",
+          "src": "/sources/statue%20for%20support-w480.webp?v=0.4.0-6e1031a722",
           "width": 480,
           "height": 366,
           "bytes": 22034
         },
         {
-          "src": "/sources/statue%20for%20support-w720.webp?v=0.3.3-7d6a2bd7f3",
+          "src": "/sources/statue%20for%20support-w720.webp?v=0.4.0-7d6a2bd7f3",
           "width": 720,
           "height": 549,
           "bytes": 36598
         },
         {
-          "src": "/sources/statue%20for%20support-w960.webp?v=0.3.3-b2001f63e7",
+          "src": "/sources/statue%20for%20support-w960.webp?v=0.4.0-b2001f63e7",
           "width": 960,
           "height": 731,
           "bytes": 52650
         },
         {
-          "src": "/sources/statue%20for%20support.webp?v=0.3.3-d786bd3e24",
+          "src": "/sources/statue%20for%20support.webp?v=0.4.0-d786bd3e24",
           "width": 1050,
           "height": 800,
           "bytes": 55444
-        }
-      ],
-      "blurred": [
-        {
-          "src": "/sources/statue%20for%20support%20(blured)-w480.webp?v=0.3.3-a5a508c10c",
-          "width": 480,
-          "height": 366,
-          "bytes": 18478
-        },
-        {
-          "src": "/sources/statue%20for%20support%20(blured)-w720.webp?v=0.3.3-a44e1dad3c",
-          "width": 720,
-          "height": 549,
-          "bytes": 36818
-        },
-        {
-          "src": "/sources/statue%20for%20support%20(blured)-w960.webp?v=0.3.3-a100ed00f7",
-          "width": 960,
-          "height": 731,
-          "bytes": 55116
-        },
-        {
-          "src": "/sources/statue%20for%20support%20(blured).webp?v=0.3.3-2634212a53",
-          "width": 1050,
-          "height": 800,
-          "bytes": 41198
-        }
-      ]
-    },
-    "features-title": {
-      "width": 1920,
-      "height": 987,
-      "sharp": [
-        {
-          "src": "/sources/features-title-w960.webp?v=0.3.3-55189ccce0",
-          "width": 960,
-          "height": 493,
-          "bytes": 17124
-        },
-        {
-          "src": "/sources/features-title-w1440.webp?v=0.3.3-08efa05111",
-          "width": 1440,
-          "height": 740,
-          "bytes": 30124
-        },
-        {
-          "src": "/sources/features-title.webp?v=0.3.3-8ec881fd46",
-          "width": 1920,
-          "height": 987,
-          "bytes": 44342
-        }
-      ],
-      "blurred": [
-        {
-          "src": "/sources/features-title%20(blured)-w960.webp?v=0.3.3-dab87e023f",
-          "width": 960,
-          "height": 493,
-          "bytes": 18066
-        },
-        {
-          "src": "/sources/features-title%20(blured)-w1440.webp?v=0.3.3-5500d6bb8e",
-          "width": 1440,
-          "height": 740,
-          "bytes": 37872
-        },
-        {
-          "src": "/sources/features-title%20(blured).webp?v=0.3.3-faa7451e35",
-          "width": 1920,
-          "height": 987,
-          "bytes": 64472
-        }
-      ]
-    },
-    "download-title": {
-      "width": 1920,
-      "height": 929,
-      "sharp": [
-        {
-          "src": "/sources/download-title-w960.webp?v=0.3.3-88009e4453",
-          "width": 960,
-          "height": 464,
-          "bytes": 19146
-        },
-        {
-          "src": "/sources/download-title-w1440.webp?v=0.3.3-0cea79f5b4",
-          "width": 1440,
-          "height": 696,
-          "bytes": 33566
-        },
-        {
-          "src": "/sources/download-title.webp?v=0.3.3-d8e04c7226",
-          "width": 1920,
-          "height": 929,
-          "bytes": 49850
-        }
-      ],
-      "blurred": [
-        {
-          "src": "/sources/download-title%20(blured)-w960.webp?v=0.3.3-073893ce1c",
-          "width": 960,
-          "height": 464,
-          "bytes": 17816
-        },
-        {
-          "src": "/sources/download-title%20(blured)-w1440.webp?v=0.3.3-0ff67a7d25",
-          "width": 1440,
-          "height": 696,
-          "bytes": 37178
-        },
-        {
-          "src": "/sources/download-title%20(blured).webp?v=0.3.3-8c8e83abd3",
-          "width": 1920,
-          "height": 929,
-          "bytes": 63958
         }
       ]
     }
@@ -281,96 +107,54 @@
     "youtube": {
       "width": 256,
       "height": 256,
-      "sharp": [
+      "variants": [
         {
-          "src": "/sources/youtube-w128.webp?v=0.3.3-184385c217",
+          "src": "/sources/youtube-w128.webp?v=0.4.0-184385c217",
           "width": 128,
           "height": 128,
           "bytes": 528
         },
         {
-          "src": "/sources/youtube.webp?v=0.3.3-41fed3d5d8",
+          "src": "/sources/youtube.webp?v=0.4.0-41fed3d5d8",
           "width": 256,
           "height": 256,
           "bytes": 1028
-        }
-      ],
-      "blurred": [
-        {
-          "src": "/sources/youtube%20(blured)-w128.webp?v=0.3.3-71192f1fd4",
-          "width": 128,
-          "height": 128,
-          "bytes": 356
-        },
-        {
-          "src": "/sources/youtube%20(blured).webp?v=0.3.3-b940d63f8e",
-          "width": 256,
-          "height": 256,
-          "bytes": 756
         }
       ]
     },
     "tiktok": {
       "width": 256,
       "height": 256,
-      "sharp": [
+      "variants": [
         {
-          "src": "/sources/tiktok-w128.webp?v=0.3.3-2f6224da56",
+          "src": "/sources/tiktok-w128.webp?v=0.4.0-2f6224da56",
           "width": 128,
           "height": 128,
           "bytes": 710
         },
         {
-          "src": "/sources/tiktok.webp?v=0.3.3-6b2353306a",
+          "src": "/sources/tiktok.webp?v=0.4.0-6b2353306a",
           "width": 256,
           "height": 256,
           "bytes": 1304
-        }
-      ],
-      "blurred": [
-        {
-          "src": "/sources/tiktok%20(blured)-w128.webp?v=0.3.3-ac3b30c3b5",
-          "width": 128,
-          "height": 128,
-          "bytes": 350
-        },
-        {
-          "src": "/sources/tiktok%20(blured).webp?v=0.3.3-c152593a2c",
-          "width": 256,
-          "height": 256,
-          "bytes": 792
         }
       ]
     },
     "instagram": {
       "width": 256,
       "height": 256,
-      "sharp": [
+      "variants": [
         {
-          "src": "/sources/instagram-w128.webp?v=0.3.3-3f77d2c930",
+          "src": "/sources/instagram-w128.webp?v=0.4.0-3f77d2c930",
           "width": 128,
           "height": 128,
           "bytes": 1284
         },
         {
-          "src": "/sources/instagram.webp?v=0.3.3-6dd4baa654",
+          "src": "/sources/instagram.webp?v=0.4.0-6dd4baa654",
           "width": 256,
           "height": 256,
           "bytes": 2408
-        }
-      ],
-      "blurred": [
-        {
-          "src": "/sources/instagram%20(blured)-w128.webp?v=0.3.3-f3976abc72",
-          "width": 128,
-          "height": 128,
-          "bytes": 372
-        },
-        {
-          "src": "/sources/instagram%20(blured).webp?v=0.3.3-35a3dda576",
-          "width": 256,
-          "height": 256,
-          "bytes": 680
         }
       ]
     }

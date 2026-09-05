@@ -52,6 +52,17 @@ nav {
 .nav-right a:hover { opacity: 1; }
 .nav-right a.active { opacity: 1; color: var(--accent); }
 
+/* Subtle top vignette behind the fixed nav: keeps logo/links readable over
+   bright backgrounds. Barely visible by design, applies to desktop + mobile. */
+nav::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 -3rem;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(10,10,10,0.72) 0%, rgba(10,10,10,0.32) 55%, transparent 100%);
+}
+
 /* ===== HERO ===== */
 .hero {
     min-height: 100vh;
@@ -440,7 +451,7 @@ nav {
 .float-icon--instagram {
     width: clamp(48px, 5vw, 66px);
     height: clamp(48px, 5vw, 66px);
-    bottom: -10%;
+    bottom: -2%;
     left: -14%;
     z-index: -3;
     opacity: 0.42;
@@ -449,13 +460,11 @@ nav {
 
 /* ===== CRUEL STOPWATCH ===== */
 #cruelCard { overflow: visible; }
-#cruelCard::before { z-index: 3; }
-#cruelCard::after { z-index: 3; top: 0; left: 0; width: 100%; height: 100%; }
 #cruelCard > .cruel-timer { position: absolute; }
 
 .cruel-timer {
     position: absolute;
-    bottom: -62px;
+    bottom: -28px;
     right: -24px;
     font-family: 'JetBrains Mono', monospace;
     font-size: clamp(2.4rem, 4.8vw, 4.4rem);
@@ -522,7 +531,7 @@ nav {
 }
 
 @media (min-width: 681px) {
-    .ambient-player-stage { bottom: calc(clamp(-1.6rem, -2vw, -1rem) + 5px); }
+    .ambient-player-stage { bottom: calc(clamp(-1.6rem, -2vw, -1rem) - 52px); }
 }
 
 .ambient-player-frame {

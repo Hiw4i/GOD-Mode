@@ -44,32 +44,156 @@
     nav { padding: 1.2rem 1.5rem; }
 }
 
-@media (min-width: 680px) {
+@media (min-width: 769px) {
     .how-it-works { min-height: 360vh; }
     .feature-cards { height: 300vh; }
 }
 
-@media (max-width: 680px) {
-    .how-it-works { min-height: 0; }
+@media (max-width: 768px) {
+    html,
+    body { overflow-x: clip; }
+
+    nav {
+        padding:
+            max(0.7rem, env(safe-area-inset-top))
+            max(0.75rem, env(safe-area-inset-right))
+            0.7rem
+            max(0.75rem, env(safe-area-inset-left));
+    }
+
+    .nav-logo,
+    .nav-right a {
+        min-width: 44px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-logo { justify-content: flex-start; }
+    .nav-right { gap: 0.25rem; }
+    .nav-right .nav-icon { display: block; }
+    .nav-right .nav-label { display: none; }
+
+    .glass-card {
+        --glass-blur: 10px;
+        background: var(--grain), rgba(14,14,14,0.54);
+        background-size: 120px 120px, auto;
+        box-shadow: 0 22px 64px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.055);
+    }
+
+    .glass-card:hover,
+    .total-focus-wrap:hover .total-focus-motion,
+    .total-focus-wrap:hover .floating-icons,
+    .ambient-control:hover,
+    .btn-outline:hover,
+    .download-card-btn.filled:hover,
+    .selectable-btn:hover,
+    .signup-submit:hover { transform: none !important; }
+
+    .how-it-works {
+        min-height: 0;
+        padding: 0;
+        overflow: clip;
+    }
+
+    .how-it-works::after,
+    .download-section::after,
+    .support-section::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 7;
+        height: clamp(11rem, 30svh, 19rem);
+        background: linear-gradient(180deg, transparent 0%, rgba(10,10,10,0.42) 38%, var(--bg) 82%, var(--bg) 100%);
+        pointer-events: none;
+    }
+
     .features-stage {
         position: relative;
         top: auto;
         height: auto;
         min-height: 0;
-        overflow: visible;
+        overflow: clip;
         contain: none;
         display: block;
-        padding: 0 1rem;
+        padding: 0;
     }
+
     .features-stage::before,
     .features-stage::after { display: none; }
-    .how-it-works-content { position: relative; inset: auto; }
-    .hiw-bg-text { top: 18rem; font-size: clamp(4.5rem, 22vw, 7.8rem); }
-    .hiw-bg-label { top: 2rem; bottom: auto; font-size: 0.45rem; letter-spacing: 1.5px; }
-    .download-bg-label, .support-bg-label { bottom: calc(100% + 1.1rem); }
-    .hiw-bg-img { top: 56rem; width: clamp(320px, 92vw, 460px); }
-    .download-bg-img { bottom: 9rem; }
-    .support-bg-img { width: 85%; }
+
+    .how-it-works-bg,
+    .download-bg,
+    .support-bg {
+        position: sticky;
+        inset: auto;
+        top: 0;
+        width: 100%;
+        height: 100svh;
+        min-height: 34rem;
+        margin-bottom: -100svh;
+        overflow: hidden;
+        isolation: isolate;
+    }
+
+    .how-it-works-bg::before,
+    .how-it-works-bg::after,
+    .download-bg::before,
+    .support-bg::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 7;
+        pointer-events: none;
+    }
+
+    .how-it-works-bg::before,
+    .download-bg::before,
+    .support-bg::before {
+        background:
+            linear-gradient(180deg, var(--bg) 0%, transparent 22%, transparent 70%, var(--bg) 100%),
+            radial-gradient(circle at 50% 50%, transparent 20%, rgba(10,10,10,0.42) 78%);
+    }
+
+    .how-it-works-bg::after {
+        background: linear-gradient(180deg, rgba(10,10,10,0.16), transparent 42%, rgba(10,10,10,0.28));
+    }
+
+    .hiw-bg-text {
+        top: clamp(8.5rem, 19svh, 12rem);
+        font-size: clamp(3.75rem, 20vw, 9.5rem);
+        line-height: 0.82;
+    }
+
+    .hiw-bg-label {
+        top: max(5.75rem, calc(env(safe-area-inset-top) + 4.75rem));
+        bottom: auto;
+        padding-inline: 1rem;
+        font-size: 0.75rem;
+        line-height: 1.4;
+        letter-spacing: 0.14em;
+        white-space: normal;
+    }
+
+    .hiw-bg-img {
+        top: clamp(17rem, 34svh, 24rem);
+        width: min(92vw, 31rem);
+        opacity: 0.76;
+    }
+
+    .how-it-works-content {
+        position: relative;
+        inset: auto;
+        z-index: 8;
+        padding-inline:
+            max(1rem, env(safe-area-inset-left))
+            max(1rem, env(safe-area-inset-right));
+        contain: none;
+    }
+
     .feature-cards {
         position: static;
         width: 100%;
@@ -78,109 +202,263 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: clamp(4rem, 8vh, 6rem);
-        padding-top: clamp(8rem, 12vh, 10rem);
-        padding-bottom: 8vh;
+        gap: clamp(2rem, 6svh, 3.25rem);
+        padding-top: max(82svh, 36rem);
+        padding-bottom: max(18svh, 7rem);
     }
+
     .feature-card,
     .feature-card:nth-child(n) {
         position: relative;
         top: auto;
         left: auto;
         right: auto;
-        width: min(300px, calc(100vw - 40px));
-        margin-left: 0;
-        margin-right: 0;
+        width: min(100%, 34rem);
+        min-height: 0;
+        margin: 0;
         --feature-card-scale: 1;
+        --feature-card-hover-scale: 1;
+        --feature-card-hover-lift: 0px;
     }
-    .feature-card-surface { padding: 1.05rem; border-radius: 14px; }
+
+    .feature-card.is-right,
+    .feature-card.is-right p { text-align: left; }
+
+    .feature-card-surface {
+        min-height: 0;
+        padding: clamp(1.2rem, 5vw, 1.6rem);
+        border-radius: 16px;
+        transform: none;
+    }
+
     #cruelCard { overflow: visible; }
-    .feature-card-surface::before { border-radius: 14px; }
-    .feature-card-surface h3 { font-size: clamp(1.3rem, 7vw, 1.7rem); }
-    .feature-card-surface p { font-size: 0.62rem; }
-    .download-cards { gap: 1.6rem; max-width: 420px; }
-    .download-card { padding: 1.5rem 1.1rem; }
-    .download-card-title { font-size: 1.5rem; margin-bottom: 0.8rem; }
-    .download-card-price { margin-bottom: 1.2rem; }
-    .price-amount { font-size: 2.1rem; }
-    .download-card-features { margin-bottom: 1.5rem; }
-    .download-card-features li { font-size: 0.75rem; padding: 0.3rem 0; gap: 0.6rem; }
-    .feature-check { font-size: 0.85rem; }
-    .spots-desc { font-size: 0.7rem; margin-bottom: 0.8rem; }
-    .spots-remaining { font-size: 2.1rem; }
-    .spots-label { font-size: 0.65rem; }
-    .spots-bar { margin-bottom: 1.2rem; }
-    .price-display { gap: 0.7rem; margin-bottom: 1.2rem; }
-    .price-new { font-size: 2.2rem; }
-    .download-card .btn, .support-card .btn { padding: 0.9rem 1.5rem; font-size: 0.65rem; }
-    .support-cards { gap: 1.3rem; max-width: 420px; }
-    .support-content { padding-top: 0; margin-top: 4rem; }
-    .support-card { padding: 1.9rem 1.1rem; }
-    .support-card-icon { width: 56px; height: 56px; font-size: 1.5rem; margin-bottom: 1.3rem; }
-    .support-card-title { font-size: 1.4rem; margin-bottom: 0.4rem; }
-    .support-card-sub { font-size: 0.6rem; margin-bottom: 1.8rem; }
+    .feature-card-surface h3 {
+        font-size: clamp(1.55rem, 7vw, 2rem);
+        line-height: 0.98;
+    }
+
+    .feature-card-surface p {
+        max-width: 36ch;
+        margin-top: 1rem;
+        color: rgba(234,234,234,0.68);
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.5;
+    }
+
     .total-focus-wrap {
         position: relative;
         top: auto;
         left: auto;
-        width: min(300px, calc(100vw - 40px));
+        width: min(100%, 34rem);
         display: block;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: clamp(3rem, 5vh, 4rem);
+        margin: 0 auto;
     }
-    .float-icon--youtube { left: -5%; margin-top: -55px; }
-    .float-icon--tiktok { left: 18%; margin-top: -30px; }
-    .float-icon--instagram { left: -2%; margin-bottom: 55px; }
-    .cruel-timer { bottom: -25px; right: -10px; }
-    .total-focus-wrap .feature-card-surface { top: auto; left: auto; }
-    .feature-card:nth-child(1) { margin-left: -8px; --card-speed: 0.7; }
-    .feature-card:nth-child(2) { margin-left: 8px; --card-speed: 1.6; }
-    .feature-card:nth-child(3) { margin-left: -8px; --card-speed: 0.8; }
-    .feature-card:nth-child(4) { margin-left: 8px; --card-speed: 1.7; }
-    .feature-card:nth-child(5) { margin-left: -8px; --card-speed: 0.9; }
-    .feature-card:nth-child(6) { margin-left: 8px; --card-speed: 3; margin-top: clamp(5rem, 8vh, 7rem); }
-    .feature-card:nth-child(7) { margin-left: -8px; --card-speed: 1.0; }
-    .feature-card:nth-child(8) { margin-left: 8px; --card-speed: 1.9; }
-    .nav-right { gap: 1.5rem; }
-    .nav-right .nav-icon { display: block; }
-    .nav-right .nav-label { display: none; }
-}
 
-@media (max-width: 600px) {
-    .hiw-bg-text { font-size: clamp(4rem, 20vw, 7rem); }
-    .download-bg-text { font-size: clamp(3.6rem, 16vw, 6rem); margin-top: 4rem; }
-    .support-bg-text { font-size: clamp(3.6rem, 16vw, 6rem); margin-top: 3rem; }
+    .total-focus-motion { min-height: 0; }
+    .float-icon--youtube { width: 68px; height: 68px; top: -40px; left: 0.25rem; }
+    .float-icon--tiktok { width: 58px; height: 58px; top: -62px; left: 5rem; }
+    .float-icon--instagram { width: 48px; height: 48px; bottom: -26px; left: 0.75rem; }
+
+    #cruelCard > .cruel-timer {
+        position: relative;
+        inset: auto;
+        top: clamp(1.7rem, 6vw, 2.2rem);
+        display: block;
+        width: max-content;
+        max-width: 100%;
+        margin: 1.5rem 0 -0.8rem auto;
+        font-size: clamp(2rem, 11vw, 3.2rem);
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    #ambientCard {
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+    }
+
+    .ambient-player-stage {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        max-width: 24rem;
+        height: 7.5rem;
+        top: clamp(0.9rem, 3.5vw, 1.25rem);
+        margin: 1rem auto -1rem;
+        transform: rotate(-1.5deg);
+    }
+
+    .total-focus-wrap .feature-card-surface { top: auto; left: auto; }
+
+    .download-section,
+    .support-section {
+        min-height: 0;
+        display: block;
+        padding: 0;
+        overflow: clip;
+    }
+
+    .download-bg,
+    .support-bg { padding: 0; }
+
+    .download-bg-text,
+    .support-bg-text {
+        position: absolute;
+        top: clamp(7.75rem, 16svh, 11rem);
+        left: 0;
+        width: 100%;
+        margin: 0;
+        font-size: clamp(3.5rem, 18vw, 9rem);
+        line-height: 0.82;
+        letter-spacing: -0.04em;
+    }
+
+    .download-bg-label,
+    .support-bg-label {
+        bottom: calc(100% + 0.9rem);
+        padding-inline: 1rem;
+        font-size: 0.75rem;
+        line-height: 1.4;
+        letter-spacing: 0.14em;
+        white-space: normal;
+    }
+
+    .download-bg-img {
+        bottom: clamp(2rem, 7svh, 5rem);
+        left: 54%;
+        width: min(132vw, 42rem);
+        opacity: 0.78;
+    }
+
+    .support-bg-img {
+        bottom: clamp(2rem, 6svh, 4.5rem);
+        left: 78%;
+        width: min(178vw, 56rem);
+        opacity: 0.74;
+    }
+
+    .download-content,
+    .support-content {
+        position: relative;
+        z-index: 8;
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding:
+            max(76svh, 33rem)
+            max(1rem, env(safe-area-inset-right))
+            max(18svh, 7rem)
+            max(1rem, env(safe-area-inset-left));
+        contain: none;
+    }
+
+    .download-cards,
+    .support-cards {
+        width: min(100%, 34rem);
+        max-width: none;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .download-card,
+    .support-card { width: 100%; }
+
+    .download-card { padding: clamp(1.35rem, 5vw, 2rem); }
+    .download-card-title { font-size: clamp(1.5rem, 7vw, 1.9rem); margin-bottom: 0.8rem; }
+    .download-card-price { margin-bottom: 1.2rem; }
+    .price-amount { font-size: 2.1rem; }
+    .premium-card .download-card-features { grid-template-columns: 1fr; }
+    .download-card-features { margin-bottom: 1.5rem; }
+    .download-card-features li { font-size: 0.94rem; line-height: 1.4; padding: 0.55rem 0; gap: 0.65rem; }
+    .feature-check { font-size: 0.9rem; }
+    .spots-desc { font-size: 0.94rem; line-height: 1.45; margin-bottom: 0.85rem; }
+    .spots-remaining { font-size: 2.1rem; }
+    .spots-label { font-size: 0.75rem; }
+    .spots-bar { margin-bottom: 1.2rem; }
+    .price-display { gap: 0.7rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+    .price-new { font-size: 2.2rem; }
+
+    .download-card .btn,
+    .support-card .btn {
+        min-height: 48px;
+        padding: 0.95rem 1.25rem;
+        font-size: 0.75rem;
+        line-height: 1.3;
+    }
+
+    .support-card { padding: clamp(1.55rem, 6vw, 2.25rem); }
+    .support-card-icon { width: 58px; height: 58px; font-size: 1.5rem; margin-bottom: 1.25rem; }
+    .support-card-title { font-size: 1.5rem; margin-bottom: 0.45rem; }
+    .support-card-sub { font-size: 0.78rem; line-height: 1.45; margin-bottom: 1.75rem; }
+    .support-version {
+        right: max(1rem, env(safe-area-inset-right));
+        bottom: max(1rem, env(safe-area-inset-bottom));
+        color: rgba(234,234,234,0.42);
+    }
+
+    .modal-overlay {
+        align-items: flex-end;
+        padding:
+            max(1rem, env(safe-area-inset-top))
+            max(0.75rem, env(safe-area-inset-right))
+            max(0.75rem, env(safe-area-inset-bottom))
+            max(0.75rem, env(safe-area-inset-left));
+    }
+
+    .modal {
+        width: 100%;
+        max-height: calc(100dvh - max(2rem, env(safe-area-inset-top)));
+        padding: 2.25rem 1.25rem 1.25rem;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        border-radius: 20px;
+    }
+
+    .modal .modal-close {
+        top: 0.35rem;
+        right: 0.35rem;
+        width: 44px;
+        height: 44px;
+    }
+
+    .modal-title { margin-bottom: 1.5rem; }
+    .modal-label { font-size: 0.75rem; line-height: 1.35; }
+    .modal-address { min-height: 44px; font-size: 0.8rem; line-height: 1.4; }
+    .selectable-btn { min-height: 76px; font-size: 0.75rem; line-height: 1.25; }
+    .signup-input,
+    .signup-submit { min-height: 48px; font-size: 1rem; }
+    .premium-email-note { min-height: 44px; font-size: 0.8rem; }
 }
 
 @media (max-width: 480px) {
     .hero { min-height: 100svh; }
     .hero-label { font-size: 0.5rem; letter-spacing: 3px; margin-bottom: 1rem; }
     .hero-statue { width: 280%; bottom: 0%; }
-    .download-section { padding: 5rem 1.5rem 3rem; }
-    .download-cards { gap: 1.2rem; max-width: 320px; }
-    .premium-card .download-card-features { grid-template-columns: 1fr; }
-    .download-card { padding: 1.35rem 0.95rem; }
-    .download-card-title { font-size: 1.3rem; }
-    .spots-remaining { font-size: 1.8rem; }
-    .price-amount { font-size: 1.8rem; }
-    .price-new { font-size: 2rem; }
-    .download-bg-text { font-size: clamp(5rem, 22vw, 10rem); margin-top: 2rem; letter-spacing: -4px; }
-    .download-bg-label { font-size: 0.45rem; letter-spacing: 2px; }
-    .download-bg-img { width: 140%; left: 50%; }
-    .support-section { padding: 5rem 1.5rem 3rem; }
-    .support-cards { gap: 1rem; max-width: 320px; }
-    .support-card { padding: 1.55rem 0.95rem; }
-    .support-card-icon { width: 46px; height: 46px; font-size: 1.15rem; margin-bottom: 1rem; }
-    .support-card-title { font-size: 1.15rem; }
-    .support-card-sub { font-size: 0.55rem; margin-bottom: 1.5rem; }
-    .support-card-btn { padding: 0.8rem 1.3rem; font-size: 0.62rem; }
-    .support-bg-text { font-size: clamp(5rem, 22vw, 10rem); margin-top: 2rem; letter-spacing: -4px; }
-    .support-bg-label { font-size: 0.45rem; letter-spacing: 2px; }
-    .support-bg-img { width: 160%; left: 50%; }
     .nav-logo { letter-spacing: 3px; font-size: 0.95rem; }
-    .modal { padding: 2rem 1.5rem; }
-    .modal-address { font-size: 0.65rem; padding: 0.6rem 0.8rem; }
+    .download-os-grid,
+    .premium-auth-grid { gap: 0.6rem; }
+}
+
+@media (max-width: 768px) and (max-height: 500px) and (orientation: landscape) {
+    .how-it-works-bg,
+    .download-bg,
+    .support-bg { min-height: 0; }
+
+    .hiw-bg-label { top: 4.35rem; }
+    .hiw-bg-text { top: 6.6rem; font-size: clamp(3.8rem, 15vw, 6.5rem); }
+    .hiw-bg-img { top: 8rem; width: min(48vw, 22rem); }
+    .feature-cards { padding-top: 100svh; }
+
+    .download-bg-text,
+    .support-bg-text { top: 5.5rem; font-size: clamp(3.5rem, 15vw, 6.5rem); }
+    .download-bg-img { width: min(68vw, 31rem); bottom: -4rem; }
+    .support-bg-img { width: min(94vw, 44rem); bottom: -5rem; }
+    .download-content,
+    .support-content { padding-top: 96svh; }
 }
 
 @media (max-width: 410px) {

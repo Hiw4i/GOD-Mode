@@ -1,18 +1,18 @@
 {
   "name": "god-mode-landing",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "private": true,
   "packageManager": "pnpm@11.24.0",
   "engines": {
     "node": ">=24.0.0 <25"
   },
   "scripts": {
-    "assets:blur": "node scripts/generate-blur-pairs.mjs",
+    "assets:images": "node scripts/generate-image-assets.mjs",
     "assets:version": "node scripts/generate-version.mjs",
     "version:check": "node scripts/check-version.mjs",
-    "predev": "pnpm assets:blur && pnpm assets:version",
+    "predev": "pnpm assets:images && pnpm assets:version",
     "dev": "next dev --turbopack",
-    "prebuild": "pnpm version:check && pnpm assets:blur && pnpm assets:version",
+    "prebuild": "pnpm version:check && pnpm assets:images && pnpm assets:version",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint .",

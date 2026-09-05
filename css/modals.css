@@ -21,7 +21,8 @@
     padding: 3rem;
     max-width: 560px;
     width: 90%;
-    background: rgba(255,255,255,0.05);
+    background: var(--grain), rgba(255,255,255,0.05);
+    background-size: 120px 120px, auto;
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     transform: translateY(20px);
