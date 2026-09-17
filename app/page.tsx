@@ -2,9 +2,9 @@ import Image from "next/image";
 import { Download, ExternalLink, Gem, Grid2X2, LayoutDashboard, ListOrdered, Smartphone } from "lucide-react";
 import { AmbientPlayer } from "@/components/ambient-player";
 import { CruelStopwatch } from "@/components/cruel-stopwatch";
+import { DownloadPlanSelector } from "@/components/download-plan-selector";
 import { ModalSystem } from "@/components/modal-system";
 import { MotionRuntime } from "@/components/motion-runtime";
-import { SpotsCounter } from "@/components/spots-counter";
 import { ambientTracks, downloadPlans, features, supportMethods } from "@/lib/content";
 import { APP_VERSION_LABEL } from "@/lib/version";
 import { variantSrcSet, type ResponsiveImageVariant } from "@/lib/responsive-images";
@@ -198,21 +198,7 @@ export default function HomePage() {
             />
           </div>
           <div className="download-content">
-            <div className="download-cards">
-              {downloadPlans.map((plan) => (
-                <article key={plan.id} className={`download-card glass-card ${plan.premium ? "premium-card" : "free-card"}`} data-hover-target>
-                  <h3 className="download-card-title">{plan.title}</h3>
-                  {plan.premium ? (
-                    <><p className="spots-desc">First 1000 legends get lifetime access for free</p><SpotsCounter /><div className="price-display"><span className="price-old">{plan.oldPrice}</span><span className="price-new">{plan.price}</span><span className="price-period">{plan.period}</span></div></>
-                  ) : (
-                    <div className="download-card-price"><span className="price-amount">{plan.price}</span></div>
-                  )}
-                  <ul className="download-card-features">{plan.features.map((item) => <li key={item}><span className="feature-check">{plan.premium ? "✓" : "—"}</span>{item}</li>)}</ul>
-                  <a href="#download" className={`btn${plan.premium ? " download-card-btn filled" : " btn-outline"}`} data-open-modal={plan.premium ? "premium" : "download"}>{plan.premium ? <>Get Premium FOREVER<span className="arrow">→</span></> : "Download Free"}</a>
-                  {!plan.premium && <div className="os-icons-row" aria-label="Available platforms"><Image src="/sources/android.png" alt="Android" width={18} height={18} /><AppleIcon /><Grid2X2 /><Image src="/sources/linux.png" alt="Linux" width={18} height={18} /></div>}
-                </article>
-              ))}
-            </div>
+            <DownloadPlanSelector plans={downloadPlans} />
           </div>
         </section>
 

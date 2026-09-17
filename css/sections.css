@@ -828,67 +828,115 @@ nav::before {
     z-index: 3;
     text-align: center;
     width: 100%;
-    max-width: 1350px;
+    max-width: 1450px;
     margin-top: auto;
     contain: layout style;
 }
 
+.download-plan-tabs { display: none; }
+
 .download-cards {
     display: grid;
-    grid-template-columns: 1fr 1.45fr;
-    gap: 14rem;
-    margin-top: 6rem;
-    max-width: 1250px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(0.75rem, 1.4vw, 1.25rem);
+    margin-top: 4.5rem;
+    max-width: 1420px;
     margin-left: auto;
     margin-right: auto;
-    align-items: center;
+    align-items: stretch;
 }
 
 .download-card {
     --glass-radius: 20px;
-    padding: 2.5rem;
-    text-align: center;
+    display: flex;
+    min-height: 358px;
+    padding: clamp(1.4rem, 2vw, 1.8rem);
+    text-align: left;
+    flex-direction: column;
 }
 
 .download-card-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
+    color: rgba(234,234,234,0.72);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    line-height: 1;
+    margin-bottom: 1.05rem;
+    text-transform: uppercase;
     position: relative;
     z-index: 1;
 }
 
 .download-card-price {
-    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
     position: relative;
     z-index: 1;
 }
 
 .price-amount {
-    font-size: 2.5rem;
+    font-size: clamp(2.5rem, 3.3vw, 3.1rem);
     font-weight: 700;
     color: var(--text);
 }
 
 .price-period {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: var(--text-dim);
-    margin-left: 0.3rem;
+    margin-left: 0;
+}
+
+.download-card-divider {
+    width: 1.65rem;
+    height: 2px;
+    margin-bottom: 1rem;
+    background: rgba(255,255,255,0.3);
+}
+
+.download-card-promotion {
+    min-height: 1.15rem;
+    margin: -0.4rem 0 0.75rem;
+    color: var(--accent);
+    font-size: 0.68rem;
+    line-height: 1.3;
+}
+
+.download-card-claim-bar {
+    height: 3px;
+    margin-top: -0.4rem;
+    margin-bottom: 0.45rem;
+    overflow: hidden;
+    background: rgba(255,255,255,0.18);
+}
+
+.download-card-claim-bar span {
+    display: block;
+    width: 62%;
+    height: 100%;
+    background: var(--accent);
+}
+
+.download-card-plan-name {
+    min-height: 1.3rem;
+    margin-bottom: 0.35rem;
+    color: rgba(234,234,234,0.78);
+    font-size: 0.95rem;
 }
 
 .download-card-features {
     list-style: none;
     text-align: left;
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
     position: relative;
     z-index: 1;
 }
 
 .download-card-features li {
-    font-size: 0.85rem;
-    color: var(--text);
-    padding: 0.4rem 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.72rem;
+    color: rgba(234,234,234,0.75);
+    padding: 0.2rem 0;
     display: flex;
     align-items: center;
     gap: 0.8rem;
@@ -897,35 +945,36 @@ nav::before {
 .download-card-features li:last-child { border-bottom: none; }
 
 .feature-check {
-    color: #22c55e;
+    color: rgba(234,234,234,0.86);
     font-weight: 700;
     font-size: 1rem;
 }
 
-.download-card-btn.filled {
-    background: rgba(255,255,255,0.9);
+.download-card-btn {
+    min-height: 54px;
+    margin-top: auto;
+    background: rgba(255,255,255,0.86);
     color: #000;
     border: 1px solid rgba(255,255,255,0.2);
 }
 
-.download-card-btn.filled:hover {
+.download-card-btn:hover {
     background: #fff;
     box-shadow: 0 8px 30px rgba(255,255,255,0.15);
     transform: translateY(-2px);
 }
 
-.download-card-btn .arrow {
-    font-size: 1.1rem;
-    transition: transform 0.3s ease;
+.download-card--free .download-card-btn {
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.15);
 }
 
-.download-card-btn:hover .arrow { transform: translateX(4px); }
-
-.premium-card { border-color: rgba(255,255,255,0.15); }
-.premium-card .feature-check { color: var(--accent); font-size: 0.9rem; }
-.premium-card .spots-remaining { color: var(--accent); }
-.premium-card .price-period { color: var(--accent); }
-.premium-card .download-card-features { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.5rem; }
+.download-card--free .download-card-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+    color: var(--text);
+}
 
 .spots-desc {
     font-size: 0.8rem;

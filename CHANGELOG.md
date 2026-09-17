@@ -4,6 +4,14 @@ All notable changes to GOD Mode are documented here. The project follows
 [Semantic Versioning](https://semver.org/) and the structure from
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.6.0] - 2026-09-17
+
+### Changed
+
+- Rebuilt Download around four plans with updated pricing, benefits, and calls to action.
+- Added a mobile plan selector that shows details for one selected plan at a time.
+- Refined Download card dividers, buttons, and glass treatment for mobile selectors.
+
 ## [0.5.0] - 2026-09-17
 
 ### Added

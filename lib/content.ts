@@ -11,13 +11,16 @@ export interface Feature {
 }
 
 export interface DownloadPlan {
-  id: "standard" | "premium";
+  id: "free" | "monthly" | "yearly" | "lifetime";
   title: string;
+  planName: string;
   features: string[];
   price: string;
-  oldPrice?: string;
   period?: string;
-  premium: boolean;
+  promotion?: string;
+  claimed?: string;
+  action: "download" | "premium";
+  cta: string;
 }
 
 export interface SupportMethod {
@@ -103,36 +106,67 @@ export const features: Feature[] = [
 
 export const downloadPlans: DownloadPlan[] = [
   {
-    id: "standard",
-    title: "Standard",
+    id: "free",
+    title: "Free",
     price: "$0",
-    premium: false,
+    planName: "Core GOD Mode",
+    action: "download",
+    cta: "Download Free",
     features: [
       "Basic focus stopwatch",
       "Last 4 weeks of statistics",
-      "1 default aesthetic theme",
-      "Basic soundscapes",
+      "Basic features",
       "No ads",
+      "One device per account",
     ],
   },
   {
-    id: "premium",
-    title: "Premium FOREVER",
-    price: "$0",
-    oldPrice: "$20",
-    period: "lifetime",
-    premium: true,
+    id: "monthly",
+    title: "Monthly",
+    price: "$4",
+    period: "/ month",
+    planName: "Full Premium",
+    action: "premium",
+    cta: "Get",
     features: [
-      "Psychological edge over 99% of people",
-      "Full & Lifetime growth statistics",
-      "Unlocks high-performance living",
-      "Strict App Blocker",
-      "Eliminate 90% of self-inflicted problems",
-      "All premium aesthetic themes and Unlimited customization",
-      "Full soundscapes library",
-      "Streak Freeze active",
-      "Lifetime access & future updates",
-      "Priority support",
+      "All premium features",
+      "All devices",
+      "Cancel anytime",
+      "And more",
+    ],
+  },
+  {
+    id: "yearly",
+    title: "Yearly",
+    price: "$29",
+    period: "/ year",
+    promotion: "$2.42/mo  ·  Save 40%",
+    planName: "Full Premium",
+    action: "premium",
+    cta: "Get",
+    features: [
+      "All premium features",
+      "All devices",
+      "Cancel anytime",
+      "Perfect price",
+      "And more",
+    ],
+  },
+  {
+    id: "lifetime",
+    title: "Lifetime",
+    price: "$49",
+    period: "once",
+    claimed: "Temporarily  ·  62/100 claimed",
+    planName: "Full Premium",
+    action: "premium",
+    cta: "Get",
+    features: [
+      "All premium features",
+      "All devices",
+      "Cancel anytime",
+      "No subscription",
+      "And more",
     ],
   },
 ];
