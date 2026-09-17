@@ -55,6 +55,7 @@ button { color: inherit; }
 .motion-active .support-card,
 .motion-near .download-card,
 .motion-near .support-card,
+.motion-active [data-parallax-card],
 .motion-active [data-parallax-visual],
 .motion-active [data-parallax-text] { will-change: transform; }
 

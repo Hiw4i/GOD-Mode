@@ -4,25 +4,25 @@
     "height": 1081,
     "variants": [
       {
-        "src": "/sources/statue%20for%20hero-w960.webp?v=0.4.0-d38e7397ab",
+        "src": "/sources/statue%20for%20hero-w960.webp?v=0.5.0-d38e7397ab",
         "width": 960,
         "height": 540,
         "bytes": 13664
       },
       {
-        "src": "/sources/statue%20for%20hero-w1280.webp?v=0.4.0-4166daf341",
+        "src": "/sources/statue%20for%20hero-w1280.webp?v=0.5.0-4166daf341",
         "width": 1280,
         "height": 720,
         "bytes": 19460
       },
       {
-        "src": "/sources/statue%20for%20hero-w1600.webp?v=0.4.0-7ed25b20d7",
+        "src": "/sources/statue%20for%20hero-w1600.webp?v=0.5.0-7ed25b20d7",
         "width": 1600,
         "height": 901,
         "bytes": 25616
       },
       {
-        "src": "/sources/statue%20for%20hero.webp?v=0.4.0-fd4c5fbf3a",
+        "src": "/sources/statue%20for%20hero.webp?v=0.5.0-fd4c5fbf3a",
         "width": 1920,
         "height": 1081,
         "bytes": 31490
@@ -35,13 +35,13 @@
       "height": 1080,
       "variants": [
         {
-          "src": "/sources/statue%20for%20features-w480.webp?v=0.4.0-539897a8ce",
+          "src": "/sources/statue%20for%20features-w480.webp?v=0.5.0-539897a8ce",
           "width": 480,
           "height": 721,
           "bytes": 62728
         },
         {
-          "src": "/sources/statue%20for%20features.webp?v=0.4.0-84aeec8af2",
+          "src": "/sources/statue%20for%20features.webp?v=0.5.0-84aeec8af2",
           "width": 719,
           "height": 1080,
           "bytes": 101476
@@ -53,19 +53,19 @@
       "height": 800,
       "variants": [
         {
-          "src": "/sources/statue%20for%20download-w480.webp?v=0.4.0-c5768c2d99",
+          "src": "/sources/statue%20for%20download-w480.webp?v=0.5.0-c5768c2d99",
           "width": 480,
           "height": 427,
           "bytes": 24640
         },
         {
-          "src": "/sources/statue%20for%20download-w720.webp?v=0.4.0-66836f3081",
+          "src": "/sources/statue%20for%20download-w720.webp?v=0.5.0-66836f3081",
           "width": 720,
           "height": 640,
           "bytes": 44746
         },
         {
-          "src": "/sources/statue%20for%20download.webp?v=0.4.0-c49da50d8f",
+          "src": "/sources/statue%20for%20download.webp?v=0.5.0-c49da50d8f",
           "width": 900,
           "height": 800,
           "bytes": 59448
@@ -77,25 +77,25 @@
       "height": 800,
       "variants": [
         {
-          "src": "/sources/statue%20for%20support-w480.webp?v=0.4.0-6e1031a722",
+          "src": "/sources/statue%20for%20support-w480.webp?v=0.5.0-6e1031a722",
           "width": 480,
           "height": 366,
           "bytes": 22034
         },
         {
-          "src": "/sources/statue%20for%20support-w720.webp?v=0.4.0-7d6a2bd7f3",
+          "src": "/sources/statue%20for%20support-w720.webp?v=0.5.0-7d6a2bd7f3",
           "width": 720,
           "height": 549,
           "bytes": 36598
         },
         {
-          "src": "/sources/statue%20for%20support-w960.webp?v=0.4.0-b2001f63e7",
+          "src": "/sources/statue%20for%20support-w960.webp?v=0.5.0-b2001f63e7",
           "width": 960,
           "height": 731,
           "bytes": 52650
         },
         {
-          "src": "/sources/statue%20for%20support.webp?v=0.4.0-d786bd3e24",
+          "src": "/sources/statue%20for%20support.webp?v=0.5.0-d786bd3e24",
           "width": 1050,
           "height": 800,
           "bytes": 55444
@@ -109,13 +109,13 @@
       "height": 256,
       "variants": [
         {
-          "src": "/sources/youtube-w128.webp?v=0.4.0-184385c217",
+          "src": "/sources/youtube-w128.webp?v=0.5.0-184385c217",
           "width": 128,
           "height": 128,
           "bytes": 528
         },
         {
-          "src": "/sources/youtube.webp?v=0.4.0-41fed3d5d8",
+          "src": "/sources/youtube.webp?v=0.5.0-41fed3d5d8",
           "width": 256,
           "height": 256,
           "bytes": 1028
@@ -127,13 +127,13 @@
       "height": 256,
       "variants": [
         {
-          "src": "/sources/tiktok-w128.webp?v=0.4.0-2f6224da56",
+          "src": "/sources/tiktok-w128.webp?v=0.5.0-2f6224da56",
           "width": 128,
           "height": 128,
           "bytes": 710
         },
         {
-          "src": "/sources/tiktok.webp?v=0.4.0-6b2353306a",
+          "src": "/sources/tiktok.webp?v=0.5.0-6b2353306a",
           "width": 256,
           "height": 256,
           "bytes": 1304
@@ -145,13 +145,13 @@
       "height": 256,
       "variants": [
         {
-          "src": "/sources/instagram-w128.webp?v=0.4.0-3f77d2c930",
+          "src": "/sources/instagram-w128.webp?v=0.5.0-3f77d2c930",
           "width": 128,
           "height": 128,
           "bytes": 1284
         },
         {
-          "src": "/sources/instagram.webp?v=0.4.0-6dd4baa654",
+          "src": "/sources/instagram.webp?v=0.5.0-6dd4baa654",
           "width": 256,
           "height": 256,
           "bytes": 2408

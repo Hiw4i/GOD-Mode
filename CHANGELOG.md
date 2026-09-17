@@ -4,6 +4,16 @@ All notable changes to GOD Mode are documented here. The project follows
 [Semantic Versioning](https://semver.org/) and the structure from
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.5.0] - 2026-09-17
+
+### Added
+
+- Added a "How it works" introduction with guided focus steps and supported-platform details.
+
+### Changed
+
+- Added scroll parallax to the new section and refined its desktop and mobile layout.
+
 ## [0.4.0] - 2026-09-05
 
 ### Added

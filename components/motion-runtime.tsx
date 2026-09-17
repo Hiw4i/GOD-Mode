@@ -16,6 +16,7 @@ const PARALLAX_CONFIG = {
   },
   download: { visualFrom: 30, visualTo: -40, textFrom: 50, textTo: -80, scrub: 0.35 },
   support: { visualFrom: 30, visualTo: -40, textFrom: 50, textTo: -80, scrub: 0.35 },
+  focusIntro: { textFrom: 50, textTo: -80, cardFrom: 18, cardTo: -28, scrub: 0.35 },
   hero: { contentY: 0.45, statueY: 0.2 },
 } as const;
 
@@ -124,7 +125,7 @@ export function MotionRuntime() {
         }
 
         if (!prefersReducedMotion) ["download", "support"].forEach((name) => {
-          const section = document.querySelector<HTMLElement>(`[data-motion-scene="${name}"]`);
+          const section = document.querySelector<HTMLElement>(`[data-motion-scene="${name}"]`) ?? document.querySelector<HTMLElement>(`#${name}`);
           if (!section) return;
           const visual = section.querySelector<HTMLElement>("[data-parallax-visual]");
           const text = section.querySelector<HTMLElement>("[data-parallax-text]");
@@ -150,6 +151,48 @@ export function MotionRuntime() {
           media.add(MOBILE_LAYOUT_QUERY, () => createSceneTimeline(true));
           cleanups.push(() => media.revert());
         });
+
+        if (!prefersReducedMotion) {
+          const section = document.querySelector<HTMLElement>("[data-motion-scene=\"focus-intro\"]");
+          if (section) {
+            const text = section.querySelector<HTMLElement>("[data-parallax-text]");
+            const cards = Array.from(section.querySelectorAll<HTMLElement>("[data-parallax-card]"));
+            const media = gsap.matchMedia();
+
+            const createFocusIntroTimeline = (mobile: boolean) => {
+              const timeline = gsap.timeline({
+                scrollTrigger: {
+                  trigger: section,
+                  start: "top bottom",
+                  end: "bottom top",
+                  scrub: PARALLAX_CONFIG.focusIntro.scrub,
+                  onToggle: ({ isActive }) => section.classList.toggle("motion-active", isActive),
+                },
+              });
+              if (text) {
+                timeline.fromTo(
+                  text,
+                  { y: mobile ? 12 : PARALLAX_CONFIG.focusIntro.textFrom },
+                  { y: mobile ? -20 : PARALLAX_CONFIG.focusIntro.textTo, ease: "none" },
+                  0,
+                );
+              }
+              cards.forEach((card) => {
+                timeline.fromTo(
+                  card,
+                  { y: mobile ? 8 : PARALLAX_CONFIG.focusIntro.cardFrom },
+                  { y: mobile ? -12 : PARALLAX_CONFIG.focusIntro.cardTo, ease: "none" },
+                  0,
+                );
+              });
+              return () => timeline.kill();
+            };
+
+            media.add("(min-width: 769px)", () => createFocusIntroTimeline(false));
+            media.add(MOBILE_LAYOUT_QUERY, () => createFocusIntroTimeline(true));
+            cleanups.push(() => media.revert());
+          }
+        }
 
         const ambientCard = document.querySelector<HTMLElement>("#ambientCard");
         const ambientStage = ambientCard?.querySelector<HTMLElement>("[data-ambient-stage]");

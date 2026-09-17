@@ -130,6 +130,145 @@ nav::before {
     pointer-events: none;
 }
 
+/* ===== FOCUS INTRO ===== */
+/* Flat var(--bg): hero melts into it via .hero::after, and it continues into
+   the solid top strip of .how-it-works — no decorative glow at the seams. */
+.focus-intro {
+    position: relative;
+    z-index: 6;
+    overflow: clip;
+    padding: clamp(5rem, 10vw, 8rem) clamp(1.5rem, 6vw, 7rem) clamp(7rem, 12vw, 10rem);
+    background: var(--bg);
+}
+
+/* Giant inscription on top, same treatment as the FEATURES / DOWNLOAD /
+   SUPPORT backdrops: full .section-bg-text brightness and glow. Its movement
+   is intentionally gentle so it stays behind the cards while scrolling. */
+.focus-intro-bg {
+    margin-top: clamp(3.5rem, 5vw, 4.5rem);
+    pointer-events: none;
+}
+
+.focus-intro-bg-text {
+    font-size: clamp(4rem, 13vw, 11rem);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+}
+
+.focus-intro-content {
+    position: relative;
+    z-index: 1;
+    width: min(1180px, 100%);
+    margin: clamp(0.5rem, 1vw, 1rem) auto 0;
+}
+
+/* Kicker above the giant word: small accent label, deliberately quiet next to
+   HOW IT WORKS (same role as .hiw-bg-label / .section-bg-label). */
+.focus-intro-kicker {
+    position: relative;
+    z-index: 1;
+    color: var(--accent);
+    font-size: clamp(0.62rem, 1vw, 0.75rem);
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-align: center;
+    text-wrap: balance;
+}
+
+/* Glass step cards climbing over the lower half of the giant word —
+   same overlap idea as the cards over backdrops in other sections. */
+.focus-intro-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2vw, 1.5rem);
+    list-style: none;
+}
+
+.focus-intro-step-card {
+    --glass-radius: 16px;
+    height: 100%;
+    padding: clamp(1.5rem, 2.2vw, 2rem);
+}
+
+.focus-intro-number {
+    display: block;
+    margin-bottom: 1.1rem;
+    color: var(--accent);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    line-height: 1;
+}
+
+.focus-intro-steps h3 {
+    color: var(--text);
+    font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+}
+
+.focus-intro-steps p {
+    margin-top: 0.7rem;
+    color: var(--text-dim);
+    font-size: clamp(0.84rem, 1.15vw, 1rem);
+    line-height: 1.5;
+}
+
+.focus-intro-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-top: 1.35rem;
+}
+
+.focus-intro-platforms {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem 1rem;
+    color: rgba(234,234,234,0.55);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.focus-intro-platforms span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    white-space: nowrap;
+}
+
+.focus-intro-platforms span + span::before {
+    content: '·';
+    margin-right: 0.6rem;
+    color: rgba(234,234,234,0.3);
+}
+
+.focus-intro-platforms svg,
+.focus-intro-platforms img { width: 0.9rem; height: 0.9rem; color: currentColor; }
+
+.focus-intro-download {
+    flex: 0 0 auto;
+    color: rgba(234,234,234,0.72);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+.focus-intro-download:hover { color: #fff; }
+.focus-intro-download span { color: var(--accent); margin-left: 0.25rem; transition: margin-left 0.3s ease; }
+.focus-intro-download:hover span { margin-left: 0.5rem; }
+
 /* ===== HOW IT WORKS (FEATURES) ===== */
 .how-it-works {
     min-height: 250vh;

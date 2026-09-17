@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Download, ExternalLink, Gem, Grid2X2, LayoutDashboard } from "lucide-react";
+import { Download, ExternalLink, Gem, Grid2X2, LayoutDashboard, ListOrdered, Smartphone } from "lucide-react";
 import { AmbientPlayer } from "@/components/ambient-player";
 import { CruelStopwatch } from "@/components/cruel-stopwatch";
 import { ModalSystem } from "@/components/modal-system";
@@ -71,6 +71,7 @@ export default function HomePage() {
       <nav aria-label="Primary navigation">
         <a href="#hero" className="nav-logo"><span className="god">GOD</span> <span className="mode">mode</span></a>
         <div className="nav-right">
+          <a href="#focus-intro"><ListOrdered className="nav-icon" /><span className="nav-label">How it works</span></a>
           <a href="#features"><LayoutDashboard className="nav-icon" /><span className="nav-label">Features</span></a>
           <a href="#download"><Download className="nav-icon" /><span className="nav-label">Download</span></a>
           <a href="#support"><Gem className="nav-icon" /><span className="nav-label">Support</span></a>
@@ -92,6 +93,46 @@ export default function HomePage() {
               loading="eager"
               fetchPriority="high"
             />
+          </div>
+        </section>
+
+        <section className="focus-intro" id="focus-intro" aria-labelledby="focus-intro-title" data-motion-scene="focus-intro" data-motion-near>
+          <h2 className="focus-intro-kicker" id="focus-intro-title">Focus is a skill. Train it.</h2>
+          <div className="focus-intro-bg" aria-hidden="true">
+            <div className="focus-intro-bg-text section-bg-text" data-parallax-text>HOW IT WORKS</div>
+          </div>
+          <div className="focus-intro-content">
+            <ol className="focus-intro-steps">
+              <li data-parallax-card>
+                <article className="focus-intro-step-card glass-card" data-hover-target>
+                  <span className="focus-intro-number">01</span>
+                  <h3>Choose one task.</h3><p>Decide what you&apos;re here to work on.</p>
+                </article>
+              </li>
+              <li data-parallax-card>
+                <article className="focus-intro-step-card glass-card" data-hover-target>
+                  <span className="focus-intro-number">02</span>
+                  <h3>Remove distractions.</h3><p>GOD Mode blocks distracting apps and silences notifications.</p>
+                </article>
+              </li>
+              <li data-parallax-card>
+                <article className="focus-intro-step-card glass-card" data-hover-target>
+                  <span className="focus-intro-number">03</span>
+                  <h3>Start the stopwatch.</h3><p>The stopwatch counts up. Detected distractions reset the run after a 10-second grace period.</p>
+                </article>
+              </li>
+            </ol>
+
+            <div className="focus-intro-footer">
+              <div className="focus-intro-platforms" aria-label="Available platforms">
+                <span><Grid2X2 />Windows</span>
+                <span><AppleIcon />macOS</span>
+                <span><Image src="/sources/linux.png" alt="" width={16} height={16} />Linux</span>
+                <span><Smartphone />iOS</span>
+                <span><Image src="/sources/android.png" alt="" width={16} height={16} />Android</span>
+              </div>
+              <a className="focus-intro-download" href="#download">Download GOD Mode <span aria-hidden="true">→</span></a>
+            </div>
           </div>
         </section>
 

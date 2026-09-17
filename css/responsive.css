@@ -75,6 +75,47 @@
     .nav-right .nav-icon { display: block; }
     .nav-right .nav-label { display: none; }
 
+    .focus-intro {
+        padding: clamp(4rem, 12vw, 5rem) max(1rem, env(safe-area-inset-right)) clamp(4rem, 16vw, 5.5rem) max(1rem, env(safe-area-inset-left));
+    }
+
+    .focus-intro-content { margin-top: 1.75rem; }
+
+    .focus-intro-kicker {
+        font-size: 0.62rem;
+        letter-spacing: 3px;
+        padding-inline: 1rem;
+    }
+
+    .focus-intro-steps {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .focus-intro-step-card { padding: 1.4rem; }
+
+    .focus-intro-number { margin-bottom: 0.9rem; }
+
+    .focus-intro-steps h3 { font-size: 1.2rem; }
+    .focus-intro-steps p { font-size: 0.92rem; }
+
+    .focus-intro-footer {
+        display: block;
+        margin-top: 1.25rem;
+    }
+
+    .focus-intro-platforms {
+        justify-content: center;
+        gap: 0.55rem 0.8rem;
+        font-size: 0.61rem;
+        line-height: 1.5;
+    }
+
+    .focus-intro-platforms span + span::before { margin-right: 0.45rem; }
+    .focus-intro-download { display: block; margin-top: 1.6rem; text-align: right; }
+
+    .focus-intro-bg-text { font-size: clamp(2.4rem, 13vw, 5rem); }
+
     .glass-card {
         --glass-blur: 10px;
         background: var(--grain), rgba(14,14,14,0.54);
