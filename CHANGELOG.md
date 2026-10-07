@@ -4,6 +4,18 @@ All notable changes to GOD Mode are documented here. The project follows
 [Semantic Versioning](https://semver.org/) and the structure from
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.6.1] - 2026-10-07
+
+### Changed
+
+- Moved Download and Features section fades below the cards so the haze no longer dims text and buttons.
+- Widened the unified Download cards (max 1220px) and increased the gap between them.
+- Removed the orange glow from the premium card and the "Full Premium" label; trimmed the note to "Secure checkout".
+- Replaced the premium feature list with Strict App Blocking, Full Focus History & Statistics, All Soundscapes, Museum / Quests / Progression, Unlimited Customization, and All Devices with one account.
+- Show "No subscriptions" instead of "Cancel anytime" when the Lifetime plan is selected.
+- Lifted the Features kicker label above the top fade and unified giant heading glow with the hero "GOD MODE" title.
+- Lowered the ambient player and added a soft blur to its prev / play / next buttons.
+
 ## [0.6.0] - 2026-09-17
 
 ### Changed

@@ -31,6 +31,7 @@
     .feature-card:nth-child(7) { left: 10%; top: 126vh; }
     .download-section { padding: 6rem 2.5rem 4rem; }
     .download-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 760px; }
+    .download-cards--unified { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); max-width: 760px; }
     .download-bg-text { font-size: clamp(4rem, 12vw, 8rem); margin-top: 5rem; }
     .download-bg-label { font-size: 0.55rem; letter-spacing: 3px; }
     .download-bg-img { width: 60%; }
@@ -363,6 +364,7 @@
         line-height: 1.4;
         letter-spacing: 0.14em;
         white-space: normal;
+        z-index: 8;
     }
 
     .download-bg-img {
@@ -450,6 +452,10 @@
     .download-cards .download-card { display: none; }
     .download-cards .download-card.is-selected { display: flex; }
 
+    .download-cards--unified { gap: 1.5rem; }
+    .download-cards--unified .download-card { display: flex; }
+    .download-cards--unified .download-card--premium { order: -1; }
+
     .download-card,
     .support-card { width: 100%; }
 
@@ -460,6 +466,13 @@
     .download-card-features { margin-bottom: 1.5rem; }
     .download-card-features li { font-size: 0.94rem; line-height: 1.4; padding: 0.55rem 0; gap: 0.65rem; }
     .feature-check { font-size: 0.9rem; }
+
+    .download-card--premium { padding: clamp(1.35rem, 5vw, 2rem); }
+    .premium-toggle { margin-bottom: 1rem; }
+    .premium-toggle-btn { min-height: 48px; font-size: 0.9rem; }
+    .premium-features { grid-template-columns: 1fr; min-height: 0; }
+    .premium-features li { font-size: 0.94rem !important; }
+    .premium-note { font-size: 0.72rem; }
     .spots-desc { font-size: 0.94rem; line-height: 1.45; margin-bottom: 0.85rem; }
     .spots-remaining { font-size: 2.1rem; }
     .spots-label { font-size: 0.75rem; }
