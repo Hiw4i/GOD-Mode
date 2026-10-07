@@ -4,6 +4,13 @@ All notable changes to GOD Mode are documented here. The project follows
 [Semantic Versioning](https://semver.org/) and the structure from
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.6.2] - 2026-10-07
+
+### Fixed
+
+- Pinned the mobile portrait Features card stack to the statue's neck: cards no longer dock early over the FEATURES backdrop while the section is entering or when scrolling back up.
+- Re-measured the stack dock when the mobile viewport height changes (browser chrome showing / hiding) so the dock stays glued to the statue.
+
 ## [0.6.1] - 2026-10-07
 
 ### Changed

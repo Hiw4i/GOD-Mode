@@ -532,6 +532,53 @@
     .premium-email-note { min-height: 44px; font-size: 0.8rem; }
 }
 
+@media (max-width: 768px) and (orientation: portrait) {
+    /* The spacer mirrors the dock distance (see --stack-spacer) so the first
+       card reaches the dock exactly when the sticky statue settles behind it.
+       Cards stick within .feature-stack-range whose top is the first card's
+       natural position: unlike the whole .feature-cards block, it cannot pull
+       cards up early over the FEATURES backdrop while the section enters. */
+    .features-stack .feature-cards { padding-top: 0; }
+    .features-stack .feature-cards::before {
+        content: '';
+        flex: 0 0 calc(var(--stack-spacer, max(82svh, 36rem)) - clamp(2rem, 6svh, 3.25rem));
+    }
+
+    .features-stack .feature-stack-range {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(2rem, 6svh, 3.25rem);
+        width: 100%;
+    }
+
+    .features-stack [data-feature-card] {
+        position: sticky;
+        bottom: calc(var(--stack-bottom) - var(--stack-card-height));
+        transform-origin: 50% 0;
+    }
+
+    /* A maximum of three queued cards is painted. Static glass avoids the
+       repeated backdrop sampling that makes overlapping cards costly. */
+    .features-stack .feature-card-surface.glass-card {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background-color: #141414;
+    }
+
+    .features-stack [data-feature-card].motion-near,
+    .features-stack .motion-near > .feature-card-surface,
+    .features-stack .ambient-player-stage { will-change: auto; }
+
+    .features-stack [data-feature-card][data-stack-visible] { will-change: transform; }
+
+    .features-stack [data-stack-queued],
+    .features-stack [data-stack-queued] .feature-card-surface,
+    .features-stack [data-stack-queued] .ambient-player-stage { pointer-events: none; }
+
+    .features-stack [data-stack-queued] .float-icon { animation-play-state: paused !important; }
+}
+
 @media (max-width: 480px) {
     .hero { min-height: 100svh; }
     .hero-label { font-size: 0.5rem; letter-spacing: 3px; margin-bottom: 1rem; }

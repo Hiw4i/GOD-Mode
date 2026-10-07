@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { createFeatureStack } from "./feature-stack-motion";
 
 const MOBILE_LAYOUT_QUERY = "(max-width: 768px)";
 
@@ -121,6 +122,10 @@ export function MotionRuntime() {
 
           media.add("(min-width: 769px)", () => createFeatureTimeline(false));
           media.add(MOBILE_LAYOUT_QUERY, () => createFeatureTimeline(true));
+          media.add(
+            `${MOBILE_LAYOUT_QUERY} and (orientation: portrait) and (prefers-reduced-motion: no-preference)`,
+            () => createFeatureStack(featuresSection, cards, ScrollTrigger),
+          );
           cleanups.push(() => media.revert());
         }
 

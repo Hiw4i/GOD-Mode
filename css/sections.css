@@ -395,6 +395,12 @@ nav::before {
     pointer-events: none;
 }
 
+/* Transparent by default: cards lay out exactly as if they were direct
+   children of .feature-cards (desktop absolute tops, mobile normal flow).
+   In mobile portrait sticky mode it becomes the containing block that keeps
+   the bottom-anchored cards from docking before the statue is in place. */
+.feature-stack-range { display: contents; }
+
 .feature-card-motion {
     --card-speed: 1;
     --feature-card-scale: 1;

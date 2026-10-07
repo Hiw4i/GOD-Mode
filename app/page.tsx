@@ -151,6 +151,7 @@ export default function HomePage() {
             </div>
             <div className="how-it-works-content">
               <div className="feature-cards">
+                <div className="feature-stack-range">
                 {features.map((feature) => {
                   const className = `feature-card feature-card-motion${feature.align === "right" ? " is-right" : ""}`;
                   if (feature.kind === "focus") {
@@ -178,6 +179,7 @@ export default function HomePage() {
                     </article>
                   );
                 })}
+                </div>
               </div>
             </div>
           </div>
