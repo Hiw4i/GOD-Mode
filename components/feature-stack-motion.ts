@@ -15,12 +15,17 @@ export function createFeatureStack(
   let dock = 0;
   let unfoldDistance = 0;
   let refreshTimer = 0;
+  const backdrop = section.querySelector<HTMLElement>(".how-it-works-bg");
+  let sceneWidth = 0;
   const items = cards.map((card, index) => ({ card, top: 0, height: 0, index, transform: "", opacity: "" }));
 
   const measure = () => {
     // Read normal-flow coordinates rather than the sticky-adjusted offsetTop.
     section.classList.remove("features-stack");
-    viewportHeight = window.innerHeight;
+    // The scene uses 100svh: browser toolbars and the keyboard must not move
+    // its dock. Only a real scene/card size change needs another measurement.
+    viewportHeight = backdrop?.offsetHeight ?? window.innerHeight;
+    sceneWidth = backdrop?.offsetWidth ?? section.offsetWidth;
     dock = viewportHeight * 0.79;
     unfoldDistance = viewportHeight * 0.28;
     // In stack layout the spacer (== dock) replaces the normal-flow top
@@ -38,7 +43,7 @@ export function createFeatureStack(
       item.top = top + flowShift;
       item.height = item.card.offsetHeight;
     });
-    section.style.setProperty("--stack-bottom", `${viewportHeight - dock}px`);
+    section.style.setProperty("--stack-dock", `${dock}px`);
     // Spacer height equals the dock so the first card arrives at the dock
     // exactly when the section content reaches the stuck statue (scroll-up
     // no longer leaves the stack floating above the statue's neck).
@@ -104,30 +109,32 @@ export function createFeatureStack(
   };
   section.addEventListener("focusin", onFocus);
 
-  // Mobile browser chrome showing/hiding changes the viewport height without
-  // firing ScrollTrigger's resize handling (ignoreMobileResize). Bottom
-  // offsets are viewport-relative, so re-measure live to keep the dock glued
-  // to the statue's neck; the full refresh is debounced.
+  // Observe layout, not visualViewport. CSS compensates the dynamic sticky
+  // viewport, while this observer handles rotation, fonts and changed copy.
   const scheduleRefresh = () => {
     window.clearTimeout(refreshTimer);
     refreshTimer = window.setTimeout(() => scrollTrigger.refresh(), 160);
   };
-  const onViewportChange = () => {
-    measure();
-    render(window.scrollY);
-    scheduleRefresh();
-  };
-  window.visualViewport?.addEventListener("resize", onViewportChange);
-  window.addEventListener("resize", onViewportChange);
+  const resizeObserver = new ResizeObserver((entries) => {
+    const changed = entries.some((entry) => {
+      const size = entry.borderBoxSize[0];
+      if (!size) return false;
+      if (entry.target === backdrop) return Math.abs(size.blockSize - viewportHeight) > 1 || Math.abs(size.inlineSize - sceneWidth) > 1;
+      const item = items.find(({ card }) => card === entry.target);
+      return item && Math.abs(size.blockSize - item.height) > 1;
+    });
+    if (changed) scheduleRefresh();
+  });
+  if (backdrop) resizeObserver.observe(backdrop);
+  cards.forEach((card) => resizeObserver.observe(card));
 
   return () => {
-    window.visualViewport?.removeEventListener("resize", onViewportChange);
-    window.removeEventListener("resize", onViewportChange);
+    resizeObserver.disconnect();
     window.clearTimeout(refreshTimer);
     trigger.kill();
     section.removeEventListener("focusin", onFocus);
     section.classList.remove("features-stack");
-    section.style.removeProperty("--stack-bottom");
+    section.style.removeProperty("--stack-dock");
     section.style.removeProperty("--stack-spacer");
     cards.forEach((card) => {
       card.style.removeProperty("transform");

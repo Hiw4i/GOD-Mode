@@ -4,6 +4,18 @@ All notable changes to GOD Mode are documented here. The project follows
 [Semantic Versioning](https://semver.org/) and the structure from
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.6.3] - 2026-10-28
+
+### Fixed
+
+- Stabilized the mobile Features card stack while browser toolbars appear or disappear, without viewport-triggered layout measurements or global animation refreshes.
+- Removed hero animation initialization and synchronous section measurements from the scroll path to reduce entry stutter.
+
+### Changed
+
+- Pre-rendered title halos and card grain during asset generation, including separate mobile glow textures, to reduce first-entry rasterization cost.
+- Prepared nearby parallax layers and decoded scene artwork before they enter the viewport, while retaining lazy loading for distant sections.
+
 ## [0.6.2] - 2026-10-07
 
 ### Fixed

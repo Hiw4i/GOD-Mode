@@ -1,0 +1,106 @@
+{
+  "mobile": {
+    "scenes": [
+      {
+        "id": "focus-intro",
+        "frames": 212,
+        "maxMs": 133.3,
+        "p95Ms": 12.1,
+        "over34ms": 3,
+        "layoutMs": 5.4,
+        "styleMs": 86.9,
+        "taskMs": 617.2
+      },
+      {
+        "id": "features",
+        "frames": 257,
+        "maxMs": 42.3,
+        "p95Ms": 6.2,
+        "over34ms": 1,
+        "layoutMs": 0.8,
+        "styleMs": 215.9,
+        "taskMs": 908.9
+      },
+      {
+        "id": "download",
+        "frames": 238,
+        "maxMs": 84.9,
+        "p95Ms": 6.2,
+        "over34ms": 1,
+        "layoutMs": 1.2,
+        "styleMs": 170.8,
+        "taskMs": 792
+      },
+      {
+        "id": "support",
+        "frames": 218,
+        "maxMs": 42.4,
+        "p95Ms": 18.1,
+        "over34ms": 1,
+        "layoutMs": 0.8,
+        "styleMs": 195.8,
+        "taskMs": 986.5
+      }
+    ],
+    "errors": [],
+    "toolbarResize": {
+      "before": {
+        "spacer": "666.76px",
+        "bottom": "177.24px",
+        "transform": "translateY(0px) scale(0.811)",
+        "y": 649.546875
+      },
+      "after": {
+        "spacer": "726.8000000000001px",
+        "bottom": "193.19999999999993px",
+        "transform": "translateY(0px) scale(0.8071)",
+        "y": 651.0625
+      }
+    }
+  },
+  "desktop": {
+    "scenes": [
+      {
+        "id": "focus-intro",
+        "frames": 219,
+        "maxMs": 24.3,
+        "p95Ms": 12.2,
+        "over34ms": 0,
+        "layoutMs": 3.4,
+        "styleMs": 170,
+        "taskMs": 950.1
+      },
+      {
+        "id": "features",
+        "frames": 213,
+        "maxMs": 30.3,
+        "p95Ms": 12.2,
+        "over34ms": 0,
+        "layoutMs": 1.7,
+        "styleMs": 335,
+        "taskMs": 1298.7
+      },
+      {
+        "id": "download",
+        "frames": 175,
+        "maxMs": 84.9,
+        "p95Ms": 12.2,
+        "over34ms": 3,
+        "layoutMs": 1.9,
+        "styleMs": 440.2,
+        "taskMs": 1407.1
+      },
+      {
+        "id": "support",
+        "frames": 264,
+        "maxMs": 12.1,
+        "p95Ms": 6.2,
+        "over34ms": 0,
+        "layoutMs": 0.8,
+        "styleMs": 132.4,
+        "taskMs": 653.7
+      }
+    ],
+    "errors": []
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "mobile": {
+    "scenes": [
+      {
+        "id": "focus-intro",
+        "frames": 242,
+        "maxMs": 72.7,
+        "p95Ms": 6.2,
+        "over34ms": 2,
+        "layoutMs": 1.4,
+        "styleMs": 107.7,
+        "taskMs": 776
+      },
+      {
+        "id": "features",
+        "frames": 257,
+        "maxMs": 42.4,
+        "p95Ms": 6.2,
+        "over34ms": 1,
+        "layoutMs": 0.6,
+        "styleMs": 239.9,
+        "taskMs": 920.4
+      },
+      {
+        "id": "download",
+        "frames": 260,
+        "maxMs": 18.2,
+        "p95Ms": 6.2,
+        "over34ms": 0,
+        "layoutMs": 1.6,
+        "styleMs": 230.8,
+        "taskMs": 1006.6
+      },
+      {
+        "id": "support",
+        "frames": 262,
+        "maxMs": 18.2,
+        "p95Ms": 6.1,
+        "over34ms": 0,
+        "layoutMs": 0.8,
+        "styleMs": 196.6,
+        "taskMs": 915.2
+      }
+    ],
+    "errors": [],
+    "toolbarResize": {
+      "before": {
+        "spacer": "666.76px",
+        "bottom": "",
+        "transform": "translateY(0px) scale(0.811)",
+        "y": 649.546875
+      },
+      "after": {
+        "spacer": "666.76px",
+        "bottom": "",
+        "transform": "translateY(0px) scale(0.811)",
+        "y": 649.546875
+      }
+    }
+  },
+  "desktop": {
+    "scenes": [
+      {
+        "id": "focus-intro",
+        "frames": 261,
+        "maxMs": 12.2,
+        "p95Ms": 6.2,
+        "over34ms": 0,
+        "layoutMs": 1.8,
+        "styleMs": 171.2,
+        "taskMs": 952.8
+      },
+      {
+        "id": "features",
+        "frames": 262,
+        "maxMs": 12.2,
+        "p95Ms": 6.1,
+        "over34ms": 0,
+        "layoutMs": 1.8,
+        "styleMs": 320.8,
+        "taskMs": 1080.2
+      },
+      {
+        "id": "download",
+        "frames": 239,
+        "maxMs": 24.2,
+        "p95Ms": 12.1,
+        "over34ms": 0,
+        "layoutMs": 1.2,
+        "styleMs": 587.4,
+        "taskMs": 1376.4
+      },
+      {
+        "id": "support",
+        "frames": 264,
+        "maxMs": 6.3,
+        "p95Ms": 6.2,
+        "over34ms": 0,
+        "layoutMs": 0.8,
+        "styleMs": 126.8,
+        "taskMs": 567.8
+      }
+    ],
+    "errors": []
+  }
+}

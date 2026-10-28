@@ -50,11 +50,9 @@ button { color: inherit; }
 .support-content { z-index: 3; }
 
 .motion-near.feature-card-motion,
-.motion-near.feature-card-motion > .feature-card-surface,
-.motion-active .download-card,
-.motion-active .support-card,
-.motion-near .download-card,
-.motion-near .support-card,
+.motion-near [data-parallax-card],
+.motion-near [data-parallax-visual],
+.motion-near [data-parallax-text],
 .motion-active [data-parallax-card],
 .motion-active [data-parallax-visual],
 .motion-active [data-parallax-text] { will-change: transform; }

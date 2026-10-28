@@ -82,7 +82,7 @@ export default function HomePage() {
         <section className="hero" id="hero">
           <div className="hero-content">
             <div className="hero-label">Deep Focus System</div>
-            <h1 className="hero-title">GOD MODE</h1>
+            <h1 className="hero-title"><span className="title-ink title-ink--hero">GOD MODE</span></h1>
           </div>
           <div className="hero-statue-wrap" aria-hidden="true">
             <ResponsivePicture
@@ -99,7 +99,7 @@ export default function HomePage() {
         <section className="focus-intro" id="focus-intro" aria-labelledby="focus-intro-title" data-motion-scene="focus-intro" data-motion-near>
           <h2 className="focus-intro-kicker" id="focus-intro-title">Focus is a skill. Train it.</h2>
           <div className="focus-intro-bg" aria-hidden="true">
-            <div className="focus-intro-bg-text section-bg-text" data-parallax-text>HOW IT WORKS</div>
+            <div className="focus-intro-bg-text section-bg-text" data-parallax-text><span className="title-ink title-ink--intro">HOW IT WORKS</span></div>
           </div>
           <div className="focus-intro-content">
             <ol className="focus-intro-steps">
@@ -140,7 +140,7 @@ export default function HomePage() {
           <div className="features-stage" data-motion-near>
             <div className="how-it-works-bg">
               <div className="hiw-bg-label">Ready to unlock your real potential?</div>
-              <div className="hiw-bg-text" data-parallax-text>FEATURES</div>
+              <div className="hiw-bg-text" data-parallax-text><span className="title-ink title-ink--features">FEATURES</span></div>
               <ResponsivePicture
                 variants={imageAssets.statues.features.variants}
                 className="hiw-bg-img"
@@ -189,7 +189,7 @@ export default function HomePage() {
           <div className="download-bg">
             <div className="download-bg-text section-bg-text" data-parallax-text>
               <div className="download-bg-label section-bg-label">Focus is a choice</div>
-              DOWNLOAD
+              <span className="title-ink title-ink--download">DOWNLOAD</span>
             </div>
             <ResponsivePicture
               variants={imageAssets.statues.download.variants}
@@ -206,7 +206,7 @@ export default function HomePage() {
 
         <section className="support-section" id="support" data-motion-scene="support" data-motion-near>
           <div className="support-bg">
-            <div className="support-bg-text section-bg-text" data-parallax-text><div className="support-bg-label section-bg-label">For those who want to give more</div>SUPPORT</div>
+            <div className="support-bg-text section-bg-text" data-parallax-text><div className="support-bg-label section-bg-label">For those who want to give more</div><span className="title-ink title-ink--support">SUPPORT</span></div>
             <ResponsivePicture
               variants={imageAssets.statues.support.variants}
               className="support-bg-img section-bg-img"

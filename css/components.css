@@ -39,16 +39,44 @@
     font-weight: 700;
     letter-spacing: -6px;
     color: #fff;
-    text-shadow:
-        0 0 60px rgba(255,255,255,0.5),
-        0 0 120px rgba(255,255,255,0.25),
-        0 0 200px rgba(255,255,255,0.1);
     opacity: 0.9;
     user-select: none;
     z-index: 1;
     text-align: center;
     width: 100%;
     position: relative;
+}
+
+/* Keep live type; only its diffuse halo is baked at build time. */
+.title-ink {
+    display: inline-block;
+    position: relative;
+    isolation: isolate;
+}
+
+.title-ink::before {
+    content: '';
+    position: absolute;
+    inset: -1.1667em;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--title-glow) center / 100% 100% no-repeat;
+}
+
+.title-ink--hero { --title-glow: url("/sources/glow-hero.webp"); }
+.title-ink--intro { --title-glow: url("/sources/glow-intro.webp"); }
+.title-ink--features { --title-glow: url("/sources/glow-features.webp"); }
+.title-ink--download { --title-glow: url("/sources/glow-download.webp"); }
+.title-ink--support { --title-glow: url("/sources/glow-support.webp"); }
+
+@media (max-width: 768px) {
+    /* Separate masks retain a broad halo around smaller mobile type. */
+    .title-ink::before { inset: -3.5em; }
+    .title-ink--hero { --title-glow: url("/sources/glow-hero-mobile.webp"); }
+    .title-ink--intro { --title-glow: url("/sources/glow-intro-mobile.webp"); }
+    .title-ink--features { --title-glow: url("/sources/glow-features-mobile.webp"); }
+    .title-ink--download { --title-glow: url("/sources/glow-download-mobile.webp"); }
+    .title-ink--support { --title-glow: url("/sources/glow-support-mobile.webp"); }
 }
 
 .section-bg-label {

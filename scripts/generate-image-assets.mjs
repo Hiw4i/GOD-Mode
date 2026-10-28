@@ -106,7 +106,42 @@ async function generateIcon(definition) {
   return { width: Math.max(...widths), height: variants.at(-1).height, variants };
 }
 
+async function generateTitleGlows() {
+  const titles = { hero: "GOD MODE", intro: "HOW IT WORKS", features: "FEATURES", download: "DOWNLOAD", support: "SUPPORT" };
+  for (const [name, title] of Object.entries(titles)) {
+    for (const fontSize of [120, 40]) {
+      const text = await sharp({ text: {
+        text: `<span foreground="#ffffff">${title}</span>`,
+        font: `Space Grotesk Bold ${fontSize}`,
+        fontfile: path.join(projectRoot, "app", "fonts", "space-grotesk-variable.ttf"),
+        rgba: true,
+      } }).png().toBuffer();
+      const padded = await sharp(text)
+        .extend({ top: 140, bottom: 140, left: 140, right: 140, background: "#0000" })
+        .png().toBuffer();
+      const { width, height } = await metadata(padded, `${name} glow`);
+      const layers = [];
+      // Half-resolution equivalents of the original 60/120/200px shadows.
+      // Blur only runs here; the browser composites a transparent bitmap.
+      for (const [sigma, opacity] of [[15, 0.5], [30, 0.25], [50, 0.1]]) {
+        layers.push({ input: await sharp(padded).blur(sigma)
+          .linear([1, 1, 1, opacity], [0, 0, 0, 0]).png().toBuffer() });
+      }
+      await sharp({ create: { width, height, channels: 4, background: "#0000" } })
+        .composite(layers).webp({ quality: 80, alphaQuality: 100 })
+        .toFile(path.join(publicRoot, `glow-${name}${fontSize === 40 ? "-mobile" : ""}.webp`));
+    }
+  }
+  console.log("✓ title glows: 5 desktop + 5 mobile textures");
+}
+
 await mkdir(publicRoot, { recursive: true });
+// Bake the existing SVG noise once at 2x density; repeated glass surfaces then
+// share a bitmap instead of rasterizing feTurbulence as new layers appear.
+await sharp(path.join(sourceRoot, "grain.svg"), { density: 144 })
+  .png({ palette: true, colours: 128, dither: 0, effort: 10 })
+  .toFile(path.join(publicRoot, "grain.png"));
+await generateTitleGlows();
 const manifest = { hero: await generateHero(), statues: {}, icons: {} };
 for (const definition of statueDefinitions) manifest.statues[definition.name] = await generateStatue(definition);
 for (const definition of iconDefinitions) manifest.icons[definition.name] = await generateIcon(definition);

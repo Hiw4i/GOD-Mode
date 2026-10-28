@@ -554,7 +554,9 @@
 
     .features-stack [data-feature-card] {
         position: sticky;
-        bottom: calc(var(--stack-bottom) - var(--stack-card-height));
+        /* Cancel the sticky viewport's changing height in CSS. The dock stays
+           in the stable 100svh scene even as browser chrome slides in/out. */
+        bottom: calc(100dvh - var(--stack-dock) - var(--stack-card-height));
         transform-origin: 50% 0;
     }
 

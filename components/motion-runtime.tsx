@@ -66,19 +66,9 @@ export function MotionRuntime() {
         const heroContent = document.querySelector<HTMLElement>(".hero-content");
         const heroStatue = document.querySelector<HTMLElement>(".hero-statue-wrap");
         if (!prefersReducedMotion && hero && heroContent && heroStatue) {
-          let initialized = false;
-          const initializeHeroParallax = () => {
-            if (initialized || window.scrollY < 1) return;
-            initialized = true;
-            window.removeEventListener("scroll", initializeHeroParallax);
-            gsap.timeline({ scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: true } })
-              .to(heroContent, { y: () => innerHeight * PARALLAX_CONFIG.hero.contentY, opacity: 0, ease: "none" }, 0)
-              .to(heroStatue, { y: () => innerHeight * PARALLAX_CONFIG.hero.statueY, ease: "none" }, 0);
-            ScrollTrigger.refresh();
-          };
-          window.addEventListener("scroll", initializeHeroParallax, { passive: true });
-          initializeHeroParallax();
-          cleanups.push(() => window.removeEventListener("scroll", initializeHeroParallax));
+          gsap.timeline({ scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: true } })
+            .to(heroContent, { y: () => hero.offsetHeight * PARALLAX_CONFIG.hero.contentY, opacity: 0, ease: "none" }, 0)
+            .to(heroStatue, { y: () => hero.offsetHeight * PARALLAX_CONFIG.hero.statueY, ease: "none" }, 0);
         }
 
         const featuresSection = document.querySelector<HTMLElement>(".how-it-works");
@@ -225,8 +215,22 @@ export function MotionRuntime() {
 
       const nearObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => entry.target.classList.toggle("motion-near", !prefersReducedMotion && entry.isIntersecting));
-      }, { rootMargin: "35% 0px", threshold: 0 });
+      }, { rootMargin: "75% 0px", threshold: 0 });
       document.querySelectorAll("[data-motion-near]").forEach((element) => nearObserver.observe(element));
+
+      // Decode below-fold artwork before its first animated frame, one scene
+      // ahead. Lazy requests remain deferred until they approach the viewport.
+      const artworkObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.querySelectorAll<HTMLImageElement>("img[loading='lazy']").forEach((image) => {
+            image.loading = "eager";
+            void image.decode().catch(() => { /* The image's normal loading/error behavior remains intact. */ });
+          });
+          artworkObserver.unobserve(entry.target);
+        });
+      }, { rootMargin: "100% 0px", threshold: 0 });
+      document.querySelectorAll("section[id]").forEach((section) => artworkObserver.observe(section));
 
       if (canHover && !prefersReducedMotion && !mobileLayoutMedia.matches) {
         document.querySelectorAll<HTMLElement>("[data-hover-target]").forEach((target) => {
@@ -256,15 +260,21 @@ export function MotionRuntime() {
       const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(".nav-right a"));
       const navLogo = document.querySelector<HTMLElement>(".nav-logo");
       const pageSections = Array.from(document.querySelectorAll<HTMLElement>("section[id]"));
+      let sectionStarts: number[] = [];
+      let activeSectionId = "";
       let navFrame = 0;
+      const measureSectionStarts = () => {
+        sectionStarts = pageSections.map((section) => section.getBoundingClientRect().top + window.scrollY);
+      };
       const updateActiveNav = () => {
         navFrame = 0;
-        const activationLine = window.innerHeight * 0.25;
+        const activationLine = window.scrollY + window.innerHeight * 0.25;
         let current = pageSections[0];
-        pageSections.forEach((section) => {
-          if (section.getBoundingClientRect().top <= activationLine) current = section;
+        pageSections.forEach((section, index) => {
+          if (sectionStarts[index] <= activationLine) current = section;
         });
-        if (!current) return;
+        if (!current || current.id === activeSectionId) return;
+        activeSectionId = current.id;
         navLinks.forEach((link) => link.classList.toggle("active", link.hash === `#${current.id}`));
         navLogo?.classList.toggle("scrolled", current.id !== "hero");
       };
@@ -274,6 +284,9 @@ export function MotionRuntime() {
       };
       window.addEventListener("scroll", scheduleActiveNavUpdate, { passive: true });
       window.addEventListener("resize", scheduleActiveNavUpdate);
+      const onRefresh = () => { measureSectionStarts(); scheduleActiveNavUpdate(); };
+      ScrollTrigger.addEventListener("refresh", onRefresh);
+      measureSectionStarts();
       updateActiveNav();
 
       const onLayoutChange = () => ScrollTrigger.refresh();
@@ -313,6 +326,8 @@ export function MotionRuntime() {
         window.removeEventListener("resize", scheduleActiveNavUpdate);
         mobileLayoutMedia.removeEventListener("change", onLayoutChange);
         nearObserver.disconnect();
+        artworkObserver.disconnect();
+        ScrollTrigger.removeEventListener("refresh", onRefresh);
         context.revert();
         if (lenis) gsap.ticker.remove(tick);
         lenis?.destroy();
