@@ -1,8 +1,16 @@
-# Production deployment: godmode.vaneev.com
+# Production deployment: godmode.zone
 
 The production site is a Next.js 16 static export hosted by Majordomo. The hosting account exposes a static web root over explicit FTPS and does not run the Node.js `next start` server. For that reason, production uses `output: "export"`; `corepack pnpm build` writes the complete website to `out/`.
 
-Live URL: [https://godmode.vaneev.com](https://godmode.vaneev.com)
+Live URL: [https://godmode.zone](https://godmode.zone)
+
+## Premium account configuration
+
+Set `NEXT_PUBLIC_SUPABASE_URL` to the HTTPS URL of the same Supabase project used by GOD Mode and set `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` to its `sb_publishable_…` key. Set both in the environment that runs the static build or in the repository's GitHub Actions variables for CI exports. Next.js embeds these values at build time. Keep lava.top credentials and the Supabase secret key in Edge Function secrets.
+
+In Supabase Authentication → URL Configuration, allow the exact redirect `https://godmode.zone/account/`. Keep the app's existing callback and allow explicit staging origins separately. Enable Google and GitHub and verify that the email template delivers `{{ .Token }}` for OTP sign-in. Configure the Premium Edge Function to allow the website's HTTPS origin.
+
+With the public values absent, the static site still builds and displays an unavailable message on the account page. Verify the release candidate can load the server catalog and open the sign-in screen before deploying it.
 
 ## Connection
 
@@ -40,7 +48,7 @@ The sequence is:
 3. Save the current `.htaccess` as the rollback pointer.
 4. Upload the next pointer under a unique temporary name.
 5. Rename the temporary pointer to `/.htaccess` on the server.
-6. Request the live home page, a hashed Next.js JavaScript bundle, and an image over HTTPS.
+6. Compare the live home and account pages with the static export over HTTPS. Check a Next.js JavaScript bundle and an image from the live release.
 7. If any smoke test fails, restore the previous pointer and test it again.
 
 The active website changes only at step 5. Uploading a release cannot expose a partially transferred build.
@@ -84,10 +92,10 @@ Success means all of the following completed:
 
 - lint passed;
 - TypeScript passed;
-- the static export contains `out/index.html` and `out/404.html`;
+- the static export contains `out/index.html`, `out/404.html`, and `out/account/index.html`;
 - the release uploaded successfully;
 - the `.htaccess` pointer switched;
-- live HTML, JavaScript, and image smoke tests returned successful non-empty responses.
+- the live home and account HTML match the static export, and the live JavaScript and image smoke tests return successful non-empty responses.
 
 `-SkipBuild` is available only when the current `out/` was already built and verified in the same working session:
 
@@ -112,14 +120,14 @@ On the first managed deployment, the rollback pointer represents the legacy web 
 ## Verification outside the script
 
 ```powershell
-curl.exe --fail --location --show-error https://godmode.vaneev.com/
-curl.exe --fail --head --show-error https://godmode.vaneev.com/sources/Icon_rounded.png
+curl.exe --fail --location --show-error https://godmode.zone/
+curl.exe --fail --head --show-error https://godmode.zone/sources/Icon_rounded.png
 ```
 
 Expected result: HTTP `200`, the GOD Mode page content, and a non-empty image response. Use a cache-busting query string when diagnosing an edge cache:
 
 ```powershell
-curl.exe --fail --head "https://godmode.vaneev.com/?check=$(Get-Date -Format FileDateTimeUniversal)"
+curl.exe --fail --head "https://godmode.zone/?check=$(Get-Date -Format FileDateTimeUniversal)"
 ```
 
 ## Troubleshooting

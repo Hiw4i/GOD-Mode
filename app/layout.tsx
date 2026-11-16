@@ -21,7 +21,7 @@ const jetBrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: "GOD Mode — Free Premium Forever",
+  title: "GOD Mode — Deep Focus System",
   description: "A cinematic deep-focus system built to protect your attention.",
   icons: { icon: "/sources/Icon_rounded.png" },
   openGraph: {

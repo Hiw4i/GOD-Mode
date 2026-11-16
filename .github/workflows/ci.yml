@@ -21,7 +21,9 @@ jobs:
     timeout-minutes: 20
     env:
       CI: "true"
-      NEXT_PUBLIC_SITE_URL: https://godmode.vaneev.com
+      NEXT_PUBLIC_SITE_URL: https://godmode.zone
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
 
     steps:
       - name: Checkout
@@ -51,6 +53,9 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      - name: Premium website tests
+        run: node --test scripts/premium-model.test.mjs
 
       - name: Build static export
         run: pnpm build

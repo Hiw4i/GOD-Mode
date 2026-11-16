@@ -21,14 +21,13 @@
     .feature-cards { width: min(760px, 100%); }
     .feature-card { width: min(340px, 40vw); min-height: 143px; }
     .feature-card-surface h3 { font-size: clamp(1.55rem, 3.7vw, 2.1rem); }
-    .total-focus-wrap { left: 0; top: 7vh; }
-    .total-focus-wrap .floating-icons { top: 18vh; }
+    .total-focus-wrap { left: 0; }
     .feature-card:nth-child(2) { right: 0; top: 34vh; }
     .feature-card:nth-child(3) { left: 0; top: 57vh; }
     .feature-card:nth-child(4) { right: 3%; top: 64vh; }
     .feature-card:nth-child(5) { left: 1%; top: 89vh; }
     .feature-card:nth-child(6) { right: 0; top: 108vh; }
-    .feature-card:nth-child(7) { left: 10%; top: 126vh; }
+    .feature-card:nth-child(7) { left: auto; right: 0; top: 126vh; }
     .download-section { padding: 6rem 2.5rem 4rem; }
     .download-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 760px; }
     .download-cards--unified { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); max-width: 760px; }
@@ -42,6 +41,10 @@
     .support-bg-img { width: 60%; }
     .support-card-icon { width: 60px; height: 60px; font-size: 1.6rem; }
     nav { padding: 1.2rem 1.5rem; }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .ambient-player-stage { bottom: calc(clamp(-1.6rem, -2vw, -1rem) - 58px); }
 }
 
 @media (min-width: 769px) {

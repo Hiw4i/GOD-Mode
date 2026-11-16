@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Builds and atomically deploys GOD Mode to godmode.vaneev.com over explicit FTPS.
+    Builds and atomically deploys GOD Mode to godmode.zone over explicit FTPS.
 
 .DESCRIPTION
     Uploads an immutable static export into /.godmode/releases/<release-id>/ and
@@ -27,7 +27,7 @@ param(
     [string]$Protocol = 'ftpes',
 
     [switch]$AcceptAnyCertificate,
-    [string]$SiteUrl = 'https://godmode.vaneev.com'
+    [string]$SiteUrl = 'https://godmode.zone'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -104,9 +104,18 @@ function Publish-Pointer([string]$LocalPointer, [string]$Suffix) {
     ) | Out-Null
 }
 
-function Test-Deployment([string]$ExpectedRelease) {
+function Test-ExportedPage([string]$LocalPath, [byte[]]$LiveBytes, [string]$UrlPath) {
+    $expected = (Get-FileHash -LiteralPath (Join-Path $OutDir $LocalPath) -Algorithm SHA256).Hash
+    $actual = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($LiveBytes))
+    if ($actual -ne $expected) {
+        throw "$UrlPath does not match the static export for this release."
+    }
+}
+
+function Test-Deployment([string]$ExpectedRelease, [switch]$VerifyExport) {
     $handler = [Net.Http.HttpClientHandler]::new()
     $handler.AutomaticDecompression = [Net.DecompressionMethods]::All
+    $handler.AllowAutoRedirect = -not $VerifyExport
     $client = [Net.Http.HttpClient]::new($handler)
     $client.Timeout = [TimeSpan]::FromSeconds(30)
     $client.DefaultRequestHeaders.UserAgent.ParseAdd('GOD-Mode-Deploy/1.0')
@@ -122,6 +131,16 @@ function Test-Deployment([string]$ExpectedRelease) {
         }
         if ($body -notmatch 'GOD Mode|GOD MODE|Deep Focus System') {
             throw 'Home page does not contain the expected GOD Mode marker.'
+        }
+
+        if ($VerifyExport) {
+            Test-ExportedPage 'index.html' ($root.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()) '/'
+            $accountUrl = "$($SiteUrl.TrimEnd('/'))/account/?deploy=$cacheBust"
+            $account = $client.GetAsync($accountUrl).GetAwaiter().GetResult()
+            if (-not $account.IsSuccessStatusCode) {
+                throw "/account/ returned HTTP $([int]$account.StatusCode)."
+            }
+            Test-ExportedPage 'account/index.html' ($account.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()) '/account/'
         }
 
         $assetMatch = [regex]::Match($body, '/_next/static/[^"''?]+\.js')
@@ -146,11 +165,11 @@ function Test-Deployment([string]$ExpectedRelease) {
     }
 }
 
-function Invoke-SmokeTests([string]$ExpectedRelease) {
+function Invoke-SmokeTests([string]$ExpectedRelease, [switch]$VerifyExport) {
     $lastError = $null
     foreach ($attempt in 1..4) {
         try {
-            Test-Deployment -ExpectedRelease $ExpectedRelease
+            Test-Deployment -ExpectedRelease $ExpectedRelease -VerifyExport:$VerifyExport
             Write-Host "Smoke tests passed on attempt $attempt." -ForegroundColor Green
             return
         } catch {
@@ -222,6 +241,7 @@ try {
 
     if (-not $SkipBuild) {
         $env:CI = 'true'
+        $env:NEXT_PUBLIC_SITE_URL = $SiteUrl.TrimEnd('/')
         Push-Location $RepoRoot
         try {
             foreach ($arguments in @(@('pnpm', 'lint'), @('pnpm', 'typecheck'), @('pnpm', 'build'))) {
@@ -233,7 +253,7 @@ try {
         }
     }
 
-    foreach ($required in 'index.html', '404.html') {
+    foreach ($required in 'index.html', '404.html', 'account/index.html') {
         if (-not (Test-Path -LiteralPath (Join-Path $OutDir $required))) {
             throw "Static export is incomplete: out\$required is missing."
         }
@@ -292,7 +312,7 @@ ErrorDocument 404 /.godmode/releases/$releaseId/404.html
 
     Publish-Pointer -LocalPointer $newPointer -Suffix $releaseId
     try {
-        Invoke-SmokeTests -ExpectedRelease $releaseId
+        Invoke-SmokeTests -ExpectedRelease $releaseId -VerifyExport
     } catch {
         Write-Warning $_.Exception.Message
         Write-Warning 'Post-deploy tests failed. Restoring the previous pointer.'

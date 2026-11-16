@@ -874,7 +874,6 @@ nav::before {
 
 .premium-toggle {
     display: flex;
-    gap: 0.25rem;
     padding: 0;
     margin-bottom: 1.15rem;
     background: transparent;
@@ -883,7 +882,26 @@ nav::before {
     z-index: 1;
 }
 
+.premium-toggle::after {
+    content: "";
+    position: absolute;
+    inset: auto auto -1px 0;
+    width: calc(100% / var(--plan-count));
+    height: 2px;
+    background: var(--accent);
+    transform: translateX(calc(var(--plan-index) * 100%));
+    transition: transform 0.25s ease;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .premium-toggle::after { transition: none; }
+}
+
 .premium-toggle-btn {
+    display: grid;
+    place-items: center;
+    position: relative;
     flex: 1;
     min-height: 44px;
     padding: 0.6rem 0.25rem;
@@ -897,21 +915,18 @@ nav::before {
     cursor: pointer;
     background: transparent;
     border: none;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
     touch-action: manipulation;
-    transition: color 0.25s ease, border-color 0.25s ease;
+    transition: color 0.25s ease;
 }
 
 .premium-toggle-btn:hover { color: var(--text); }
-.premium-toggle-btn:focus-visible {
-    outline: 2px solid var(--accent);
+.premium-toggle-btn:focus-within {
+    outline: 2px solid var(--text);
     outline-offset: 2px;
 }
 
 .premium-toggle-btn.is-selected {
     color: var(--text);
-    border-bottom-color: var(--accent);
 }
 
 .premium-price { animation: premium-fade 0.25s ease; }
@@ -982,7 +997,7 @@ nav::before {
 .download-card-promotion {
     min-height: 1.15rem;
     margin: -0.4rem 0 0.75rem;
-    color: var(--accent);
+    color: var(--text-dim);
     font-size: 0.68rem;
     line-height: 1.3;
 }
@@ -997,9 +1012,8 @@ nav::before {
 
 .download-card-claim-bar span {
     display: block;
-    width: 62%;
     height: 100%;
-    background: var(--accent);
+    background: var(--text);
 }
 
 /* Reserves the claim-bar slot so switching month / year / lifetime never moves content below. */
@@ -1304,4 +1318,30 @@ nav::before {
     vertical-align: middle;
     opacity: 0.7;
     transition: opacity 0.3s;
+}
+
+.premium-toggle-btn input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+
+.premium-account-link:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+}
+
+.premium-account-link {
+    display: grid;
+    align-content: center;
+    min-height: 44px;
+    margin-top: 0.35rem;
+    position: relative;
+    z-index: 1;
+    color: color-mix(in srgb, var(--text) 76%, var(--bg));
+    font-size: 0.78rem;
+    text-align: center;
+    text-underline-offset: 0.22em;
 }

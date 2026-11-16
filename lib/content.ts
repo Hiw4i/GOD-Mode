@@ -11,15 +11,10 @@ export interface Feature {
 }
 
 export interface DownloadPlan {
-  id: "free" | "monthly" | "yearly" | "lifetime";
   title: string;
   planName: string;
   features: string[];
   price: string;
-  period?: string;
-  promotion?: string;
-  claimed?: string;
-  action: "download" | "premium";
   cta: string;
 }
 
@@ -104,79 +99,28 @@ export const features: Feature[] = [
   },
 ];
 
-export const downloadPlans: DownloadPlan[] = [
-  {
-    id: "free",
-    title: "Free",
-    price: "$0",
-    planName: "Core GOD Mode",
-    action: "download",
-    cta: "Download Free",
-    features: [
-      "Basic focus stopwatch",
-      "Last 4 weeks of statistics",
-      "Basic features",
-      "No ads",
-      "One device per account",
-    ],
-  },
-  {
-    id: "monthly",
-    title: "Monthly",
-    price: "$4",
-    period: "/ month",
-    planName: "Full Premium",
-    action: "premium",
-    cta: "Get",
-    features: [
-      "Strict App Blocking",
-      "Full Focus History & Statistics",
-      "All Soundscapes",
-      "Museum, Quests & Progression",
-      "Unlimited Customization",
-      "All Devices with one account",
-      "Cancel anytime",
-    ],
-  },
-  {
-    id: "yearly",
-    title: "Yearly",
-    price: "$29",
-    period: "/ year",
-    promotion: "$2.42/mo  ·  Save 40%",
-    planName: "Full Premium",
-    action: "premium",
-    cta: "Get",
-    features: [
-      "Strict App Blocking",
-      "Full Focus History & Statistics",
-      "All Soundscapes",
-      "Museum, Quests & Progression",
-      "Unlimited Customization",
-      "All Devices with one account",
-      "Cancel anytime",
-    ],
-  },
-  {
-    id: "lifetime",
-    title: "Lifetime",
-    price: "$49",
-    period: "once",
-    claimed: "Temporarily  ·  62/100 claimed",
-    planName: "Full Premium",
-    action: "premium",
-    cta: "Get",
-    features: [
-      "Strict App Blocking",
-      "Full Focus History & Statistics",
-      "All Soundscapes",
-      "Museum, Quests & Progression",
-      "Unlimited Customization",
-      "All Devices with one account",
-      "Cancel anytime",
-    ],
-  },
-];
+export const freeDownloadPlan: DownloadPlan = {
+  title: "Free",
+  price: "$0",
+  planName: "Core GOD Mode",
+  cta: "Download Free",
+  features: [
+    "Basic focus stopwatch",
+    "Last 4 weeks of statistics",
+    "Basic features",
+    "No ads",
+    "One device per account",
+  ],
+};
+
+export const premiumFeatures = [
+  "Strict App Blocking",
+  "Full Focus History & Statistics",
+  "All Soundscapes",
+  "Museum, Quests & Progression",
+  "Unlimited Customization",
+  "All Devices with one account",
+] as const;
 
 export const supportMethods: SupportMethod[] = [
   { id: "card", symbol: "$", title: "Card", subtitle: "Visa, MasterCard, СБП, PayPal, Apple Pay" },

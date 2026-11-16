@@ -1,0 +1,97 @@
+.account-page {
+    display: grid;
+    align-content: start;
+    gap: 1.5rem;
+    width: min(100% - 2rem, 36rem);
+    margin-inline: auto;
+    padding-block: clamp(2rem, 7vw, 4.5rem);
+}
+
+.account-back,
+.account-text-button,
+.premium-account-link {
+    color: inherit;
+    text-underline-offset: 0.22em;
+}
+
+.account-back {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    gap: 0.55rem;
+    min-height: 44px;
+    text-decoration: none;
+}
+
+.account-back:hover,
+.account-text-button:hover { text-decoration: underline; }
+
+.account-page h1 {
+    font-size: clamp(2.25rem, 7vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+}
+
+.account-panel {
+    display: grid;
+    gap: 0.9rem;
+    padding: clamp(1.15rem, 5vw, 2rem);
+}
+
+.account-panel h2 { font-size: 1.35rem; }
+.account-panel p { overflow-wrap: anywhere; }
+.account-page .download-card { min-width: 0; }
+.account-page .premium-auth-grid { margin: 0; }
+.account-page .premium-auth-btn { min-height: 48px; }
+
+.account-muted,
+.account-details dt {
+    color: color-mix(in srgb, var(--text) 72%, var(--bg));
+    line-height: 1.5;
+}
+
+.account-email { margin-top: 0.25rem; }
+
+.account-row,
+.account-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+}
+
+.account-actions { justify-content: flex-start; }
+
+.account-text-button {
+    justify-self: start;
+    min-height: 44px;
+    padding-inline: 0.15rem;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.account-details {
+    display: grid;
+    gap: 0.5rem;
+    padding-block: 0.85rem;
+    border-block: 1px solid var(--border);
+}
+
+.account-details > div {
+    display: grid;
+    grid-template-columns: minmax(6rem, 1fr) minmax(0, 1.5fr);
+    gap: 0.5rem;
+}
+
+.account-details dd { overflow-wrap: anywhere; }
+.account-status { line-height: 1.5; }
+.account-error { color: #ffb5a6; line-height: 1.5; }
+.account-confirm p { margin-bottom: 0.35rem; }
+.account-page .account-form { margin-top: 0; gap: 0.65rem; }
+.account-page .signup-input { width: 100%; min-height: 44px; font-size: 1rem; }
+.account-page :is(.signup-submit, .btn) { min-height: 44px; }
+.account-page button:disabled { cursor: wait; opacity: 0.65; }
+.account-page :is(button, a, input):focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }

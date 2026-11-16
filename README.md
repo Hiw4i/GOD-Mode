@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Hiw4i/GOD-Mode/actions/workflows/ci.yml/badge.svg)](https://github.com/Hiw4i/GOD-Mode/actions/workflows/ci.yml)
 
-GOD Mode is a cinematic one-page product site built with Next.js App Router, React, TypeScript, GSAP, Lenis, and locally hosted media. Production is exported as static HTML/CSS/JavaScript and served at [godmode.vaneev.com](https://godmode.vaneev.com).
+GOD Mode is a cinematic one-page product site built with Next.js App Router, React, TypeScript, GSAP, Lenis, and locally hosted media. Production is exported as static HTML/CSS/JavaScript and served at [godmode.zone](https://godmode.zone).
 
 ## Requirements
 

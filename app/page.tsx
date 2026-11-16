@@ -1,11 +1,12 @@
 import Image from "next/image";
-import { Download, ExternalLink, Gem, Grid2X2, LayoutDashboard, ListOrdered, Smartphone } from "lucide-react";
+import Link from "next/link";
+import { Download, ExternalLink, Gem, Grid2X2, LayoutDashboard, ListOrdered, Smartphone, UserRound } from "lucide-react";
 import { AmbientPlayer } from "@/components/ambient-player";
 import { CruelStopwatch } from "@/components/cruel-stopwatch";
 import { DownloadPlanSelector } from "@/components/download-plan-selector";
 import { ModalSystem } from "@/components/modal-system";
 import { MotionRuntime } from "@/components/motion-runtime";
-import { ambientTracks, downloadPlans, features, supportMethods } from "@/lib/content";
+import { ambientTracks, features, freeDownloadPlan, supportMethods } from "@/lib/content";
 import { APP_VERSION_LABEL } from "@/lib/version";
 import { variantSrcSet, type ResponsiveImageVariant } from "@/lib/responsive-images";
 import imageAssets from "@/lib/generated-image-assets.json";
@@ -75,6 +76,7 @@ export default function HomePage() {
           <a href="#features"><LayoutDashboard className="nav-icon" /><span className="nav-label">Features</span></a>
           <a href="#download"><Download className="nav-icon" /><span className="nav-label">Download</span></a>
           <a href="#support"><Gem className="nav-icon" /><span className="nav-label">Support</span></a>
+          <Link href="/account/" aria-label="Account"><UserRound className="nav-icon" aria-hidden="true" /><span className="nav-label">Account</span></Link>
         </div>
       </nav>
 
@@ -200,7 +202,7 @@ export default function HomePage() {
             />
           </div>
           <div className="download-content">
-            <DownloadPlanSelector plans={downloadPlans} />
+            <DownloadPlanSelector freePlan={freeDownloadPlan} />
           </div>
         </section>
 

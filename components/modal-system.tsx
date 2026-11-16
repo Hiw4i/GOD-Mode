@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { Grid2X2, Smartphone } from "lucide-react";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-type ModalId = "crypto" | "download" | "premium" | "signup";
+type ModalId = "crypto" | "download";
 
 const addresses = [
   ["USDT (SOL)", "TExampleAddress1234567890abc"],
@@ -26,7 +26,6 @@ export function ModalSystem() {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const returnFocusRef = useRef<HTMLElement | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
@@ -48,18 +47,11 @@ export function ModalSystem() {
     closeTimerRef.current = window.setTimeout(() => setOpen(null), 400);
   };
 
-  const switchModal = (id: ModalId) => {
-    if (animationFrameRef.current !== null) window.cancelAnimationFrame(animationFrameRef.current);
-    if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
-    setVisible(false);
-    closeTimerRef.current = window.setTimeout(() => showModal(id), 200);
-  };
-
   useEffect(() => {
     const onDocumentClick = (event: MouseEvent) => {
       const target = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-open-modal]") : null;
       const id = target?.dataset.openModal as ModalId | undefined;
-      if (!id) return;
+      if (id !== "crypto" && id !== "download") return;
       event.preventDefault();
       returnFocusRef.current = target;
       showModal(id);
@@ -97,17 +89,6 @@ export function ModalSystem() {
     await navigator.clipboard.writeText(value);
     setCopied(value);
     window.setTimeout(() => setCopied((current) => current === value ? null : current), 2000);
-  };
-
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    setSuccess(true);
-    window.setTimeout(() => {
-      setSuccess(false);
-      closeModal();
-      form.reset();
-    }, 2000);
   };
 
   if (!open) return null;
@@ -156,33 +137,6 @@ export function ModalSystem() {
                 </button>
               ))}
             </div>
-          </>
-        )}
-
-        {open === "premium" && (
-          <>
-            <h3 className="modal-title" id="premium-modal-title">Sign in to secure your Premium</h3>
-            <div className="premium-auth-grid">
-              {["google", "github"].map((provider) => (
-                <button key={provider} className={`selectable-btn premium-auth-btn${selected === provider ? " selected" : ""}`} type="button" onClick={() => flashSelected(provider)}>
-                  <Image src={`/sources/${provider}.png`} alt="" width={36} height={36} />
-                  <span>{provider[0].toUpperCase() + provider.slice(1)}</span>
-                </button>
-              ))}
-            </div>
-            <button className="premium-email-note" type="button" onClick={() => switchModal("signup")}>or use email</button>
-          </>
-        )}
-
-        {open === "signup" && (
-          <>
-            <h3 className="modal-title" id="signup-modal-title">Create your account</h3>
-            <form className="signup-form" onSubmit={submit}>
-              <input className="signup-input" type="text" name="name" autoComplete="name" placeholder="Name" required />
-              <input className="signup-input" type="email" name="email" autoComplete="email" placeholder="Email" required />
-              <input className="signup-input" type="password" name="password" autoComplete="new-password" placeholder="Password" required />
-              <button className={`signup-submit${success ? " success" : ""}`} type="submit">{success ? "✓ Welcome!" : "Sign Up"}</button>
-            </form>
           </>
         )}
       </div>
