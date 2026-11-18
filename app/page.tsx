@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Download, ExternalLink, Gem, Grid2X2, LayoutDashboard, ListOrdered, Smartphone, UserRound } from "lucide-react";
+import { Download, ExternalLink, Gem, Grid2X2, LayoutDashboard, ListOrdered, Smartphone } from "lucide-react";
 import { AmbientPlayer } from "@/components/ambient-player";
 import { CruelStopwatch } from "@/components/cruel-stopwatch";
 import { DownloadPlanSelector } from "@/components/download-plan-selector";
@@ -76,7 +76,6 @@ export default function HomePage() {
           <a href="#features"><LayoutDashboard className="nav-icon" /><span className="nav-label">Features</span></a>
           <a href="#download"><Download className="nav-icon" /><span className="nav-label">Download</span></a>
           <a href="#support"><Gem className="nav-icon" /><span className="nav-label">Support</span></a>
-          <Link href="/account/" aria-label="Account"><UserRound className="nav-icon" aria-hidden="true" /><span className="nav-label">Account</span></Link>
         </div>
       </nav>
 
@@ -231,6 +230,8 @@ export default function HomePage() {
           <a className="support-version" href="/version.json" aria-label={`GOD Mode build information, ${APP_VERSION_LABEL}`}>{APP_VERSION_LABEL}</a>
         </section>
       </main>
+
+      <footer className="site-legal"><Link href="/privacy/">Privacy policy</Link></footer>
 
       <ModalSystem />
       <MotionRuntime />

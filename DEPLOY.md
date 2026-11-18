@@ -92,10 +92,10 @@ Success means all of the following completed:
 
 - lint passed;
 - TypeScript passed;
-- the static export contains `out/index.html`, `out/404.html`, and `out/account/index.html`;
+- the static export contains the home, 404, account, account deletion, and privacy pages;
 - the release uploaded successfully;
 - the `.htaccess` pointer switched;
-- the live home and account HTML match the static export, and the live JavaScript and image smoke tests return successful non-empty responses.
+- the live home, account, account deletion, and privacy HTML match the static export, and the live JavaScript and image smoke tests return successful non-empty responses.
 
 `-SkipBuild` is available only when the current `out/` was already built and verified in the same working session:
 

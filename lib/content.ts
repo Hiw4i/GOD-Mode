@@ -92,7 +92,7 @@ export const features: Feature[] = [
   {
     id: "quests",
     title: "Quests",
-    description: "Deploy daily missions and focus challenges of varying difficulty.",
+    description: "Pick daily focus goals for free, or build a longer routine with weekly and monthly Premium quests.",
     kind: "standard",
     delay: 5,
     speed: 1.25,
@@ -107,19 +107,19 @@ export const freeDownloadPlan: DownloadPlan = {
   features: [
     "Basic focus stopwatch",
     "Last 4 weeks of statistics",
-    "Basic features",
+    "Daily quests and unlimited focus tasks",
+    "Sync across devices with an account",
     "No ads",
-    "One device per account",
   ],
 };
 
 export const premiumFeatures = [
-  "Strict App Blocking",
+  "Weekly & monthly quests",
   "Full Focus History & Statistics",
-  "All Soundscapes",
-  "Museum, Quests & Progression",
-  "Unlimited Customization",
-  "All Devices with one account",
+  "Cruel Stopwatch & unlimited blocked apps",
+  "Premium music, themes & clock fonts",
+  "Navigation customization",
+  "Premium level rewards on paid plans",
 ] as const;
 
 export const supportMethods: SupportMethod[] = [

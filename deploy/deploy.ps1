@@ -40,6 +40,7 @@ if ($DryRun -and $Rollback) {
 $DeployDir = $PSScriptRoot
 $RepoRoot = Split-Path -Parent $DeployDir
 $OutDir = Join-Path $RepoRoot 'out'
+$AccountPages = @('account', 'delete-account', 'privacy')
 $CredFile = Join-Path $DeployDir 'credentials.ps1'
 $LogFile = Join-Path $DeployDir 'deploy.log'
 $TempDir = Join-Path ([IO.Path]::GetTempPath()) ("godmode-deploy-" + [guid]::NewGuid().ToString('N'))
@@ -135,12 +136,20 @@ function Test-Deployment([string]$ExpectedRelease, [switch]$VerifyExport) {
 
         if ($VerifyExport) {
             Test-ExportedPage 'index.html' ($root.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()) '/'
-            $accountUrl = "$($SiteUrl.TrimEnd('/'))/account/?deploy=$cacheBust"
-            $account = $client.GetAsync($accountUrl).GetAwaiter().GetResult()
-            if (-not $account.IsSuccessStatusCode) {
-                throw "/account/ returned HTTP $([int]$account.StatusCode)."
+            foreach ($page in $AccountPages) {
+                $path = "/$page/"
+                $url = "$($SiteUrl.TrimEnd('/'))$path`?deploy=$cacheBust"
+                $response = $client.GetAsync($url).GetAwaiter().GetResult()
+                if (-not $response.IsSuccessStatusCode) {
+                    throw "$path returned HTTP $([int]$response.StatusCode)."
+                }
+                Test-ExportedPage "$page/index.html" ($response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()) $path
             }
-            Test-ExportedPage 'account/index.html' ($account.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()) '/account/'
+            $missing = $client.GetAsync("$($SiteUrl.TrimEnd('/'))/godmode-deploy-missing-$cacheBust/").GetAwaiter().GetResult()
+            if ([int]$missing.StatusCode -ne 404) {
+                throw "Missing page returned HTTP $([int]$missing.StatusCode) instead of 404."
+            }
+            Test-ExportedPage '404.html' ($missing.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()) '404'
         }
 
         $assetMatch = [regex]::Match($body, '/_next/static/[^"''?]+\.js')
@@ -253,7 +262,8 @@ try {
         }
     }
 
-    foreach ($required in 'index.html', '404.html', 'account/index.html') {
+    $requiredFiles = @('index.html', '404.html') + @($AccountPages | ForEach-Object { "$_/index.html" })
+    foreach ($required in $requiredFiles) {
         if (-not (Test-Path -LiteralPath (Join-Path $OutDir $required))) {
             throw "Static export is incomplete: out\$required is missing."
         }

@@ -15,7 +15,7 @@ export default function AccountPage() {
   return (
     <main className="account-page">
       <Link className="account-back" href="/"><ArrowLeft aria-hidden="true" size={18} /> GOD Mode</Link>
-      <h1>Account</h1>
+      <h1 id="account-title">Account</h1>
       <Suspense fallback={<p role="status" className="account-muted">Loading your account…</p>}>
         <PremiumAccount />
       </Suspense>

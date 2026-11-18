@@ -16,6 +16,7 @@ const statueDefinitions = [
   { name: "features", widths: [480, 720, 960, 1280], fade: [{ offset: 0, opacity: 1 }, { offset: 72, opacity: 1 }, { offset: 96, opacity: 0 }, { offset: 100, opacity: 0 }] },
   { name: "download", widths: [480, 720, 960, 1280] },
   { name: "support", widths: [480, 720, 960, 1280] },
+  { name: "not-found", widths: [768, 1152, 1536], requireAlpha: false },
 ];
 
 const iconDefinitions = [
@@ -89,10 +90,10 @@ async function generateStatue(definition) {
   const basename = `statue for ${definition.name}`;
   const input = path.join(sourceRoot, `${basename}.png`);
   const info = await metadata(input, basename);
-  if (!info.hasAlpha) throw new Error(`"${basename}" must preserve an alpha channel.`);
+  if (definition.requireAlpha !== false && !info.hasAlpha) throw new Error(`"${basename}" must preserve an alpha channel.`);
   const widths = responsiveWidths(info.width, definition.widths);
   const prepared = definition.fade ? await applyVerticalAlphaFade(input, info.width, info.height, definition.fade) : input;
-  const variants = await encodeVariants({ basename, input: prepared, sourceWidth: info.width, sourceHeight: info.height, widths, quality: 90 });
+  const variants = await encodeVariants({ basename, input: prepared, sourceWidth: info.width, sourceHeight: info.height, widths, quality: 90, requireAlpha: definition.requireAlpha });
   console.log(`✓ ${basename}: ${widths.join(", ")}px variants`);
   return { width: Math.max(...widths), height: variants.at(-1).height, variants };
 }

@@ -7,7 +7,10 @@ import { getBrowserAuth } from "@/lib/account-auth";
 const oauthProviders = ["google", "github"] as const;
 export const oauthReturnIntent = "godmode.account.return";
 
-export function AccountSignIn({ checkoutId, plan }: { checkoutId: string | null; plan: string | null }) {
+type SignInProps = { checkoutId: string | null; plan: string | null; existingAccountOnly?: never }
+  | { existingAccountOnly: true; checkoutId?: never; plan?: never };
+
+export function AccountSignIn({ checkoutId, plan, existingAccountOnly }: SignInProps) {
   const [email, setEmail] = useState("");
   const [sentEmail, setSentEmail] = useState("");
   const [token, setToken] = useState("");
@@ -23,6 +26,7 @@ export function AccountSignIn({ checkoutId, plan }: { checkoutId: string | null;
       const intent = new URLSearchParams();
       if (checkoutId) intent.set("checkout", checkoutId);
       if (plan) intent.set("plan", plan);
+      if (existingAccountOnly) intent.set("returnTo", "delete-account");
       sessionStorage.setItem(oauthReturnIntent, intent.toString());
       const { error } = await auth.signInWithOAuth({
         provider,
@@ -47,7 +51,10 @@ export function AccountSignIn({ checkoutId, plan }: { checkoutId: string | null;
         if (error) throw error;
       } else {
         const address = email.trim();
-        const { error } = await auth.signInWithOtp({ email: address });
+        const { error } = await auth.signInWithOtp({
+          email: address,
+          options: { shouldCreateUser: !existingAccountOnly },
+        });
         if (error) throw error;
         setSentEmail(address);
       }
@@ -76,6 +83,7 @@ export function AccountSignIn({ checkoutId, plan }: { checkoutId: string | null;
           </button>
         ))}
       </div>
+      <p className="account-auth-separator">or</p>
       <form className="signup-form account-form" onSubmit={handleEmail}>
         {sentEmail ? (
           <>
@@ -108,7 +116,7 @@ export function AccountSignIn({ checkoutId, plan }: { checkoutId: string | null;
         )}
         {error && <p role="alert" className="account-error">{error}</p>}
         <button className="signup-submit" type="submit" disabled={busy}>
-          {sentEmail ? "Verify code" : "Email me a code"}
+          {sentEmail ? "Verify code" : "Send code"}
         </button>
         {sentEmail && (
           <button
@@ -117,7 +125,7 @@ export function AccountSignIn({ checkoutId, plan }: { checkoutId: string | null;
             disabled={busy}
             onClick={() => { setSentEmail(""); setToken(""); setError(""); }}
           >
-            Use a different email or request a new code
+            Change email or resend code
           </button>
         )}
       </form>

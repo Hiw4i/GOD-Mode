@@ -83,6 +83,17 @@ button { color: inherit; }
     .support-version { right: 1.5rem; bottom: 1.25rem; }
 }
 
+.site-legal {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    color: color-mix(in srgb, var(--text) 72%, var(--bg));
+    font-size: 0.875rem;
+}
+
+.site-legal a { display: inline-flex; align-items: center; min-height: 44px; color: inherit; text-underline-offset: 0.22em; }
+.site-legal a:hover, .site-legal a:focus-visible { color: var(--text); text-decoration: underline; }
+
 @media (max-width: 410px) {
     .hero-statue-wrap { width: 310%; }
 }

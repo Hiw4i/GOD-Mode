@@ -6,6 +6,7 @@ type Requests = {
   checkout: { input: { plan: PlanId }; output: Checkout };
   cancel: { input?: never; output: Subscription };
   redeem: { input: { code: string }; output: Subscription };
+  delete_account: { input: { confirmed: true }; output: { result: "deleted" } };
 };
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

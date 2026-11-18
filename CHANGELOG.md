@@ -4,6 +4,19 @@ All notable changes to GOD Mode are documented here. The project follows
 [Semantic Versioning](https://semver.org/) and the structure from
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.6.4] - 2026-11-18
+
+### Added
+
+- Self-service account deletion with Google, GitHub or email sign-in, confirmation and billing-state checks.
+- Privacy policy and a custom 404 page with original statue artwork and a direct route home.
+
+### Changed
+
+- Simplified account sign-in, added the social/email separator and removed Account from section navigation.
+- Updated Next.js and its ESLint configuration to 16.4.6 with security fixes.
+- Deployment verifies the account, deletion and privacy pages alongside the landing page.
+
 ## [0.6.3] - 2026-10-28
 
 ### Fixed

@@ -104,6 +104,10 @@ export function PremiumAccount() {
           const intent = sessionStorage.getItem(oauthReturnIntent);
           sessionStorage.removeItem(oauthReturnIntent);
           if (intent && (callback.has("code") || callback.has("error"))) {
+            if (new URLSearchParams(intent).get("returnTo") === "delete-account") {
+              window.location.replace(providerError ? "/delete-account/?error=sign_in_failed" : "/delete-account/");
+              return;
+            }
             restored = parseAccountQuery(intent);
           }
         } catch {
@@ -134,11 +138,9 @@ export function PremiumAccount() {
 
   const selected = availablePlans(catalog).find((item) => item.id === plan);
   return (
-    <section className="account-panel glass-card" aria-labelledby="account-signin-title">
-      <h2 id="account-signin-title">Sign in to GOD Mode</h2>
-      {selected && <p>Selected plan <strong>Premium {selected.name} · {selected.price} {selected.period}</strong></p>}
+    <section className="account-auth" aria-labelledby="account-title">
+      {selected && <p className="account-selection">Premium {selected.name} · {selected.price} {selected.period}</p>}
       {plan === "lifetime" && loaded && catalog && !selected && <p>Founders Edition is sold out.</p>}
-      <p className="account-muted">Use the same account on the site and in the app to access Premium on every device.</p>
       {authState.error && <p role="alert" className="account-error">{authState.error}</p>}
       {getBrowserAuth() && <AccountSignIn checkoutId={checkoutId} plan={plan} />}
     </section>
@@ -290,7 +292,7 @@ function SignedInAccount({
           <>
             <dl className="account-details">
               <div><dt>Plan</dt><dd>{planName(subscription.plan)}</dd></div>
-              <div><dt>Status</dt><dd>{statusLabels[subscription.status]}</dd></div>
+              {subscription.status !== "free" && <div><dt>Status</dt><dd>{statusLabels[subscription.status]}</dd></div>}
               {subscription.next_charge_at && (
                 <div><dt>Next charge</dt><dd>{formatDate(subscription.next_charge_at)}</dd></div>
               )}
@@ -356,10 +358,9 @@ function SignedInAccount({
           )}
         </>
       )}
-      {subscription && (
-        <section className="account-panel glass-card" aria-labelledby="promo-title">
-          <h2 id="promo-title">Promo code</h2>
-          {canPurchase ? (
+      {subscription && canPurchase && (
+        <details className="account-panel account-promo">
+          <summary>Redeem a promo code</summary>
             <form className="signup-form account-form" onSubmit={(event) => void manage("redeem", event)}>
               <label htmlFor="premium-promo-code">Enter your code</label>
               <input
@@ -374,13 +375,9 @@ function SignedInAccount({
               />
               <button className="signup-submit" type="submit" disabled={busy || !code.trim()}>Apply code</button>
             </form>
-          ) : (
-            <p className="account-muted">
-              {pending ? "Finish your checkout before using a promo code." : "You can apply a code after your current Premium access ends."}
-            </p>
-          )}
-        </section>
+        </details>
       )}
+      <Link className="account-text-button" href="/delete-account/">Delete account</Link>
     </>
   );
 }
