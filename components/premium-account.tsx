@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import { RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type { Session } from "@supabase/supabase-js";
@@ -30,9 +31,8 @@ const statusLabels: Record<Subscription["status"], string> = {
   revoked: "Access revoked",
 };
 
-const checkoutLabels: Record<CheckoutState, string> = {
+const checkoutLabels: Record<Exclude<CheckoutState, "open">, string> = {
   creating: "Preparing your checkout…",
-  open: "Checkout is open. Premium activates after payment is confirmed.",
   unknown: "We’re checking your payment with lava.top. Please wait before paying again.",
   paid: "Payment confirmed. Sign in to GOD Mode with this same account to use Premium.",
   closed: "Checkout closed. Choose a plan if you’d like to try again.",
@@ -276,8 +276,15 @@ function SignedInAccount({
             <h2 id="subscription-title">Subscription</h2>
             {session.user.email && <p className="account-muted account-email">{session.user.email}</p>}
           </div>
-          <button className="account-text-button" type="button" disabled={busy} onClick={() => void manage("signout")}>
-            Sign out
+          <button
+            className="account-refresh-button"
+            type="button"
+            aria-label="Refresh status"
+            title="Refresh status"
+            disabled={busy}
+            onClick={() => setRefresh((value) => value + 1)}
+          >
+            <RefreshCw size={18} aria-hidden="true" />
           </button>
         </div>
 
@@ -300,13 +307,13 @@ function SignedInAccount({
                 <div><dt>Access until</dt><dd>{formatDate(subscription.access_until)}</dd></div>
               )}
             </dl>
-            {subscription.checkout_state && (
+            {subscription.checkout_state && subscription.checkout_state !== "open" && (
               <p className="account-status" role="status">
                 {subscription.checkout_plan ? `${planName(subscription.checkout_plan)} · ` : ""}
                 {checkoutLabels[subscription.checkout_state]}
               </p>
             )}
-            {resumeUrl && <a className="btn premium-cta" href={resumeUrl}>Continue to lava.top</a>}
+            {resumeUrl && <a className="btn download-card-btn premium-cta" href={resumeUrl}>Continue to lava.top</a>}
             {subscription.can_cancel && (confirmCancel ? (
               <div className="account-confirm">
                 <p>Your access continues until the end of the paid period.</p>
@@ -326,9 +333,6 @@ function SignedInAccount({
             ))}
           </>
         )}
-        <button className="account-text-button" type="button" disabled={busy} onClick={() => setRefresh((value) => value + 1)}>
-          Refresh status
-        </button>
         {feedback && <p role={feedback.error ? "alert" : "status"} className={feedback.error ? "account-error" : "account-status"}>{feedback.message}</p>}
       </section>
 
@@ -377,7 +381,12 @@ function SignedInAccount({
             </form>
         </details>
       )}
-      <Link className="account-text-button" href="/delete-account/">Delete account</Link>
+      <div className="account-actions account-footer">
+        <button className="account-text-button" type="button" disabled={busy} onClick={() => void manage("signout")}>
+          Sign out
+        </button>
+        <Link className="account-text-button" href="/delete-account/">Delete account</Link>
+      </div>
     </>
   );
 }

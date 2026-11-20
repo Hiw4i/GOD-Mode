@@ -86,16 +86,41 @@
 
 .account-email { margin-top: 0.25rem; }
 
-.account-row,
+.account-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+}
+
 .account-actions {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
     gap: 0.5rem 1rem;
 }
 
-.account-actions { justify-content: flex-start; }
+.account-footer .account-text-button {
+    display: inline-flex;
+    align-items: center;
+    font: inherit;
+}
+
+.account-refresh-button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.account-refresh-button:not(:disabled):hover { background: var(--border); }
+.account-refresh-button:not(:disabled):active { opacity: 0.75; }
 
 .account-text-button {
     justify-self: start;
@@ -126,7 +151,7 @@
 .account-confirm p { margin-bottom: 0.35rem; }
 .account-page .account-form { margin-top: 0; gap: 0.65rem; }
 .account-page .signup-input { width: 100%; min-height: 44px; font-size: 1rem; }
-.account-page :is(.signup-submit, .btn) { min-height: 44px; }
+.account-page :is(.signup-submit, .btn):not(:where(.account-panel .download-card-btn)) { min-height: 44px; }
 .account-page button:disabled { cursor: wait; opacity: 0.65; }
 .account-page .account-delete-button:disabled { cursor: default; transform: none; }
 .account-page :is(button, a, input, summary):focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
