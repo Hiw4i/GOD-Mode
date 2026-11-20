@@ -117,6 +117,7 @@ export const premiumFeatures = [
   "Weekly & monthly quests",
   "Full Focus History & Statistics",
   "Cruel Stopwatch & unlimited blocked apps",
+  "Website blocking on supported builds",
   "Premium music, themes & clock fonts",
   "Navigation customization",
   "Premium level rewards on paid plans",
