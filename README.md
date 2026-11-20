@@ -9,7 +9,6 @@ GOD Mode is a cinematic one-page product site built with Next.js App Router, Rea
 - Node.js 24.x
 - Corepack
 - pnpm 11.24.0 (declared in `package.json`)
-- PowerShell 7 and WinSCP for FTPS deployment
 
 ## Local development
 
@@ -34,7 +33,7 @@ Every version must have a matching `CHANGELOG.md` section. Builds expose their
 version and Git commit at `/version.json`; run `corepack pnpm version:check` to
 validate release metadata independently.
 
-`next build` creates the deployable static export in `out/`. The site intentionally avoids runtime-only Next.js features because the production hosting provides static files over FTPS, not a Node.js process.
+`next build` creates the deployable static export in `out/`. Production serves these files over HTTPS from eServer.
 
 ## Continuous integration
 
@@ -49,7 +48,7 @@ GitHub Actions runs on every push and pull request to `main`. The workflow uses 
 | `lib/` | Typed site content and generated geometry data |
 | `public/` | Production images, audio, icons, and social preview |
 | `scripts/` | Build-time media generation |
-| `deploy/` | Atomic FTPS deployment and credential template |
+| `deploy/` | Legacy Majordomo FTPS script and credential template |
 | `reports/` | Lighthouse snapshots from performance work |
 | `out/` | Generated static release; ignored by Git |
 
@@ -65,15 +64,8 @@ Open `http://localhost:3000`.
 
 ## Production deployment
 
-See [`DEPLOY.md`](./DEPLOY.md). The short workflow is:
-
-```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File .\deploy\deploy.ps1 -DryRun
-pwsh -NoProfile -ExecutionPolicy Bypass -File .\deploy\deploy.ps1
-```
-
-The deployment script never mirrors the web root. It uploads an immutable release, switches a small `.htaccess` pointer, verifies the live HTML and assets, and restores the previous pointer automatically if verification fails.
+See [`DEPLOY.md`](./DEPLOY.md) for the eServer release checks, rollback preparation, and DNS and mail migration status.
 
 ## Secrets
 
-Copy `deploy/credentials.example.ps1` to `deploy/credentials.ps1` and set the hosting password locally. The real credential file, deployment logs, downloaded WinSCP binaries, `.env*`, build output, and dependency directories are ignored by Git.
+Keep hosting credentials in the configured secret store. Git ignores legacy FTPS credentials, deployment logs, downloaded WinSCP binaries, `.env*`, build output, and dependency directories.
