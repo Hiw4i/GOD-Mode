@@ -124,7 +124,7 @@ export const premiumFeatures = [
 ] as const;
 
 export const supportMethods: SupportMethod[] = [
-  { id: "card", symbol: "$", title: "Card", subtitle: "Visa, MasterCard, СБП, PayPal, Apple Pay" },
+  { id: "card", symbol: "$", title: "One-time donation", subtitle: "Bank cards, SBP, PayPal, Apple Pay" },
   { id: "crypto", symbol: "₿", title: "Crypto", subtitle: "USDT / BTC / ETH / SOL" },
 ];
 

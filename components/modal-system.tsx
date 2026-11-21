@@ -7,10 +7,10 @@ import { useEffect, useRef, useState } from "react";
 type ModalId = "crypto" | "download";
 
 const addresses = [
-  ["USDT (SOL)", "TExampleAddress1234567890abc"],
-  ["BTC", "bc1qexampleaddress000000000"],
-  ["ETH", "0xExampleAddress1234567890"],
-  ["SOL", "ExampleAddress1234567890abc"],
+  ["USDT (SOL)", "73d8tty76NzLtXSndvL7wxcQBi2Jppx67RFpixKa8ZHr"],
+  ["BTC", "bc1q88vepyde7q20hu336wax7s9fl8hp3ra0m0fxmn"],
+  ["ETH", "0x6601094f0A8f7287Bb9236f210c06d0DF5AF7e50"],
+  ["SOL", "73d8tty76NzLtXSndvL7wxcQBi2Jppx67RFpixKa8ZHr"],
 ] as const;
 
 function AppleIcon() {

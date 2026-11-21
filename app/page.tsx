@@ -222,7 +222,7 @@ export default function HomePage() {
                 <article key={method.id} className="support-card glass-card" data-hover-target>
                   <div className={`support-card-icon ${method.id === "card" ? "rub" : "btc"}`}>{method.symbol}</div>
                   <h3 className="support-card-title">{method.title}</h3><p className="support-card-sub">{method.subtitle}</p>
-                  {method.id === "card" ? <a href="https://tbank.ru/cf/1ntWnJ2SQaO" target="_blank" rel="noopener noreferrer" className="btn btn-outline">Link <ExternalLink className="btn-external-icon" /></a> : <button className="btn btn-outline" type="button" data-open-modal="crypto">View Addresses</button>}
+                  {method.id === "card" ? <a href="https://app.lava.top/1520067993?tabId=donate" target="_blank" rel="noopener noreferrer" className="btn btn-outline">Donate via lava.top <ExternalLink className="btn-external-icon" /></a> : <button className="btn btn-outline" type="button" data-open-modal="crypto">View Addresses</button>}
                 </article>
               ))}
             </div>
