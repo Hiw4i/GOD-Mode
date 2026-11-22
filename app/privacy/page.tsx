@@ -15,7 +15,9 @@ export default function PrivacyPage() {
     <section className="account-policy-section" aria-labelledby="blocker-data-title">
       <h2 id="blocker-data-title">App blocking</h2>
       <p>GOD Mode uses the list of launchable apps on your device to build your blocklist. While blocking is enabled, GOD Mode checks the foreground app’s identifier to enforce that list during a focus session. On Android this uses the optional Accessibility service. GOD Mode does not collect screen text, screenshots or keystrokes through the service.</p>
-      <p>If you turn on <strong>Sync App Lockout statistics</strong>, GOD Mode saves the app identifier, date, platform and blocking result to your account. You can turn this off in Focus settings on each device. Turning it off stops new collection and clears events waiting to upload. You can keep using the blocker.</p>
+      <p>GOD Mode collects blocking statistics by default. For an app it saves the identifier and the app’s display name; for a website it saves the domain. Each event also carries the date and platform so the Statistics screen can show how often blocking worked. This sync is on by default and is not a separate consent step.</p>
+      <p>Events are collected even before you sign in. They stay in a local queue with no account attached and are transferred to your account the first time you sign in, then uploaded like any other event.</p>
+      <p>You can turn off <strong>Sync blocking statistics</strong> in the three-dot menu of the blocking card on the Statistics screen. Turning it off stops uploads only: GOD Mode keeps counting blocks locally and keeps the pending events on that device until you turn sync back on, when they are uploaded to your account. The blocker itself always works regardless of this setting.</p>
     </section>
     <section className="account-policy-section" aria-labelledby="payment-data-title">
       <h2 id="payment-data-title">Premium payments</h2>
