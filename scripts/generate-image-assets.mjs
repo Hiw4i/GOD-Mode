@@ -99,10 +99,10 @@ async function generateStatue(definition) {
 }
 
 async function generateIcon(definition) {
-  const input = path.join(sourceRoot, `${definition.name}.jpg`);
+  const input = path.join(sourceRoot, `${definition.name}.png`);
   const info = await metadata(input, definition.name);
   const widths = responsiveWidths(Math.min(info.width, 256), definition.widths);
-  const variants = await encodeVariants({ basename: definition.name, input, sourceWidth: info.width, sourceHeight: info.height, widths, quality: 88, requireAlpha: false });
+  const variants = await encodeVariants({ basename: definition.name, input, sourceWidth: info.width, sourceHeight: info.height, widths, quality: 88 });
   console.log(`✓ ${definition.name}: ${widths.join(", ")}px variants`);
   return { width: Math.max(...widths), height: variants.at(-1).height, variants };
 }

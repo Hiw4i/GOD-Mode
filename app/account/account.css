@@ -36,7 +36,20 @@
 .account-page:has(.account-auth),
 .account-page--deletion { max-width: 27rem; }
 
-.account-page--deletion { padding-top: clamp(3rem, 10vw, 6rem); }
+.account-page--deletion {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    padding-top: clamp(3rem, 10vw, 6rem);
+}
+
+.account-page--deletion > .account-support {
+    align-self: center;
+    margin-block-start: auto;
+    text-align: center;
+}
+
+.account-page--deletion .account-auth > .account-text-button { justify-self: center; }
 
 .account-auth { display: grid; gap: 0.95rem; }
 .account-selection { font-variant-numeric: tabular-nums; }

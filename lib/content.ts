@@ -35,15 +35,15 @@ export const features: Feature[] = [
   {
     id: "total-focus",
     title: "Total Focus",
-    description: "All notifications and apps are blocked. You are left alone with the task.",
+    description: "Block the apps you choose during focus sessions. Premium adds website blocking on Windows Portable with a browser extension and in Chrome and Brave on supported Android builds.",
     kind: "focus",
     delay: 1,
     speed: 0.95,
   },
   {
     id: "best-ux",
-    title: "The Best UX/UI",
-    description: "Aesthetic excellence is the heart of GOD Mode. Every detail is crafted to perfection.",
+    title: "Make It Yours",
+    description: "Choose a theme and clock font, adjust stopwatch opacity, and set the pace of animations.",
     kind: "standard",
     align: "right",
     delay: 2,
@@ -52,7 +52,7 @@ export const features: Feature[] = [
   {
     id: "statistics",
     title: "Real Statistics",
-    description: "Know yourself. Find out your real productivity. Every second tracked. Every distraction counted.",
+    description: "See where your focus time goes with a session calendar, time by task, and Focus Quality charts.",
     kind: "standard",
     delay: 2,
     speed: 1.16,
@@ -60,7 +60,7 @@ export const features: Feature[] = [
   {
     id: "cruel-stopwatch",
     title: "Cruel Stopwatch",
-    description: "Every break has a price. Stopwatch will reset after any distraction.",
+    description: "Turn on Cruel Stopwatch to reset your timer if you stay away from GOD Mode for more than 10 seconds.",
     kind: "timer",
     delay: 3,
     speed: 1.5,
@@ -68,7 +68,7 @@ export const features: Feature[] = [
   {
     id: "ambient-soundscapes",
     title: "Ambient Soundscapes",
-    description: "Curated sounds to drown out noise.",
+    description: "Play ambient soundscapes, noise, binaural beats, or lo-fi in the background while you work.",
     kind: "ambient",
     delay: 4,
     speed: 1.34,
@@ -76,7 +76,7 @@ export const features: Feature[] = [
   {
     id: "task-targeting",
     title: "Task Targeting",
-    description: "Point all energy at one task with absolute intent.",
+    description: "Pick a task before you start. Your focus time is recorded against it, so you can see what you worked on later.",
     kind: "standard",
     delay: 5,
     speed: 1.42,
@@ -84,7 +84,7 @@ export const features: Feature[] = [
   {
     id: "museum-focus",
     title: "Museum of Focus",
-    description: "Turn your discipline into art. Convert raw focus time and completed tasks into XP, level up your rank, and unlock unique collectible trophies.",
+    description: "Earn XP as you focus, level up, and unlock collectible trophies, each with its own story.",
     kind: "standard",
     delay: 5,
     speed: 1.3,
@@ -117,7 +117,7 @@ export const premiumFeatures = [
   "Weekly & monthly quests",
   "Full Focus History & Statistics",
   "Cruel Stopwatch & unlimited blocked apps",
-  "Website blocking on supported builds",
+  "Website blocking on Windows Portable & supported Android builds",
   "Premium music, themes & clock fonts",
   "Navigation customization",
   "Premium level rewards on paid plans",

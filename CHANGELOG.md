@@ -4,6 +4,17 @@ All notable changes to GOD Mode are documented here. The project follows
 [Semantic Versioning](https://semver.org/) and the structure from
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.6.5] - 2026-11-22
+
+### Changed
+
+- Updated the focus feature descriptions, including Premium website blocking on supported Windows and Android builds.
+- Replaced the floating YouTube, TikTok, and Instagram artwork with graphite illustrations.
+
+### Fixed
+
+- Centered the account switch and moved the support link to the bottom of the account deletion page.
+
 ## [0.6.4] - 2026-11-18
 
 ### Added

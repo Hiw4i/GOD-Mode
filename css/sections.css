@@ -574,7 +574,6 @@ nav::before {
     left: -18%;
     z-index: -2;
     opacity: 0.9;
-    border-radius: 16px;
 }
 
 .float-icon--tiktok {
@@ -584,7 +583,6 @@ nav::before {
     left: 7%;
     z-index: -1;
     opacity: 1;
-    border-radius: 18px;
 }
 
 .float-icon--instagram {
@@ -593,8 +591,7 @@ nav::before {
     bottom: -2%;
     left: -14%;
     z-index: -3;
-    opacity: 0.42;
-    border-radius: 14px;
+    opacity: 0.6;
 }
 
 /* ===== CRUEL STOPWATCH ===== */

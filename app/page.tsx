@@ -113,13 +113,13 @@ export default function HomePage() {
               <li data-parallax-card>
                 <article className="focus-intro-step-card glass-card" data-hover-target>
                   <span className="focus-intro-number">02</span>
-                  <h3>Remove distractions.</h3><p>GOD Mode blocks distracting apps and silences notifications.</p>
+                  <h3>Remove distractions.</h3><p>Block distracting apps and mute notifications. With Premium, block websites on supported builds.</p>
                 </article>
               </li>
               <li data-parallax-card>
                 <article className="focus-intro-step-card glass-card" data-hover-target>
                   <span className="focus-intro-number">03</span>
-                  <h3>Start the stopwatch.</h3><p>The stopwatch counts up. Detected distractions reset the run after a 10-second grace period.</p>
+                  <h3>Start the stopwatch.</h3><p>Track your focus time, even in the background.</p>
                 </article>
               </li>
             </ol>
