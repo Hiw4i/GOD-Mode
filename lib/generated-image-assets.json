@@ -4,25 +4,25 @@
     "height": 1081,
     "variants": [
       {
-        "src": "/sources/statue%20for%20hero-w960.webp?v=0.6.5-d38e7397ab",
+        "src": "/sources/statue%20for%20hero-w960.webp?v=0.6.6-d38e7397ab",
         "width": 960,
         "height": 540,
         "bytes": 13664
       },
       {
-        "src": "/sources/statue%20for%20hero-w1280.webp?v=0.6.5-4166daf341",
+        "src": "/sources/statue%20for%20hero-w1280.webp?v=0.6.6-4166daf341",
         "width": 1280,
         "height": 720,
         "bytes": 19460
       },
       {
-        "src": "/sources/statue%20for%20hero-w1600.webp?v=0.6.5-7ed25b20d7",
+        "src": "/sources/statue%20for%20hero-w1600.webp?v=0.6.6-7ed25b20d7",
         "width": 1600,
         "height": 901,
         "bytes": 25616
       },
       {
-        "src": "/sources/statue%20for%20hero.webp?v=0.6.5-fd4c5fbf3a",
+        "src": "/sources/statue%20for%20hero.webp?v=0.6.6-fd4c5fbf3a",
         "width": 1920,
         "height": 1081,
         "bytes": 31490
@@ -35,13 +35,13 @@
       "height": 1080,
       "variants": [
         {
-          "src": "/sources/statue%20for%20features-w480.webp?v=0.6.5-539897a8ce",
+          "src": "/sources/statue%20for%20features-w480.webp?v=0.6.6-539897a8ce",
           "width": 480,
           "height": 721,
           "bytes": 62728
         },
         {
-          "src": "/sources/statue%20for%20features.webp?v=0.6.5-84aeec8af2",
+          "src": "/sources/statue%20for%20features.webp?v=0.6.6-84aeec8af2",
           "width": 719,
           "height": 1080,
           "bytes": 101476
@@ -53,19 +53,19 @@
       "height": 800,
       "variants": [
         {
-          "src": "/sources/statue%20for%20download-w480.webp?v=0.6.5-c5768c2d99",
+          "src": "/sources/statue%20for%20download-w480.webp?v=0.6.6-c5768c2d99",
           "width": 480,
           "height": 427,
           "bytes": 24640
         },
         {
-          "src": "/sources/statue%20for%20download-w720.webp?v=0.6.5-66836f3081",
+          "src": "/sources/statue%20for%20download-w720.webp?v=0.6.6-66836f3081",
           "width": 720,
           "height": 640,
           "bytes": 44746
         },
         {
-          "src": "/sources/statue%20for%20download.webp?v=0.6.5-c49da50d8f",
+          "src": "/sources/statue%20for%20download.webp?v=0.6.6-c49da50d8f",
           "width": 900,
           "height": 800,
           "bytes": 59448
@@ -77,25 +77,25 @@
       "height": 800,
       "variants": [
         {
-          "src": "/sources/statue%20for%20support-w480.webp?v=0.6.5-6e1031a722",
+          "src": "/sources/statue%20for%20support-w480.webp?v=0.6.6-6e1031a722",
           "width": 480,
           "height": 366,
           "bytes": 22034
         },
         {
-          "src": "/sources/statue%20for%20support-w720.webp?v=0.6.5-7d6a2bd7f3",
+          "src": "/sources/statue%20for%20support-w720.webp?v=0.6.6-7d6a2bd7f3",
           "width": 720,
           "height": 549,
           "bytes": 36598
         },
         {
-          "src": "/sources/statue%20for%20support-w960.webp?v=0.6.5-b2001f63e7",
+          "src": "/sources/statue%20for%20support-w960.webp?v=0.6.6-b2001f63e7",
           "width": 960,
           "height": 731,
           "bytes": 52650
         },
         {
-          "src": "/sources/statue%20for%20support.webp?v=0.6.5-d786bd3e24",
+          "src": "/sources/statue%20for%20support.webp?v=0.6.6-d786bd3e24",
           "width": 1050,
           "height": 800,
           "bytes": 55444
@@ -107,19 +107,19 @@
       "height": 1024,
       "variants": [
         {
-          "src": "/sources/statue%20for%20not-found-w768.webp?v=0.6.5-ac1534db27",
+          "src": "/sources/statue%20for%20not-found-w768.webp?v=0.6.6-ac1534db27",
           "width": 768,
           "height": 512,
           "bytes": 71308
         },
         {
-          "src": "/sources/statue%20for%20not-found-w1152.webp?v=0.6.5-1f1738a2f6",
+          "src": "/sources/statue%20for%20not-found-w1152.webp?v=0.6.6-1f1738a2f6",
           "width": 1152,
           "height": 768,
           "bytes": 151712
         },
         {
-          "src": "/sources/statue%20for%20not-found.webp?v=0.6.5-223c755544",
+          "src": "/sources/statue%20for%20not-found.webp?v=0.6.6-223c755544",
           "width": 1536,
           "height": 1024,
           "bytes": 260072
@@ -133,16 +133,16 @@
       "height": 256,
       "variants": [
         {
-          "src": "/sources/youtube-w128.webp?v=0.6.5-03e17293f5",
+          "src": "/sources/youtube-w128.webp?v=0.6.6-184effd286",
           "width": 128,
           "height": 128,
-          "bytes": 5962
+          "bytes": 5510
         },
         {
-          "src": "/sources/youtube.webp?v=0.6.5-6b4a259981",
+          "src": "/sources/youtube.webp?v=0.6.6-5cb05d803d",
           "width": 256,
           "height": 256,
-          "bytes": 19542
+          "bytes": 13972
         }
       ]
     },
@@ -151,16 +151,16 @@
       "height": 256,
       "variants": [
         {
-          "src": "/sources/tiktok-w128.webp?v=0.6.5-d86b73eae2",
+          "src": "/sources/tiktok-w128.webp?v=0.6.6-451a0c9d8f",
           "width": 128,
           "height": 128,
-          "bytes": 6158
+          "bytes": 5692
         },
         {
-          "src": "/sources/tiktok.webp?v=0.6.5-cad0384792",
+          "src": "/sources/tiktok.webp?v=0.6.6-5e9dd4c991",
           "width": 256,
           "height": 256,
-          "bytes": 16814
+          "bytes": 14200
         }
       ]
     },
@@ -169,16 +169,16 @@
       "height": 256,
       "variants": [
         {
-          "src": "/sources/instagram-w128.webp?v=0.6.5-3777d6a9ba",
+          "src": "/sources/instagram-w128.webp?v=0.6.6-707a2ebbcc",
           "width": 128,
           "height": 128,
-          "bytes": 9484
+          "bytes": 5946
         },
         {
-          "src": "/sources/instagram.webp?v=0.6.5-9e67e1922d",
+          "src": "/sources/instagram.webp?v=0.6.6-57f224930f",
           "width": 256,
           "height": 256,
-          "bytes": 25066
+          "bytes": 14260
         }
       ]
     }

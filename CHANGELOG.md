@@ -4,6 +4,12 @@ All notable changes to GOD Mode are documented here. The project follows
 [Semantic Versioning](https://semver.org/) and the structure from
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.6.6] - 2026-11-23
+
+### Changed
+
+- Redesigned the floating YouTube, TikTok, and Instagram icons as black tiles crossed out with a bold white marker.
+
 ## [0.6.5] - 2026-11-22
 
 ### Changed
